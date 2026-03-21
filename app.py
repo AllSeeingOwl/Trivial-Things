@@ -137,6 +137,9 @@ def get_stats():
 @app.route('/api/mark_used', methods=['POST'])
 def mark_used():
     data = request.json
+    if data is None or not isinstance(data, dict):
+        return jsonify({'error': 'Invalid or missing JSON payload'}), 400
+
     q_id = data.get('id')
     if not q_id:
         return jsonify({'error': 'Missing question ID'}), 400
