@@ -1,0 +1,122 @@
+from flask import Flask, jsonify, render_template, request
+import csv
+import random
+import os
+
+app = Flask(__name__)
+
+CSV_FILE = 'Questions & All That.csv'
+
+def load_questions():
+    questions = []
+    if not os.path.exists(CSV_FILE):
+        return questions
+
+    with open(CSV_FILE, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        for r_idx, row in enumerate(reader):
+            # Pad row if necessary to ensure it has 6 columns
+            row = row + [''] * (6 - len(row))
+
+            # Check Set A (Cols 0, 1, 2)
+            q_a = row[0].strip()
+            if q_a and q_a not in ['Set A', 'Set B'] and not q_a.startswith(','):
+                questions.append({
+                    'id': f"{r_idx}_A",
+                    'row': r_idx,
+                    'set': 'A',
+                    'question': q_a,
+                    'answer': row[1].strip(),
+                    'used': row[2].strip().upper() == 'TRUE'
+                })
+
+            # Check Set B (Cols 3, 4, 5)
+            q_b = row[3].strip()
+            if q_b and q_b not in ['Set A', 'Set B'] and not q_b.startswith(','):
+                questions.append({
+                    'id': f"{r_idx}_B",
+                    'row': r_idx,
+                    'set': 'B',
+                    'question': q_b,
+                    'answer': row[4].strip(),
+                    'used': row[5].strip().upper() == 'TRUE'
+                })
+    return questions
+
+def update_used_status(q_id, used_status):
+    row_idx_str, set_type = q_id.split('_')
+    row_idx = int(row_idx_str)
+
+    with open(CSV_FILE, 'r', encoding='utf-8') as f:
+        rows = list(csv.reader(f))
+
+    for i in range(len(rows)):
+        rows[i] = rows[i] + [''] * (6 - len(rows[i]))
+
+    if set_type == 'A':
+        rows[row_idx][2] = 'TRUE' if used_status else 'FALSE'
+    elif set_type == 'B':
+        rows[row_idx][5] = 'TRUE' if used_status else 'FALSE'
+
+    with open(CSV_FILE, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(rows)
+
+def reset_all_questions():
+    with open(CSV_FILE, 'r', encoding='utf-8') as f:
+        rows = list(csv.reader(f))
+
+    for i in range(len(rows)):
+        rows[i] = rows[i] + [''] * (6 - len(rows[i]))
+
+    qs = load_questions()
+    for q in qs:
+        r_idx = q['row']
+        if q['set'] == 'A':
+            rows[r_idx][2] = 'FALSE'
+        elif q['set'] == 'B':
+            rows[r_idx][5] = 'FALSE'
+
+    with open(CSV_FILE, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(rows)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/question', methods=['GET'])
+def get_random_question():
+    questions = load_questions()
+    unused_questions = [q for q in questions if not q['used']]
+
+    if not unused_questions:
+        return jsonify({'error': 'No unused questions left!'}), 404
+
+    question = random.choice(unused_questions)
+    return jsonify(question)
+
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    questions = load_questions()
+    total = len(questions)
+    used = len([q for q in questions if q['used']])
+    return jsonify({'total': total, 'used': used, 'remaining': total - used})
+
+@app.route('/api/mark_used', methods=['POST'])
+def mark_used():
+    data = request.json
+    q_id = data.get('id')
+    if not q_id:
+        return jsonify({'error': 'Missing question ID'}), 400
+
+    update_used_status(q_id, True)
+    return jsonify({'success': True})
+
+@app.route('/api/reset', methods=['POST'])
+def reset():
+    reset_all_questions()
+    return jsonify({'success': True})
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000, host='0.0.0.0')
