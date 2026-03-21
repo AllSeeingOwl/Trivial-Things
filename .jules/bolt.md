@@ -1,0 +1,3 @@
+## 2024-05-24 - Redundant file I/O operations and Caching
+**Learning:** This application previously read and parsed the entire CSV database on every single `/api/question` and `/api/stats` endpoint access. Because the frontend sequentially accesses these endpoints per question skip or mark used, each UI action triggered two redundant file reads. Storing a persistent, module-level in-memory cache directly avoids this and resolves a noticeable bottleneck when reading big CSV databases.
+**Action:** When a web application relies purely on file parsing for its data access, use module-level variables or an in-memory database representation to cache the results and only sync writes to disk to greatly cut down on file system access per request.
