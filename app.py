@@ -56,6 +56,7 @@ def load_questions():
     _questions_cache = questions
     return _questions_cache
 
+
 def update_used_status(q_id, used_status):
     row_idx_str, set_type = q_id.split('_')
     row_idx = int(row_idx_str)
@@ -112,6 +113,7 @@ def reset_all_questions():
 def index():
     return render_template('index.html')
 
+
 @app.route('/api/question', methods=['GET'])
 def get_random_question():
     questions = load_questions()
@@ -123,12 +125,14 @@ def get_random_question():
     question = random.choice(unused_questions)
     return jsonify(question)
 
+
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
     questions = load_questions()
     total = len(questions)
     used = len([q for q in questions if q['used']])
     return jsonify({'total': total, 'used': used, 'remaining': total - used})
+
 
 @app.route('/api/mark_used', methods=['POST'])
 def mark_used():
@@ -137,13 +141,22 @@ def mark_used():
     if not q_id:
         return jsonify({'error': 'Missing question ID'}), 400
 
-    update_used_status(q_id, True)
+    if not isinstance(q_id, str) or '_' not in q_id:
+        return jsonify({'error': 'Invalid question ID format'}), 400
+
+    try:
+        update_used_status(q_id, True)
+    except Exception:
+        return jsonify({'error': 'Failed to process request'}), 500
+
     return jsonify({'success': True})
+
 
 @app.route('/api/reset', methods=['POST'])
 def reset():
     reset_all_questions()
     return jsonify({'success': True})
 
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=False, port=5000, host='0.0.0.0')
