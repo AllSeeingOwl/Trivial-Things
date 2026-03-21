@@ -51,6 +51,11 @@
             border-radius: 15px;
         }
 
+        .flashcard:focus-visible {
+            outline: 3px solid #3498db;
+            outline-offset: 4px;
+        }
+
         .flashcard.is-flipped {
             transform: rotateY(180deg);
         }
@@ -99,6 +104,11 @@
             font-weight: bold;
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button:focus-visible {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
         }
 
         button:active {
@@ -156,7 +166,7 @@
     </div>
 
     <div class="flashcard-container" id="flashcard-container">
-        <div class="flashcard" id="flashcard">
+        <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Flashcard">
             <div class="flashcard-face flashcard-front" id="question-text">
                 Loading...
             </div>
@@ -180,6 +190,12 @@
         let currentQuestion = null;
 
         document.getElementById('flashcard').addEventListener('click', flipCard);
+        document.getElementById('flashcard').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                flipCard();
+            }
+        });
 
         function flipCard() {
             const card = document.getElementById('flashcard');

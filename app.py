@@ -7,8 +7,18 @@ app = Flask(__name__)
 
 CSV_FILE = 'Questions & All That.csv'
 
+# ⚡ Bolt Optimization: In-Memory Cache
+# Caches the CSV rows in memory to prevent reading and parsing the entire file
+# on every /api/question and /api/stats request, significantly reducing file I/O operations.
+_questions_cache = None
 
 def load_questions():
+    global _questions_cache
+
+    # Return cached data if already loaded to skip expensive file I/O
+    if _questions_cache is not None:
+        return _questions_cache
+
     questions = []
     if not os.path.exists(CSV_FILE):
         return questions
@@ -42,7 +52,9 @@ def load_questions():
                     'answer': row[4].strip(),
                     'used': row[5].strip().upper() == 'TRUE'
                 })
-    return questions
+
+    _questions_cache = questions
+    return _questions_cache
 
 
 def update_used_status(q_id, used_status):
@@ -64,6 +76,13 @@ def update_used_status(q_id, used_status):
         writer = csv.writer(f)
         writer.writerows(rows)
 
+    # Keep the in-memory cache synchronized with the CSV disk writes
+    global _questions_cache
+    if _questions_cache is not None:
+        for q in _questions_cache:
+            if q['id'] == q_id:
+                q['used'] = used_status
+                break
 
 def reset_all_questions():
     with open(CSV_FILE, 'r', encoding='utf-8') as f:
@@ -84,6 +103,11 @@ def reset_all_questions():
         writer = csv.writer(f)
         writer.writerows(rows)
 
+    # Synchronize the cache reset with the disk writes
+    global _questions_cache
+    if _questions_cache is not None:
+        for q in _questions_cache:
+            q['used'] = False
 
 @app.route('/')
 def index():
