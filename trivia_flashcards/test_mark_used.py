@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from app import app
 import json
 
@@ -15,6 +16,13 @@ class TestApp(unittest.TestCase):
         response = self.app.post('/api/mark_used', json={})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json, {'error': 'Missing question ID'})
+
+    @patch('app.update_used_status')
+    def test_mark_used_exception(self, mock_update_used_status):
+        mock_update_used_status.side_effect = Exception("Mocked exception")
+        response = self.app.post('/api/mark_used', json={"id": "valid_id"})
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json, {'error': 'Failed to process request'})
 
 if __name__ == '__main__':
     unittest.main()
