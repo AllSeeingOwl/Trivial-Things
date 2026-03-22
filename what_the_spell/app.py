@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 CSV_FILE = os.path.join(os.path.dirname(__file__), 'What The Spell.csv')
 
+
 def load_data():
     grids = []
     pool = []
@@ -28,7 +29,8 @@ def load_data():
 
             # If we are in a grid and the row has the row number at the end
             # "word1, word2, word3, word4, word5, word6, row_num"
-            if current_grid is not None and len(row) >= 7 and row[6].strip().isdigit():
+            if (current_grid is not None and len(row) >= 7 and
+                    row[6].strip().isdigit()):
                 words = [w.strip() for w in row[:6]]
                 current_grid.append(words)
 
@@ -42,18 +44,21 @@ def load_data():
 
     return grids, pool
 
+
 @app.route('/')
 def index():
-    grids, pool = load_data()
+    grids, _ = load_data()
     return render_template('index.html', num_grids=len(grids))
+
 
 @app.route('/api/grid/<int:grid_idx>')
 def get_grid(grid_idx):
-    grids, pool = load_data()
+    grids, _ = load_data()
     if 0 <= grid_idx < len(grids):
         return jsonify({'grid': grids[grid_idx]})
     return jsonify({'error': 'Grid not found'}), 404
 
+
 if __name__ == '__main__':
-    # Run on port 5001 to avoid conflicting with the main app if running simultaneously
+    # Run on port 5001 to avoid conflicting with main app
     app.run(debug=False, port=5001, host='0.0.0.0')
