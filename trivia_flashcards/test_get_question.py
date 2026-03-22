@@ -1,5 +1,10 @@
 import unittest
 from unittest.mock import patch
+from app import app, load_questions
+
+class TestGetQuestion(unittest.TestCase):
+    def setUp(self):
+        self.app = app.test_client()
 import app
 
 class TestGetQuestion(unittest.TestCase):
