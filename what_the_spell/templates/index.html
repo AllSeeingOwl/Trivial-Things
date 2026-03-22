@@ -89,13 +89,24 @@
             color: white;
         }
 
-        .cell.word-cell:hover {
+        .cell.word-cell:hover,
+        .cell.word-cell:focus-visible {
             background-color: #0056b3;
             transform: scale(1.05);
+            outline: none;
+        }
+
+        .cell.word-cell:focus-visible {
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
         }
 
         .cell.revealed {
             background-color: #28a745 !important;
+        }
+
+        .cell.revealed:focus-visible {
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+            background-color: #218838 !important;
         }
 
         .spell-challenge {
@@ -160,11 +171,11 @@
 
     <div class="spell-challenge">
         <h2>Spelling Challenge</h2>
-        <div class="modes">
-            <button class="mode-btn active" data-mode="normal">Normal</button>
-            <button class="mode-btn" data-mode="no-vowels">No Vowels</button>
-            <button class="mode-btn" data-mode="backwards">Backwards</button>
-            <button class="mode-btn" data-mode="both">No Vowels + Backwards</button>
+        <div class="modes" role="group" aria-label="Spelling Challenge Modes">
+            <button class="mode-btn active" data-mode="normal" aria-pressed="true">Normal</button>
+            <button class="mode-btn" data-mode="no-vowels" aria-pressed="false">No Vowels</button>
+            <button class="mode-btn" data-mode="backwards" aria-pressed="false">Backwards</button>
+            <button class="mode-btn" data-mode="both" aria-pressed="false">No Vowels + Backwards</button>
         </div>
         <div>Selected Word:</div>
         <div class="challenge-word" id="current-word">---</div>
@@ -191,8 +202,12 @@
 
         modeBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                modeBtns.forEach(b => b.classList.remove('active'));
+                modeBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
+                });
                 e.target.classList.add('active');
+                e.target.setAttribute('aria-pressed', 'true');
                 currentMode = e.target.getAttribute('data-mode');
                 updateChallenge();
             });
@@ -237,11 +252,22 @@
                     cell.textContent = `Word ${rowIndex + 1}-${colIndex + 1}`;
                     cell.dataset.word = word;
 
-                    cell.addEventListener('click', function() {
-                        this.textContent = this.dataset.word;
-                        this.classList.add('revealed');
-                        currentWord = this.dataset.word;
+                    function revealCell(element) {
+                        element.textContent = element.dataset.word;
+                        element.classList.add('revealed');
+                        currentWord = element.dataset.word;
                         updateChallenge();
+                    }
+
+                    cell.addEventListener('click', function() {
+                        revealCell(this);
+                    });
+
+                    cell.addEventListener('keydown', function(event) {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            revealCell(this);
+                        }
                     });
 
                     gridContainer.appendChild(cell);
@@ -253,6 +279,10 @@
             const div = document.createElement('div');
             div.className = `cell ${className}`;
             div.textContent = content;
+            if (className.includes('word-cell')) {
+                div.setAttribute('tabindex', '0');
+                div.setAttribute('role', 'button');
+            }
             return div;
         }
 
