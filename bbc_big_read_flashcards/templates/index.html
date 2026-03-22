@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBC Big Read Flashcards</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            max-width: 1200px;
+        }
+
+        .cell {
+            width: 180px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            padding: 10px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            box-shadow: inset 0 0 0 2px transparent;
+        }
+
+        .cell:hover,
+        .cell:focus-visible {
+            background-color: #dee2e6;
+            transform: scale(1.02);
+            outline: none;
+        }
+
+        .cell:focus-visible {
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+        }
+
+        .cell.correct {
+            background-color: #28a745 !important;
+            color: white;
+        }
+
+        .cell.incorrect {
+            background-color: #dc3545 !important;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>BBC's Big Read (2003 Poll)</h1>
+    <p>Which of these books was ranked 100 OR HIGHER? Click to reveal!</p>
+
+    <div class="controls">
+        <button id="reset-btn">Reset Board</button>
+    </div>
+
+    <div class="grid-container" id="grid">
+        <!-- Grid will be generated here -->
+    </div>
+
+    <script>
+        const resetBtn = document.getElementById('reset-btn');
+        const gridContainer = document.getElementById('grid');
+        let currentGridData = null;
+
+        resetBtn.addEventListener('click', renderGrid);
+
+        async function loadGrid() {
+            try {
+                const response = await fetch('/api/grid');
+                const data = await response.json();
+
+                if (data.grid && data.grid.length > 0) {
+                    currentGridData = data.grid;
+                    renderGrid();
+                } else {
+                    gridContainer.innerHTML = '<p>No data found.</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching grid:', error);
+            }
+        }
+
+        function renderGrid() {
+            if (!currentGridData) return;
+            gridContainer.innerHTML = '';
+
+            currentGridData.forEach((row, rowIndex) => {
+                row.forEach((cellData, colIndex) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.textContent = cellData.text;
+                    cell.setAttribute('tabindex', '0');
+                    cell.setAttribute('role', 'button');
+                    cell.dataset.status = cellData.status;
+
+                    function revealCell(element) {
+                        if (element.dataset.status === 'correct') {
+                            element.classList.add('correct');
+                        } else if (element.dataset.status === 'incorrect') {
+                            element.classList.add('incorrect');
+                        }
+                    }
+
+                    cell.addEventListener('click', function() {
+                        revealCell(this);
+                    });
+
+                    cell.addEventListener('keydown', function(event) {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            revealCell(this);
+                        }
+                    });
+
+                    gridContainer.appendChild(cell);
+                });
+            });
+        }
+
+        loadGrid();
+    </script>
+</body>
+</html>
