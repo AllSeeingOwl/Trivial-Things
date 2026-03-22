@@ -64,8 +64,10 @@ def update_used_status(q_id, used_status):
     with open(CSV_FILE, 'r', encoding='utf-8') as f:
         rows = list(csv.reader(f))
 
-    for i in range(len(rows)):
-        rows[i] = rows[i] + [''] * (6 - len(rows[i]))
+    # ⚡ Bolt Optimization: Targeted Row Padding
+    # Instead of an O(n) loop padding every single row in the CSV file,
+    # we only pad the specific row we are modifying. This eliminates unnecessary operations.
+    rows[row_idx] = rows[row_idx] + [''] * (6 - len(rows[row_idx]))
 
     if set_type == 'A':
         rows[row_idx][2] = 'TRUE' if used_status else 'FALSE'
@@ -88,12 +90,13 @@ def reset_all_questions():
     with open(CSV_FILE, 'r', encoding='utf-8') as f:
         rows = list(csv.reader(f))
 
-    for i in range(len(rows)):
-        rows[i] = rows[i] + [''] * (6 - len(rows[i]))
-
     qs = load_questions()
     for q in qs:
         r_idx = q['row']
+        # ⚡ Bolt Optimization: Targeted Row Padding
+        # Instead of an O(n) loop padding every single row upfront,
+        # we only pad the rows that are actually being reset.
+        rows[r_idx] = rows[r_idx] + [''] * (6 - len(rows[r_idx]))
         if q['set'] == 'A':
             rows[r_idx][2] = 'FALSE'
         elif q['set'] == 'B':
