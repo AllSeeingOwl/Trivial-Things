@@ -56,4 +56,4 @@ def get_grid(grid_idx):
 
 if __name__ == '__main__':
     # Run on port 5001 to avoid conflicting with the main app if running simultaneously
-    app.run(debug=True, port=5001, host='0.0.0.0')
+    app.run(debug=False, port=5001, host='0.0.0.0')
