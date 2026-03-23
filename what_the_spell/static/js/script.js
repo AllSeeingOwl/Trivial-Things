@@ -49,16 +49,8 @@ function renderGrid() {
 
     gridContainer.innerHTML = '';
 
-    // Header Row
-    gridContainer.appendChild(createCell('', 'header'));
-    for (let i = 1; i <= 6; i++) {
-        gridContainer.appendChild(createCell(i, 'header'));
-    }
-
     // Data Rows
     currentGridData.forEach((row, rowIndex) => {
-        gridContainer.appendChild(createCell(rowIndex + 1, 'header'));
-
         row.forEach((word, colIndex) => {
             const cell = createCell(word, 'word-cell');
             // Initially hide the word (could show coordinate like A1, B2 instead, or just mask)
