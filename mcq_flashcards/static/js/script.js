@@ -34,6 +34,9 @@ function handleChoice(choiceStr, btnEl) {
     btnEl.style.backgroundColor = isCorrect ? 'var(--btn-success)' : 'var(--btn-danger)';
     btnEl.style.color = '#fff';
 
+    // Append icon to innerText to avoid relying on color alone (WCAG 1.4.1)
+    btnEl.innerText = choiceStr + (isCorrect ? ' ✓' : ' ✗');
+
     // Announce choice outcome via ARIA live
     const liveAnnouncer = document.getElementById('error-msg');
     liveAnnouncer.classList.remove('hidden');
