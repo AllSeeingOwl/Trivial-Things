@@ -153,6 +153,13 @@ def upload_file():
             return jsonify({'grid': grid_data})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+        finally:
+            # Clean up the file to prevent uploads/ from growing indefinitely
+            if os.path.exists(filepath):
+                try:
+                    os.remove(filepath)
+                except Exception:
+                    pass
 
     return jsonify({'error': 'Invalid file type. Please upload a PDF.'}), 400
 
