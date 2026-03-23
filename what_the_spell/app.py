@@ -6,8 +6,20 @@ app = Flask(__name__)
 
 CSV_FILE = os.path.join(os.path.dirname(__file__), 'What The Spell.csv')
 
+# ⚡ Bolt Optimization: In-Memory Cache
+# Caches the CSV rows in memory to prevent reading and parsing the entire file
+# on every / and /api/grid/<int:grid_idx> request, reducing I/O operations.
+_cache_grids = None
+_cache_pool = None
+
 
 def load_data():
+    global _cache_grids, _cache_pool
+
+    # Return cached data if already loaded to skip expensive file I/O
+    if _cache_grids is not None and _cache_pool is not None:
+        return _cache_grids, _cache_pool
+
     grids = []
     pool = []
 
@@ -42,7 +54,10 @@ def load_data():
                 if row[0].strip() and not row[0].strip().isdigit():
                     pool.append(row[0].strip())
 
-    return grids, pool
+    _cache_grids = grids
+    _cache_pool = pool
+
+    return _cache_grids, _cache_pool
 
 
 @app.route('/')
