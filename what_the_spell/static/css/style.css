@@ -1,0 +1,160 @@
+:root {
+    --bg-color: #f0f2f5;
+    --text-color: #333;
+    --text-muted: #666;
+    --border-color: #ccc;
+    --bg-white: white;
+    --btn-primary: #007bff;
+    --btn-primary-hover: #0056b3;
+    --cell-bg: #e9ecef;
+    --cell-header-bg: #343a40;
+    --cell-header-color: white;
+    --cell-revealed-bg: #28a745;
+    --cell-revealed-hover: #218838;
+    --mode-btn-bg: #6c757d;
+    --mode-btn-active: #28a745;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+select, button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--bg-white);
+    cursor: pointer;
+}
+
+button {
+    background-color: var(--btn-primary);
+    color: white;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: var(--btn-primary-hover);
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.cell {
+    width: 100px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--cell-bg);
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    padding: 5px;
+    box-sizing: border-box;
+    word-wrap: break-word;
+}
+
+.cell.header {
+    background-color: var(--cell-header-bg);
+    color: var(--cell-header-color);
+    cursor: default;
+    font-size: 16px;
+}
+
+.cell.word-cell {
+    background-color: var(--btn-primary);
+    color: white;
+}
+
+.cell.word-cell:hover,
+.cell.word-cell:focus-visible {
+    background-color: var(--btn-primary-hover);
+    transform: scale(1.05);
+    outline: none;
+}
+
+.cell.word-cell:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+.cell.revealed {
+    background-color: var(--cell-revealed-bg) !important;
+}
+
+.cell.revealed:focus-visible {
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+    background-color: var(--cell-revealed-hover) !important;
+}
+
+.spell-challenge {
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 80%;
+    max-width: 600px;
+}
+
+.challenge-word {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 20px 0;
+    min-height: 40px;
+    letter-spacing: 2px;
+}
+
+.modes {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.mode-btn {
+    background-color: var(--mode-btn-bg);
+}
+
+.mode-btn.active {
+    background-color: var(--mode-btn-active);
+}
+
+.expected-result {
+    margin-top: 15px;
+    font-size: 18px;
+    color: var(--text-muted);
+    font-style: italic;
+}

@@ -1,0 +1,137 @@
+:root {
+    --bg-color: #f0f2f5;
+    --text-color: #333;
+    --bg-white: white;
+    --btn-primary: #007bff;
+    --btn-primary-hover: #0056b3;
+    --cell-bg: #e9ecef;
+    --cell-hover-bg: #dee2e6;
+    --cell-correct-bg: #28a745;
+    --cell-incorrect-bg: #dc3545;
+    --border-color: #ccc;
+    --text-muted: #666;
+    --shadow-color: rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-direction: column;
+    background: var(--bg-white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.controls form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+input[type="file"] {
+    padding: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--btn-primary);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: var(--btn-primary-hover);
+}
+
+.grid-container {
+    display: grid;
+    gap: 10px;
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    margin-bottom: 30px;
+    max-width: 1200px;
+    display: none; /* hidden until grid is loaded */
+}
+
+.cell {
+    min-width: 160px;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--cell-bg);
+    border-radius: 5px;
+    font-weight: 500;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    padding: 10px;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    box-shadow: inset 0 0 0 2px transparent;
+}
+
+.cell:hover,
+.cell:focus-visible {
+    background-color: var(--cell-hover-bg);
+    transform: scale(1.02);
+    outline: none;
+}
+
+.cell:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+.cell.correct {
+    background-color: var(--cell-correct-bg) !important;
+    color: white;
+}
+
+.cell.incorrect {
+    background-color: var(--cell-incorrect-bg) !important;
+    color: white;
+}
+
+#loading {
+    display: none;
+    margin-top: 20px;
+    color: var(--text-muted);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

@@ -4,317 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What The Spell</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        select, button {
-            padding: 10px 15px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: white;
-            cursor: pointer;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        .cell {
-            width: 100px;
-            height: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-            padding: 5px;
-            box-sizing: border-box;
-            word-wrap: break-word;
-        }
-
-        .cell.header {
-            background-color: #343a40;
-            color: white;
-            cursor: default;
-            font-size: 16px;
-        }
-
-        .cell.word-cell {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .cell.word-cell:hover,
-        .cell.word-cell:focus-visible {
-            background-color: #0056b3;
-            transform: scale(1.05);
-            outline: none;
-        }
-
-        .cell.word-cell:focus-visible {
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
-        }
-
-        .cell.revealed {
-            background-color: #28a745 !important;
-        }
-
-        .cell.revealed:focus-visible {
-            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
-            background-color: #218838 !important;
-        }
-
-        .spell-challenge {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 80%;
-            max-width: 600px;
-        }
-
-        .challenge-word {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 20px 0;
-            min-height: 40px;
-            letter-spacing: 2px;
-        }
-
-        .modes {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .mode-btn {
-            background-color: #6c757d;
-        }
-
-        .mode-btn.active {
-            background-color: #28a745;
-        }
-
-        .expected-result {
-            margin-top: 15px;
-            font-size: 18px;
-            color: #666;
-            font-style: italic;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-    <h1>What The Spell</h1>
+    <header>
+        <h1>What The Spell</h1>
+    </header>
 
-    <div class="controls">
-        <label for="grid-select">Select Grid:</label>
-        <select id="grid-select">
-            {% for i in range(num_grids) %}
-            <option value="{{ i }}">Grid {{ i + 1 }}</option>
-            {% endfor %}
-        </select>
-        <button id="load-btn">Load Grid</button>
-        <button id="reset-btn">Reset Board</button>
-    </div>
+    <main>
+        <section class="controls" aria-label="Grid Controls">
+            <label for="grid-select">Select Grid:</label>
+            <select id="grid-select">
+                {% for i in range(num_grids) %}
+                <option value="{{ i }}">Grid {{ i + 1 }}</option>
+                {% endfor %}
+            </select>
+            <button id="load-btn">Load Grid</button>
+            <button id="reset-btn">Reset Board</button>
+        </section>
 
-    <div class="grid-container" id="grid">
-        <!-- Grid will be generated here -->
-    </div>
+        <section class="grid-container" id="grid" aria-label="Word Grid">
+            <!-- Grid will be generated here -->
+        </section>
 
-    <div class="spell-challenge">
-        <h2>Spelling Challenge</h2>
-        <div class="modes" role="group" aria-label="Spelling Challenge Modes">
-            <button class="mode-btn active" data-mode="normal" aria-pressed="true">Normal</button>
-            <button class="mode-btn" data-mode="no-vowels" aria-pressed="false">No Vowels</button>
-            <button class="mode-btn" data-mode="backwards" aria-pressed="false">Backwards</button>
-            <button class="mode-btn" data-mode="both" aria-pressed="false">No Vowels + Backwards</button>
-        </div>
-        <div>Selected Word:</div>
-        <div class="challenge-word" id="current-word">---</div>
-        <div class="expected-result">
-            Expected spelling: <span id="expected-spelling">---</span>
-        </div>
-    </div>
+        <section class="spell-challenge" aria-labelledby="challenge-heading">
+            <h2 id="challenge-heading">Spelling Challenge</h2>
+            <div class="modes" role="group" aria-label="Spelling Challenge Modes">
+                <button class="mode-btn active" data-mode="normal" aria-pressed="true">Normal</button>
+                <button class="mode-btn" data-mode="no-vowels" aria-pressed="false">No Vowels</button>
+                <button class="mode-btn" data-mode="backwards" aria-pressed="false">Backwards</button>
+                <button class="mode-btn" data-mode="both" aria-pressed="false">No Vowels + Backwards</button>
+            </div>
+            <div>Selected Word:</div>
+            <div class="challenge-word" id="current-word" aria-live="polite" aria-atomic="true">---</div>
+            <div class="expected-result">
+                Expected spelling: <span id="expected-spelling" aria-live="polite" aria-atomic="true">---</span>
+            </div>
+        </section>
+    </main>
 
-    <script>
-        const gridSelect = document.getElementById('grid-select');
-        const loadBtn = document.getElementById('load-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const gridContainer = document.getElementById('grid');
-        const currentWordEl = document.getElementById('current-word');
-        const expectedSpellingEl = document.getElementById('expected-spelling');
-        const modeBtns = document.querySelectorAll('.mode-btn');
-
-        let currentGridData = null;
-        let currentMode = 'normal';
-        let currentWord = '';
-
-        loadBtn.addEventListener('click', loadGrid);
-        resetBtn.addEventListener('click', renderGrid);
-
-        modeBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                modeBtns.forEach(b => {
-                    b.classList.remove('active');
-                    b.setAttribute('aria-pressed', 'false');
-                });
-                e.target.classList.add('active');
-                e.target.setAttribute('aria-pressed', 'true');
-                currentMode = e.target.getAttribute('data-mode');
-                updateChallenge();
-            });
-        });
-
-        async function loadGrid() {
-            const gridIdx = gridSelect.value;
-            try {
-                const response = await fetch(`/api/grid/${gridIdx}`);
-                const data = await response.json();
-
-                if (data.grid) {
-                    currentGridData = data.grid;
-                    renderGrid();
-                    resetChallenge();
-                } else {
-                    alert('Error loading grid');
-                }
-            } catch (error) {
-                console.error('Error fetching grid:', error);
-            }
-        }
-
-        function renderGrid() {
-            if (!currentGridData) return;
-
-            gridContainer.innerHTML = '';
-
-            // Header Row
-            gridContainer.appendChild(createCell('', 'header'));
-            for (let i = 1; i <= 6; i++) {
-                gridContainer.appendChild(createCell(i, 'header'));
-            }
-
-            // Data Rows
-            currentGridData.forEach((row, rowIndex) => {
-                gridContainer.appendChild(createCell(rowIndex + 1, 'header'));
-
-                row.forEach((word, colIndex) => {
-                    const cell = createCell(word, 'word-cell');
-                    // Initially hide the word (could show coordinate like A1, B2 instead, or just mask)
-                    cell.textContent = `Word ${rowIndex + 1}-${colIndex + 1}`;
-                    cell.dataset.word = word;
-
-                    function revealCell(element) {
-                        element.textContent = element.dataset.word;
-                        element.classList.add('revealed');
-                        currentWord = element.dataset.word;
-                        updateChallenge();
-                    }
-
-                    cell.addEventListener('click', function() {
-                        revealCell(this);
-                    });
-
-                    cell.addEventListener('keydown', function(event) {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            revealCell(this);
-                        }
-                    });
-
-                    gridContainer.appendChild(cell);
-                });
-            });
-        }
-
-        function createCell(content, className) {
-            const div = document.createElement('div');
-            div.className = `cell ${className}`;
-            div.textContent = content;
-            if (className.includes('word-cell')) {
-                div.setAttribute('tabindex', '0');
-                div.setAttribute('role', 'button');
-            }
-            return div;
-        }
-
-        function resetChallenge() {
-            currentWord = '';
-            currentWordEl.textContent = '---';
-            expectedSpellingEl.textContent = '---';
-        }
-
-        function updateChallenge() {
-            if (!currentWord) return;
-
-            currentWordEl.textContent = currentWord;
-
-            let result = currentWord;
-
-            if (currentMode === 'no-vowels' || currentMode === 'both') {
-                result = result.replace(/[aeiouAEIOU]/g, '');
-            }
-
-            if (currentMode === 'backwards' || currentMode === 'both') {
-                result = result.split('').reverse().join('');
-            }
-
-            // Format expected spelling with dashes between letters
-            expectedSpellingEl.textContent = result.toUpperCase().split('').join('-');
-        }
-
-        // Load the first grid initially
-        if (gridSelect.options.length > 0) {
-            loadGrid();
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

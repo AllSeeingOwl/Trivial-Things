@@ -4,337 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Flashcards</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-
-        .stats {
-            background: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            font-weight: bold;
-            color: #7f8c8d;
-        }
-
-        .flashcard-container {
-            perspective: 1000px;
-            width: 100%;
-            max-width: 600px;
-            height: 300px;
-            margin-bottom: 30px;
-        }
-
-        .flashcard {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-radius: 15px;
-        }
-
-        .flashcard:focus-visible {
-            outline: 3px solid #3498db;
-            outline-offset: 4px;
-        }
-
-        .flashcard.is-flipped {
-            transform: rotateY(180deg);
-        }
-
-        .flashcard-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            box-sizing: border-box;
-            border-radius: 15px;
-            font-size: 1.5rem;
-            text-align: center;
-            background: white;
-        }
-
-        .flashcard-front {
-            background: linear-gradient(135deg, #6dd5ed, #2193b0);
-            color: white;
-        }
-
-        .flashcard-back {
-            background: linear-gradient(135deg, #f2994a, #f2c94c);
-            color: white;
-            transform: rotateY(180deg);
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        button {
-            padding: 12px 24px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        button:focus-visible {
-            outline: 3px solid #3498db;
-            outline-offset: 2px;
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-danger {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-
-        .btn-warning {
-            background-color: #f39c12;
-            color: white;
-        }
-        .btn-warning:hover {
-            background-color: #d68910;
-        }
-
-        .btn-secondary {
-            background-color: #95a5a6;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        #error-msg {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-    <h1>MCQ Flashcards</h1>
-    <div class="stats" id="stats-container">
-        Loading stats...
-    </div>
+    <header>
+        <h1>MCQ Flashcards</h1>
+        <div class="stats" id="stats-container" aria-live="polite">
+            Loading stats...
+        </div>
+    </header>
 
-    <div class="flashcard-container" id="flashcard-container">
-        <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Flashcard">
-            <div class="flashcard-face flashcard-front" id="front-face" style="flex-direction: column;">
-                <div id="question-text" style="margin-bottom: 20px;">Loading...</div>
-                <div id="mcq-choices" style="display: flex; flex-direction: column; gap: 10px; width: 80%;">
-                    <!-- Choices will be injected here -->
+    <main>
+        <section class="flashcard-container" id="flashcard-container" aria-label="Flashcard Area">
+            <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Flashcard" aria-expanded="false">
+                <div class="flashcard-face flashcard-front" id="front-face" style="flex-direction: column;">
+                    <div id="question-text" style="margin-bottom: 20px;" aria-live="polite">Loading...</div>
+                    <div id="mcq-choices" style="display: flex; flex-direction: column; gap: 10px; width: 80%;" role="group" aria-label="Multiple Choice Options">
+                        <!-- Choices will be injected here -->
+                    </div>
+                </div>
+                <div class="flashcard-face flashcard-back" id="answer-text" aria-hidden="true" aria-live="polite">
+                    Loading...
                 </div>
             </div>
-            <div class="flashcard-face flashcard-back" id="answer-text">
-                Loading...
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <div class="controls">
-        <button class="btn-primary" id="next-btn" onclick="loadNextQuestion()">Skip (Keep)</button>
-        <button class="btn-danger" id="eliminate-btn" onclick="eliminateAndNext()">Eliminate & Next</button>
-    </div>
+        <section class="controls" aria-label="Flashcard Actions">
+            <button class="btn-primary" id="next-btn" onclick="loadNextQuestion()">Skip (Keep)</button>
+            <button class="btn-danger" id="eliminate-btn" onclick="eliminateAndNext()">Eliminate & Next</button>
+        </section>
 
-    <button class="btn-warning" onclick="resetAll()">Reset All Questions</button>
+        <section aria-label="Administrative Actions">
+            <button class="btn-warning" onclick="resetAll()">Reset All Questions</button>
+        </section>
 
-    <div id="error-msg" class="hidden"></div>
+        <div id="error-msg" class="hidden" role="alert" aria-live="assertive"></div>
+    </main>
 
-    <script>
-        let currentQuestion = null;
-        let selectedChoice = false;
-
-        document.getElementById('flashcard').addEventListener('click', flipCard);
-        document.getElementById('flashcard').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                if (selectedChoice) flipCard();
-            }
-        });
-
-        function flipCard() {
-            const card = document.getElementById('flashcard');
-            card.classList.toggle('is-flipped');
-        }
-
-        function handleChoice(choiceStr, btnEl) {
-            // Prevent multiple selections
-            if (selectedChoice) return;
-            selectedChoice = true;
-
-            // Mark correct/incorrect styling directly
-            const isCorrect = choiceStr === currentQuestion.answer;
-            btnEl.style.backgroundColor = isCorrect ? '#2ecc71' : '#e74c3c';
-            btnEl.style.color = '#fff';
-
-            // Always show correct answer eventually or just flip the card
-            setTimeout(() => {
-                flipCard();
-            }, 800);
-        }
-
-        async function fetchStats() {
-            try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                document.getElementById('stats-container').innerText =
-                    `Remaining: ${data.remaining} | Used: ${data.used} | Total: ${data.total}`;
-            } catch (error) {
-                console.error("Failed to load stats", error);
-            }
-        }
-
-        async function loadNextQuestion() {
-            const card = document.getElementById('flashcard');
-            if (card.classList.contains('is-flipped')) {
-                card.classList.remove('is-flipped');
-                // Wait for flip animation to finish before updating text
-                await new Promise(r => setTimeout(r, 300));
-            }
-
-            document.getElementById('error-msg').classList.add('hidden');
-
-            try {
-                const res = await fetch('/api/question');
-                if (!res.ok) {
-                    const data = await res.json();
-                    document.getElementById('flashcard-container').classList.add('hidden');
-                    document.getElementById('next-btn').classList.add('hidden');
-                    document.getElementById('eliminate-btn').classList.add('hidden');
-
-                    const errorEl = document.getElementById('error-msg');
-                    errorEl.innerText = data.error || "No more questions!";
-                    errorEl.classList.remove('hidden');
-                    return;
-                }
-
-                const data = await res.json();
-                currentQuestion = data;
-
-                document.getElementById('flashcard-container').classList.remove('hidden');
-                document.getElementById('next-btn').classList.remove('hidden');
-                document.getElementById('eliminate-btn').classList.remove('hidden');
-
-                document.getElementById('question-text').innerText = data.question;
-                document.getElementById('answer-text').innerText = data.answer;
-
-                selectedChoice = false;
-
-                const choicesContainer = document.getElementById('mcq-choices');
-                choicesContainer.innerHTML = '';
-
-                if (data.choices && data.choices.length > 0) {
-                    data.choices.forEach(choice => {
-                        const btn = document.createElement('button');
-                        btn.innerText = choice;
-                        btn.style.backgroundColor = 'rgba(255,255,255,0.2)';
-                        btn.style.color = '#fff';
-                        btn.style.border = '2px solid rgba(255,255,255,0.5)';
-                        btn.style.padding = '10px';
-                        btn.style.cursor = 'pointer';
-                        btn.style.borderRadius = '5px';
-                        btn.style.transition = 'all 0.2s';
-                        btn.onmouseover = () => { if(!selectedChoice) btn.style.backgroundColor = 'rgba(255,255,255,0.4)'; };
-                        btn.onmouseout = () => { if(!selectedChoice) btn.style.backgroundColor = 'rgba(255,255,255,0.2)'; };
-                        btn.onclick = (e) => {
-                            e.stopPropagation(); // prevent flashcard click
-                            handleChoice(choice, btn);
-                        };
-                        choicesContainer.appendChild(btn);
-                    });
-                } else {
-                    choicesContainer.innerHTML = '<p>No choices available</p>';
-                }
-
-                fetchStats();
-            } catch (error) {
-                console.error("Failed to load question", error);
-            }
-        }
-
-        async function eliminateAndNext() {
-            if (!currentQuestion) return;
-
-            try {
-                const res = await fetch('/api/mark_used', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: currentQuestion.id })
-                });
-
-                if (res.ok) {
-                    loadNextQuestion();
-                }
-            } catch (error) {
-                console.error("Failed to mark question as used", error);
-            }
-        }
-
-        async function resetAll() {
-            if (!confirm("Are you sure you want to reset all questions? They will all become available again.")) {
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/reset', { method: 'POST' });
-                if (res.ok) {
-                    loadNextQuestion();
-                }
-            } catch (error) {
-                console.error("Failed to reset questions", error);
-            }
-        }
-
-        // Initialize
-        loadNextQuestion();
-    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
