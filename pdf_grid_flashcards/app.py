@@ -5,6 +5,8 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
+# Sentinel: Limit upload size to 16MB to prevent DoS attacks
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def parse_pdf(filepath):
@@ -152,7 +154,9 @@ def upload_file():
             grid_data = parse_pdf(filepath)
             return jsonify({'grid': grid_data})
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            # Sentinel: Log actual error but return generic message to avoid leaking internals
+            print(f"Security/Error processing PDF: {e}")
+            return jsonify({'error': 'An error occurred while processing the file.'}), 500
         finally:
             # Clean up the file to prevent uploads/ from growing indefinitely
             if os.path.exists(filepath):
@@ -164,4 +168,5 @@ def upload_file():
     return jsonify({'error': 'Invalid file type. Please upload a PDF.'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5002, host='0.0.0.0')
+    # Sentinel: Disable debug mode to prevent Werkzeug debugger RCE in production
+    app.run(debug=False, port=5002, host='0.0.0.0')

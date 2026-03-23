@@ -12,3 +12,7 @@
 **Vulnerability:** The Flask application in `what_the_spell/app.py` was configured with `debug=True` and `host='0.0.0.0'`, exposing the Werkzeug interactive debugger to all network interfaces. This allows arbitrary remote code execution (RCE).
 **Learning:** Sub-applications or micro-apps within a repository might have different configurations than the main application. It is crucial to verify the security configurations (like debug mode) across all applications in a monorepo or project with multiple entry points.
 **Prevention:** Ensure `debug=False` is the default in all production or externally accessible Flask applications. Implement automated checks (e.g., linters or security scanners) to detect `debug=True` in `app.run()` calls before merging code.
+## 2024-05-30 - [pdf_grid_flashcards - Prevent RCE via debug mode and limit file uploads]
+**Vulnerability:** Flask `app.run(debug=True, host='0.0.0.0')` was exposing the interactive Werkzeug debugger. No file upload limits were set, leading to DoS risks. Internal errors were leaked via generic exception string casts.
+**Learning:** Development settings (`debug=True`) left in production endpoints, especially those exposed globally (`0.0.0.0`), can lead to arbitrary code execution (RCE).
+**Prevention:** Always verify `debug=False` for Flask applications bound to public interfaces. Implement `MAX_CONTENT_LENGTH` for file uploads, and mask internal errors to prevent information disclosure.
