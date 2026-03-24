@@ -4,6 +4,10 @@ let selectedChoice = false;
 document.getElementById('flashcard').addEventListener('click', flipCard);
 document.getElementById('flashcard').addEventListener('keydown', function(event) {
     if (event.key === 'Enter' || event.key === ' ') {
+        // Prevent intercepting Enter/Space key presses on child interactive elements (like MCQ buttons)
+        if (event.target !== event.currentTarget) {
+            return;
+        }
         event.preventDefault();
         if (selectedChoice) flipCard();
     }
