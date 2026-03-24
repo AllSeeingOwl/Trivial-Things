@@ -19,6 +19,10 @@ class TestGetQuestion(unittest.TestCase):
         self.assertEqual(response.json['id'], '1')
         self.assertEqual(response.json['question'], 'Q1')
         self.assertTrue('A1' in response.json['choices'])
+        self.assertIn('stats', response.json)
+        self.assertEqual(response.json['stats']['total'], 2)
+        self.assertEqual(response.json['stats']['used'], 1)
+        self.assertEqual(response.json['stats']['remaining'], 1)
 
     @patch('app.load_questions')
     def test_get_question_no_unused(self, mock_load):

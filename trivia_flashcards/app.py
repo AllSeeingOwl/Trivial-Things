@@ -126,7 +126,18 @@ def get_random_question():
         return jsonify({'error': 'No unused questions left!'}), 404
 
     question = random.choice(unused_questions)
-    return jsonify(question)
+
+    question_data = dict(question)
+    # ⚡ Bolt Optimization: Batch Network Requests
+    # Include stats in the question response to prevent the frontend from having
+    # to make a second HTTP request to /api/stats on every question load.
+    question_data['stats'] = {
+        'total': len(questions),
+        'used': len(questions) - len(unused_questions),
+        'remaining': len(unused_questions)
+    }
+
+    return jsonify(question_data)
 
 
 @app.route('/api/stats', methods=['GET'])
