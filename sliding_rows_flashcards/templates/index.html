@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliding Rows Flashcards</title>
+    <!-- We'll link to our new stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sliding Rows Flashcards</h1>
+            <div class="stats-container">
+                <span>Chains Remaining: <span id="chains-remaining">0</span>/<span id="chains-total">0</span></span>
+                <button id="reset-button" class="btn">Reset All</button>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <div id="loading" class="hidden">Loading chain...</div>
+            <div id="error-message" class="hidden error"></div>
+
+            <div class="chain-container" id="chain-container">
+                <!-- Rows will be injected here dynamically via JS -->
+            </div>
+
+            <div class="navigation-controls hidden" id="nav-controls">
+                <button id="next-chain-button" class="btn primary-btn">Load Next Chain</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- We'll link to our new script -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

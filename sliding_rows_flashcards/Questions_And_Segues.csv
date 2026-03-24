@@ -1,0 +1,21 @@
+Chain_ID,Order,Question,Answer,USED
+Chain_A,1,What is the capital of France?,Paris,FALSE
+Chain_A,2,Which famous river flows through Paris?,The Seine,FALSE
+Chain_A,3,The Seine river eventually flows into which body of water?,The English Channel,FALSE
+Chain_A,4,What underwater tunnel connects the UK to France beneath the English Channel?,The Channel Tunnel (Chunnel),FALSE
+Chain_A,5,In what year was the Channel Tunnel officially opened?,1994,FALSE
+Chain_A,6,Who was the UK Prime Minister in 1994?,John Major,FALSE
+Chain_A,7,John Major succeeded which famous female Prime Minister?,Margaret Thatcher,FALSE
+Chain_A,8,What was Margaret Thatcher's nickname?,The Iron Lady,FALSE
+Chain_A,9,Which element has the chemical symbol 'Fe'?,Iron,FALSE
+Chain_A,10,What is the atomic number of Iron?,26,FALSE
+Chain_B,1,Who painted the Mona Lisa?,Leonardo da Vinci,FALSE
+Chain_B,2,In which museum is the Mona Lisa currently housed?,The Louvre,FALSE
+Chain_B,3,The Louvre is located in which European city?,Paris,FALSE
+Chain_B,4,What iconic iron lattice tower is located on the Champ de Mars in Paris?,The Eiffel Tower,FALSE
+Chain_B,5,Who was the chief engineer of the Eiffel Tower?,Gustave Eiffel,FALSE
+Chain_B,6,Gustave Eiffel also designed the internal frame for which famous US monument?,The Statue of Liberty,FALSE
+Chain_B,7,The Statue of Liberty was a gift to the US from which country?,France,FALSE
+Chain_B,8,Which ocean separates France and the United States?,The Atlantic Ocean,FALSE
+Chain_B,9,What is the largest ocean on Earth?,The Pacific Ocean,FALSE
+Chain_B,10,Which explorer led the first expedition to cross the Pacific Ocean?,Ferdinand Magellan,FALSE
