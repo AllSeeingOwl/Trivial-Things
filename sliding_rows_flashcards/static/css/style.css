@@ -1,0 +1,210 @@
+/* Basic styling using variables and resets */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #ecf0f1;
+    --text-color: #333;
+    --row-bg: #fff;
+    --row-hover: #f1f5f8;
+    --row-revealed-bg: #e8f4f8;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+h1 {
+    margin: 0;
+    color: var(--secondary-color);
+}
+
+.stats-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color var(--transition-speed);
+}
+
+.btn:hover {
+    background-color: #1a252f;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    padding: 12px 24px;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.primary-btn:hover {
+    background-color: #2980b9;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Screen reader only utility class to comply with WCAG 1.4.1 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* --- Sliding Rows Styles --- */
+.chain-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sliding-row {
+    background-color: var(--row-bg);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    position: relative;
+}
+
+.sliding-row:hover {
+    background-color: var(--row-hover);
+}
+
+/* The header of the row that acts as the clickable "handle" */
+.row-handle {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.row-number {
+    width: 40px;
+    height: 40px;
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.row-status-text {
+    flex-grow: 1;
+    color: #7f8c8d;
+    font-style: italic;
+    font-size: 14px;
+    text-align: right;
+}
+
+/* The content area that slides down */
+.row-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-speed) ease-in-out, padding var(--transition-speed) ease-in-out;
+    background-color: var(--row-revealed-bg);
+    border-top: 1px solid transparent;
+}
+
+/* State Classes controlled by JS */
+
+/* 1. Question Revealed */
+.sliding-row.state-question .row-content {
+    max-height: 200px; /* arbitrary max-height larger than content */
+    padding: 20px;
+    border-top: 1px solid #dcdde1;
+}
+
+.sliding-row.state-question .question-text {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.sliding-row.state-question .answer-text {
+    display: none;
+}
+
+.sliding-row.state-question .row-status-text {
+    color: var(--primary-color);
+    font-style: normal;
+}
+
+/* 2. Answer Revealed */
+.sliding-row.state-answer .row-content {
+    max-height: 400px;
+    padding: 20px;
+    border-top: 1px solid #dcdde1;
+}
+
+.sliding-row.state-answer .question-text {
+    display: block;
+    font-size: 16px;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+}
+
+.sliding-row.state-answer .answer-text {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.sliding-row.state-answer .row-status-text {
+    color: #27ae60;
+}
+
+.sliding-row.state-answer {
+    cursor: default; /* No more clicking needed */
+    background-color: #f8f9fa;
+}
+
+.sliding-row.state-answer:hover {
+    background-color: #f8f9fa;
+}
