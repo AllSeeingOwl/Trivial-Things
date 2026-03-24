@@ -152,7 +152,9 @@ def mark_used():
     try:
         update_chain_used_status(chain_id, True)
     except Exception as e:
-        return jsonify({'error': 'Failed to process request', 'details': str(e)}), 500
+        # Sentinel: Log actual error but return generic message to avoid leaking internals
+        print(f"Security/Error processing mark_used: {e}")
+        return jsonify({'error': 'Failed to process request'}), 500
 
     return jsonify({'success': True})
 
