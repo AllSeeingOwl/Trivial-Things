@@ -137,7 +137,12 @@ async function loadNextQuestion() {
             choicesContainer.innerHTML = '<p>No choices available</p>';
         }
 
-        fetchStats();
+        if (data.stats) {
+            document.getElementById('stats-container').innerText =
+                `Remaining: ${data.stats.remaining} | Used: ${data.stats.used} | Total: ${data.stats.total}`;
+        } else {
+            fetchStats();
+        }
     } catch (error) {
         console.error("Failed to load question", error);
     }
