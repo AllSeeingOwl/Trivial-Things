@@ -49,6 +49,11 @@ function renderGrid() {
 
     gridContainer.innerHTML = '';
 
+    // ⚡ Bolt Optimization: DocumentFragment for DOM insertions
+    // Batch DOM insertions using a DocumentFragment to prevent multiple reflows
+    // and repaints during grid rendering.
+    const fragment = document.createDocumentFragment();
+
     // Data Rows
     currentGridData.forEach((row, rowIndex) => {
         row.forEach((word, colIndex) => {
@@ -75,9 +80,11 @@ function renderGrid() {
                 }
             });
 
-            gridContainer.appendChild(cell);
+            fragment.appendChild(cell);
         });
     });
+
+    gridContainer.appendChild(fragment);
 }
 
 function createCell(content, className) {

@@ -89,6 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Render the DOM elements for the rows
     function renderChain(questions) {
+        // ⚡ Bolt Optimization: DocumentFragment for DOM insertions
+        // Batch DOM insertions using a DocumentFragment to prevent multiple reflows
+        // and repaints during chain rendering.
+        const fragment = document.createDocumentFragment();
+
         questions.forEach((q, index) => {
             // Container for the row
             const rowDiv = document.createElement('div');
@@ -163,8 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            chainContainer.appendChild(rowDiv);
+            fragment.appendChild(rowDiv);
         });
+
+        chainContainer.appendChild(fragment);
     }
 
     // Check if we reached the end of the line for this specific chain
