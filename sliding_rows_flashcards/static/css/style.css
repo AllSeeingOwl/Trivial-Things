@@ -62,6 +62,11 @@ h1 {
     background-color: #1a252f;
 }
 
+.btn:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
 .primary-btn {
     background-color: var(--primary-color);
     padding: 12px 24px;
@@ -119,6 +124,12 @@ h1 {
     padding: 15px 20px;
     font-size: 18px;
     font-weight: bold;
+}
+
+.row-handle:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: -3px; /* Inset to prevent clipping */
+    border-radius: var(--border-radius);
 }
 
 .row-number {
