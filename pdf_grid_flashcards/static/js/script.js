@@ -58,6 +58,11 @@ function renderGrid() {
     gridContainer.style.gridTemplateColumns = `repeat(${numCols}, 1fr)`;
     gridContainer.style.display = 'grid';
 
+    // ⚡ Bolt Optimization: DocumentFragment for DOM insertions
+    // Batch DOM insertions using a DocumentFragment to prevent multiple reflows
+    // and repaints during grid rendering.
+    const fragment = document.createDocumentFragment();
+
     currentGridData.forEach((row, rowIndex) => {
         row.forEach((cellData, colIndex) => {
             const cell = document.createElement('div');
@@ -88,7 +93,9 @@ function renderGrid() {
                 }
             });
 
-            gridContainer.appendChild(cell);
+            fragment.appendChild(cell);
         });
     });
+
+    gridContainer.appendChild(fragment);
 }

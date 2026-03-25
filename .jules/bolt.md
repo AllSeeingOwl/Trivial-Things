@@ -4,3 +4,7 @@
 ## 2024-05-24 - Batching API responses for statistics
 **Learning:** The frontend made sequentially dependent HTTP requests: loading a question via `/api/question` and then immediately fetching stats via `/api/stats`. This caused significant network overhead and duplication of effort on the backend to count used questions on every UI cycle.
 **Action:** When data dependencies are closely tied to the same backend state and always required together (like a question and current statistics), modify the primary endpoint to return a batched data payload. This effectively halves the total number of network HTTP requests needed by the UI to render.
+
+## 2026-03-25 - Batch DOM Insertions with DocumentFragment
+**Learning:** Inserting DOM elements one-by-one inside a loop causes unnecessary repaints and reflows. Across `what_the_spell`, `pdf_grid_flashcards`, and `sliding_rows_flashcards`, large loops appending elements directly to `gridContainer` or `chainContainer` were causing layout trashing.
+**Action:** Use `const fragment = document.createDocumentFragment()` to batch DOM nodes before inserting them into the actual document. This reduces reflows and repaints to exactly 1 operation.
