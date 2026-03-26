@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where In The World?</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- OpenLocationCode (Plus Codes) -->
+    <script src="https://cdn.jsdelivr.net/npm/open-location-code@1.0.4/openlocationcode.min.js"></script>
+    <!-- Geohash -->
+    <script src="https://cdn.jsdelivr.net/npm/ngeohash@0.6.3/main.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Where In The World?</h1>
+            <div id="game-stats">
+                <span id="round-counter">Round 1 / 5</span>
+                <span id="score-counter">Score: 0</span>
+            </div>
+        </header>
+
+        <div id="start-screen" class="screen active">
+            <h2>Welcome to Where In The World!</h2>
+            <p>Find the mystery locations on the map. You can place your guess by clicking on the map, or by typing coordinates, a Plus Code, a Geohash, or a place name.</p>
+            <div class="settings">
+                <label for="round-select">Number of Rounds:</label>
+                <select id="round-select">
+                    <option value="3">Best of 3</option>
+                    <option value="5" selected>Best of 5</option>
+                    <option value="7">Best of 7</option>
+                </select>
+            </div>
+            <button id="start-btn" class="btn primary">Start Game</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="prompt-card">
+                <h3 id="current-place" class="place-hint"></h3>
+                <h2 id="current-prompt" class="prompt-text"></h2>
+            </div>
+
+            <div class="input-container">
+                <input type="text" id="location-input" placeholder="Type a place name, coordinates (lat, lng), Plus Code, or Geohash...">
+                <button id="search-btn" class="btn secondary">Locate</button>
+            </div>
+
+            <div id="map"></div>
+
+            <div class="controls">
+                <button id="submit-guess-btn" class="btn primary" disabled>Submit Guess</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2 id="result-title"></h2>
+            <div class="result-stats">
+                <p>Distance: <strong id="result-distance"></strong> miles</p>
+                <p>Points Earned: <strong id="result-points"></strong></p>
+            </div>
+            <button id="next-round-btn" class="btn primary">Next Round</button>
+        </div>
+
+        <div id="end-screen" class="screen">
+            <h2>Game Over!</h2>
+            <p>Final Score: <strong id="final-score"></strong></p>
+            <button id="play-again-btn" class="btn primary">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
