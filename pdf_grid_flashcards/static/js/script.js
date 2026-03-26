@@ -70,9 +70,11 @@ function renderGrid() {
             cell.textContent = cellData.text;
             cell.setAttribute('tabindex', '0');
             cell.setAttribute('role', 'button');
+            cell.setAttribute('aria-expanded', 'false');
             cell.dataset.status = cellData.status;
 
             function revealCell(element) {
+                element.setAttribute('aria-expanded', 'true');
                 if (element.dataset.status === 'correct') {
                     element.classList.add('correct');
                     element.setAttribute('aria-label', `${element.textContent} - Correct`);

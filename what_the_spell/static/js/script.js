@@ -65,6 +65,7 @@ function renderGrid() {
             function revealCell(element) {
                 element.textContent = element.dataset.word;
                 element.classList.add('revealed');
+                element.setAttribute('aria-expanded', 'true');
                 currentWord = element.dataset.word;
                 updateChallenge();
             }
@@ -94,6 +95,7 @@ function createCell(content, className) {
     if (className.includes('word-cell')) {
         div.setAttribute('tabindex', '0');
         div.setAttribute('role', 'button');
+        div.setAttribute('aria-expanded', 'false');
     }
     return div;
 }

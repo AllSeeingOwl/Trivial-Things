@@ -52,6 +52,13 @@ def test_what_the_spell_accessibility(page: Page):
     # It should have the .revealed class now
     expect(first_cell).to_have_class("cell word-cell revealed")
 
+    # Verify aria-expanded toggles correctly
+    expect(first_cell).to_have_attribute("aria-expanded", "true")
+
+    # Check that another unrevealed cell still has aria-expanded=false
+    second_cell = cells.nth(1)
+    expect(second_cell).to_have_attribute("aria-expanded", "false")
+
     # Take another screenshot
     page.screenshot(path="/home/jules/verification/what-the-spell-revealed.png")
 
