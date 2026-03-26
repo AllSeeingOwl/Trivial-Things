@@ -16,23 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialization
     function init() {
-        updateStats();
         loadNextChain();
         nextChainBtn.addEventListener('click', loadNextChain);
         resetBtn.addEventListener('click', resetAll);
     }
 
-    // Fetch Stats
-    async function updateStats() {
-        try {
-            const res = await fetch('/api/stats');
-            if (res.ok) {
-                const data = await res.json();
-                chainsTotalEl.textContent = data.total;
-                chainsRemainingEl.textContent = data.remaining;
-            }
-        } catch (e) {
-            console.error('Failed to update stats:', e);
+    // Update Stats UI
+    function updateStats(data) {
+        if (data && data.stats) {
+            chainsTotalEl.textContent = data.stats.total;
+            chainsRemainingEl.textContent = data.stats.remaining;
         }
     }
 
@@ -50,6 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/get_chain');
             loadingEl.classList.add('hidden');
+            const data = await response.json();
+
+            // Still update stats even if 404 since it's batched now
+            updateStats(data);
 
             if (response.status === 404) {
                 errorEl.textContent = "You've completed all available question chains!";
@@ -61,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
             currentChainId = data.chain_id;
             currentQuestions = data.questions;
 
@@ -79,7 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/api/reset', { method: 'POST' });
             if (res.ok) {
-                await updateStats();
+                const data = await res.json();
+                updateStats(data);
                 loadNextChain();
             }
         } catch (e) {
@@ -182,12 +179,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Mark this chain as used in the backend
             try {
-                await fetch('/api/mark_used', {
+                const res = await fetch('/api/mark_used', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chain_id: currentChainId })
                 });
-                updateStats(); // Refresh the counter
+                if (res.ok) {
+                    const data = await res.json();
+                    updateStats(data); // Refresh the counter with batched stats
+                }
             } catch (error) {
                 console.error('Failed to mark chain as used:', error);
             }
