@@ -33,12 +33,23 @@ uploadForm.addEventListener('submit', async (e) => {
             renderGrid();
             resetBtn.style.display = 'inline-block';
         } else {
-            gridContainer.innerHTML = `<p style="color:red;" role="alert">Error: ${data.error || 'No grid data found.'}</p>`;
+            gridContainer.innerHTML = '';
+            const errorMsg = document.createElement('p');
+            errorMsg.style.color = 'red';
+            errorMsg.setAttribute('role', 'alert');
+            // Sentinel: Prevent DOM-based XSS by using textContent instead of innerHTML
+            errorMsg.textContent = `Error: ${data.error || 'No grid data found.'}`;
+            gridContainer.appendChild(errorMsg);
             gridContainer.style.display = 'block';
         }
     } catch (error) {
         console.error('Error uploading PDF:', error);
-        gridContainer.innerHTML = `<p style="color:red;" role="alert">Upload failed.</p>`;
+        gridContainer.innerHTML = '';
+        const errorMsg = document.createElement('p');
+        errorMsg.style.color = 'red';
+        errorMsg.setAttribute('role', 'alert');
+        errorMsg.textContent = 'Upload failed.';
+        gridContainer.appendChild(errorMsg);
         gridContainer.style.display = 'block';
     } finally {
         loadingDiv.style.display = 'none';

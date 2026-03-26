@@ -16,3 +16,8 @@
 **Vulnerability:** Flask `app.run(debug=True, host='0.0.0.0')` was exposing the interactive Werkzeug debugger. No file upload limits were set, leading to DoS risks. Internal errors were leaked via generic exception string casts.
 **Learning:** Development settings (`debug=True`) left in production endpoints, especially those exposed globally (`0.0.0.0`), can lead to arbitrary code execution (RCE).
 **Prevention:** Always verify `debug=False` for Flask applications bound to public interfaces. Implement `MAX_CONTENT_LENGTH` for file uploads, and mask internal errors to prevent information disclosure.
+
+## 2024-05-30 - [pdf_grid_flashcards - Prevent DOM-Based XSS in Error Messages]
+**Vulnerability:** The application was vulnerable to DOM-based Cross-Site Scripting (XSS) because it injected API response error messages (`data.error`) directly into the DOM using `.innerHTML`.
+**Learning:** Even if the backend controls the error message currently, injecting dynamic data via `.innerHTML` is a risky pattern. If backend validation fails or is changed later to reflect user input in errors, XSS can occur.
+**Prevention:** Never use `.innerHTML` with string concatenation containing dynamic data. Always use `document.createElement()` and assign the data safely via `.textContent` to ensure the browser treats it as text, not executable HTML/JavaScript.
