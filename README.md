@@ -1,10 +1,10 @@
 # Trivia and Flashcards Apps
 
-Welcome to the Trivia and Flashcards repository! This collection features four interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
+Welcome to the Trivia and Flashcards repository! This collection features six interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
 
 ## The Applications
 
-The repository is organized into four distinct Flask applications:
+The repository is organized into six distinct Flask applications:
 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
@@ -25,6 +25,16 @@ A spelling-focused interactive grid application.
 An application that generates interactive grid views by parsing structured PDFs.
 *   **Features**: Upload a PDF (like a crossword or grid puzzle), and the app uses PyMuPDF (`fitz`) to extract text and colored regions, rendering an interactive HTML grid where you can verify correct/incorrect cells.
 *   **Running**: `cd pdf_grid_flashcards && python3 app.py` (Runs on port 5002 by default).
+
+### 5. Sliding Rows Flashcards (`sliding_rows_flashcards/`)
+An application that presents sliding rows of flashcards and segues.
+*   **Features**: Reads data from `Questions_And_Segues.csv` to provide a unique flashcard learning experience.
+*   **Running**: `cd sliding_rows_flashcards && python3 app.py` (Runs on port 5003 by default).
+
+### 6. Where In The World (`where_in_the_world/`)
+An interactive map-based game application.
+*   **Features**: Serves an interactive game using Leaflet.js maps and `Where In The World Is.csv` as its data source. Scores guesses based on Haversine distance between the guessed location (via click, Plus Codes, Geohash, Decimal/DMS Coordinates, or Nominatim search) and the target.
+*   **Running**: `cd where_in_the_world && python3 app.py` (Runs on port 5004 by default).
 
 ## Tech Stack
 
