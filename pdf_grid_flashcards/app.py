@@ -13,6 +13,9 @@ def parse_pdf(filepath):
     doc = fitz.open(filepath)
     best_page = None
     max_rects = 0
+    # ⚡ Bolt Optimization: Cache expensive PyMuPDF API call
+    # Prevent calling get_drawings() twice for the best page by caching it here.
+    best_drawings = None
 
     for page in doc:
         drawings = page.get_drawings()
@@ -26,13 +29,15 @@ def parse_pdf(filepath):
         if rects_count > max_rects:
             max_rects = rects_count
             best_page = page
+            best_drawings = drawings
 
     if not best_page:
         best_page = doc.load_page(0)
+        best_drawings = best_page.get_drawings()
 
     page = best_page
     words = page.get_text("words")
-    drawings = page.get_drawings()
+    drawings = best_drawings
 
     colored_rects = []
     for d in drawings:
