@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
+
 def parse_coordinates(location_text):
     """
     Extracts the decimal latitude and longitude from the location text.
@@ -18,14 +19,19 @@ def parse_coordinates(location_text):
             return float(match.group(1)), float(match.group(2))
     return None, None
 
+
 def load_data():
     data = []
     try:
-        with open('Where In The World Is.csv', mode='r', encoding='utf-8') as f:
+        with open(
+                'Where In The World Is.csv', mode='r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for i, row in enumerate(reader):
                 prompt = row.get('...This Thing...', '').strip()
-                location_text = row.get('...Can Be Found Here (what3words + latitude & longitudes)', '')
+                location_col = (
+                    '...Can Be Found Here (what3words + latitude & longitudes)'
+                )
+                location_text = row.get(location_col, '')
                 lat, lng = parse_coordinates(location_text)
                 if lat is not None and lng is not None and prompt:
                     data.append({
@@ -39,7 +45,9 @@ def load_data():
         print(f"Error loading CSV: {e}")
     return data
 
+
 QUESTIONS = load_data()
+
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """
@@ -52,14 +60,17 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     # haversine formula
     dlon = lon2 - lon1
     dlat = lat2 - lat1
-    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+    a = math.sin(dlat/2)**2 + math.cos(lat1) * \
+        math.cos(lat2) * math.sin(dlon/2)**2
     c = 2 * math.asin(math.sqrt(a))
-    r = 3956 # Radius of earth in miles
+    r = 3956  # Radius of earth in miles
     return c * r
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/api/questions')
 def get_questions():
@@ -70,7 +81,7 @@ def get_questions():
     # Select random questions without duplicates
     selected = random.sample(QUESTIONS, count)
 
-    # We send everything to client without the coords initially to prevent cheating
+    # Send everything to client without coords initially to prevent cheating
     safe_selected = []
     for q in selected:
         safe_selected.append({
@@ -79,6 +90,7 @@ def get_questions():
             'prompt': q['prompt']
         })
     return jsonify(safe_selected)
+
 
 @app.route('/api/score', methods=['POST'])
 def calculate_score():
@@ -91,7 +103,8 @@ def calculate_score():
     if not target:
         return jsonify({'error': 'Target not found'}), 404
 
-    distance = haversine_distance(guess_lat, guess_lng, target['lat'], target['lng'])
+    distance = haversine_distance(
+        guess_lat, guess_lng, target['lat'], target['lng'])
 
     score = 0
     if distance <= 1:
@@ -108,5 +121,7 @@ def calculate_score():
         'target_lng': target['lng']
     })
 
+
 if __name__ == '__main__':
-    app.run(port=5004, debug=True)
+    # Sentinel: Disabled debug=True to prevent RCE and info disclosure
+    app.run(port=5004, debug=False)
