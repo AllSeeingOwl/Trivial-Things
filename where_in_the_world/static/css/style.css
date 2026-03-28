@@ -103,6 +103,7 @@ input[type="text"] {
 input[type="text"]:focus {
     outline: none;
     border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
 }
 
 #map {
@@ -136,6 +137,11 @@ input[type="text"]:focus {
     background-color: #bdc3c7;
     cursor: not-allowed;
     transform: none;
+}
+
+.btn:focus-visible {
+    outline: 3px solid var(--secondary-color);
+    outline-offset: 2px;
 }
 
 .btn.primary {
