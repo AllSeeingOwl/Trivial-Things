@@ -1,0 +1,13 @@
+--- mcq_flashcards/static/js/script.js
++++ mcq_flashcards/static/js/script.js
+@@ -137,7 +137,9 @@
+                 choicesContainer.appendChild(btn);
+             });
+         } else {
+-            choicesContainer.innerHTML = '<p>No choices available</p>';
++            const p = document.createElement('p');
++            p.textContent = 'No choices available';
++            choicesContainer.appendChild(p);
+         }
+
+         if (data.stats) {

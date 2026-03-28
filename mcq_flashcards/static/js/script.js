@@ -39,16 +39,16 @@ function handleChoice(choiceStr, btnEl) {
     btnEl.style.color = '#fff';
 
     // Append icon to innerText to avoid relying on color alone (WCAG 1.4.1)
-    btnEl.innerText = choiceStr + (isCorrect ? ' ✓' : ' ✗');
+    btnEl.textContent = choiceStr + (isCorrect ? ' ✓' : ' ✗');
 
     // Announce choice outcome via ARIA live
     const liveAnnouncer = document.getElementById('error-msg');
     liveAnnouncer.classList.remove('hidden');
     liveAnnouncer.style.color = 'transparent'; // Invisible to sighted users temporarily
-    liveAnnouncer.innerText = isCorrect ? 'Correct!' : 'Incorrect.';
+    liveAnnouncer.textContent = isCorrect ? 'Correct!' : 'Incorrect.';
 
     setTimeout(() => {
-        liveAnnouncer.innerText = '';
+        liveAnnouncer.textContent = '';
         liveAnnouncer.style.color = 'var(--btn-danger)';
         liveAnnouncer.classList.add('hidden');
     }, 2000);
@@ -63,7 +63,7 @@ async function fetchStats() {
     try {
         const res = await fetch('/api/stats');
         const data = await res.json();
-        document.getElementById('stats-container').innerText =
+        document.getElementById('stats-container').textContent =
             `Remaining: ${data.remaining} | Used: ${data.used} | Total: ${data.total}`;
     } catch (error) {
         console.error("Failed to load stats", error);
@@ -96,7 +96,7 @@ async function loadNextQuestion() {
             document.getElementById('eliminate-btn').classList.add('hidden');
 
             const errorEl = document.getElementById('error-msg');
-            errorEl.innerText = data.error || "No more questions!";
+            errorEl.textContent = data.error || "No more questions!";
             errorEl.classList.remove('hidden');
             return;
         }
@@ -108,18 +108,18 @@ async function loadNextQuestion() {
         document.getElementById('next-btn').classList.remove('hidden');
         document.getElementById('eliminate-btn').classList.remove('hidden');
 
-        document.getElementById('question-text').innerText = data.question;
-        document.getElementById('answer-text').innerText = data.answer;
+        document.getElementById('question-text').textContent = data.question;
+        document.getElementById('answer-text').textContent = data.answer;
 
         selectedChoice = false;
 
         const choicesContainer = document.getElementById('mcq-choices');
-        choicesContainer.innerHTML = '';
+        choicesContainer.textContent = '';
 
         if (data.choices && data.choices.length > 0) {
             data.choices.forEach(choice => {
                 const btn = document.createElement('button');
-                btn.innerText = choice;
+                btn.textContent = choice;
                 btn.style.backgroundColor = 'rgba(255,255,255,0.2)';
                 btn.style.color = '#fff';
                 btn.style.border = '2px solid rgba(255,255,255,0.5)';
@@ -138,11 +138,13 @@ async function loadNextQuestion() {
                 choicesContainer.appendChild(btn);
             });
         } else {
-            choicesContainer.innerHTML = '<p>No choices available</p>';
+            const p = document.createElement('p');
+            p.textContent = 'No choices available';
+            choicesContainer.appendChild(p);
         }
 
         if (data.stats) {
-            document.getElementById('stats-container').innerText =
+            document.getElementById('stats-container').textContent =
                 `Remaining: ${data.stats.remaining} | Used: ${data.stats.used} | Total: ${data.stats.total}`;
         } else {
             fetchStats();

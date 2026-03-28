@@ -47,7 +47,7 @@ async function loadGrid() {
 function renderGrid() {
     if (!currentGridData) return;
 
-    gridContainer.innerHTML = '';
+    gridContainer.textContent = '';
 
     // ⚡ Bolt Optimization: DocumentFragment for DOM insertions
     // Batch DOM insertions using a DocumentFragment to prevent multiple reflows
