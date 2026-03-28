@@ -1,8 +1,21 @@
 let currentQuestion = null;
 let selectedChoice = false;
 
-document.getElementById('flashcard').addEventListener('click', flipCard);
-document.getElementById('flashcard').addEventListener('keydown', function(event) {
+// ⚡ Bolt Optimization: Cache DOM Elements
+// Cache frequently accessed DOM elements at the top level to prevent
+// repetitive and expensive document.getElementById lookups during interactions.
+const flashcardEl = document.getElementById('flashcard');
+const answerTextEl = document.getElementById('answer-text');
+const errorMsgEl = document.getElementById('error-msg');
+const flashcardContainerEl = document.getElementById('flashcard-container');
+const nextBtnEl = document.getElementById('next-btn');
+const eliminateBtnEl = document.getElementById('eliminate-btn');
+const questionTextEl = document.getElementById('question-text');
+const choicesContainerEl = document.getElementById('mcq-choices');
+const statsContainerEl = document.getElementById('stats-container');
+
+flashcardEl.addEventListener('click', flipCard);
+flashcardEl.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' || event.key === ' ') {
         // Prevent intercepting Enter/Space key presses on child interactive elements (like MCQ buttons)
         if (event.target !== event.currentTarget) {
@@ -14,17 +27,14 @@ document.getElementById('flashcard').addEventListener('keydown', function(event)
 });
 
 function flipCard() {
-    const card = document.getElementById('flashcard');
-    const backFace = document.getElementById('answer-text');
+    flashcardEl.classList.toggle('is-flipped');
 
-    card.classList.toggle('is-flipped');
-
-    if (card.classList.contains('is-flipped')) {
-        card.setAttribute('aria-expanded', 'true');
-        backFace.setAttribute('aria-hidden', 'false');
+    if (flashcardEl.classList.contains('is-flipped')) {
+        flashcardEl.setAttribute('aria-expanded', 'true');
+        answerTextEl.setAttribute('aria-hidden', 'false');
     } else {
-        card.setAttribute('aria-expanded', 'false');
-        backFace.setAttribute('aria-hidden', 'true');
+        flashcardEl.setAttribute('aria-expanded', 'false');
+        answerTextEl.setAttribute('aria-hidden', 'true');
     }
 }
 
@@ -51,6 +61,14 @@ function handleChoice(choiceStr, btnEl) {
         liveAnnouncer.textContent = '';
         liveAnnouncer.style.color = 'var(--btn-danger)';
         liveAnnouncer.classList.add('hidden');
+    errorMsgEl.classList.remove('hidden');
+    errorMsgEl.style.color = 'transparent'; // Invisible to sighted users temporarily
+    errorMsgEl.innerText = isCorrect ? 'Correct!' : 'Incorrect.';
+
+    setTimeout(() => {
+        errorMsgEl.innerText = '';
+        errorMsgEl.style.color = 'var(--btn-danger)';
+        errorMsgEl.classList.add('hidden');
     }, 2000);
 
     // Always show correct answer eventually or just flip the card
@@ -64,6 +82,7 @@ async function fetchStats() {
         const res = await fetch('/api/stats');
         const data = await res.json();
         document.getElementById('stats-container').textContent =
+        statsContainerEl.innerText =
             `Remaining: ${data.remaining} | Used: ${data.used} | Total: ${data.total}`;
     } catch (error) {
         console.error("Failed to load stats", error);
@@ -71,42 +90,41 @@ async function fetchStats() {
 }
 
 async function loadNextQuestion() {
-    const card = document.getElementById('flashcard');
-    const backFace = document.getElementById('answer-text');
-
-    if (card.classList.contains('is-flipped')) {
-        card.classList.remove('is-flipped');
-        card.setAttribute('aria-expanded', 'false');
-        backFace.setAttribute('aria-hidden', 'true');
+    if (flashcardEl.classList.contains('is-flipped')) {
+        flashcardEl.classList.remove('is-flipped');
+        flashcardEl.setAttribute('aria-expanded', 'false');
+        answerTextEl.setAttribute('aria-hidden', 'true');
         // Wait for flip animation to finish before updating text
         await new Promise(r => setTimeout(r, 300));
     } else {
-        card.setAttribute('aria-expanded', 'false');
-        backFace.setAttribute('aria-hidden', 'true');
+        flashcardEl.setAttribute('aria-expanded', 'false');
+        answerTextEl.setAttribute('aria-hidden', 'true');
     }
 
-    document.getElementById('error-msg').classList.add('hidden');
+    errorMsgEl.classList.add('hidden');
 
     try {
         const res = await fetch('/api/question');
         if (!res.ok) {
             const data = await res.json();
-            document.getElementById('flashcard-container').classList.add('hidden');
-            document.getElementById('next-btn').classList.add('hidden');
-            document.getElementById('eliminate-btn').classList.add('hidden');
+            flashcardContainerEl.classList.add('hidden');
+            nextBtnEl.classList.add('hidden');
+            eliminateBtnEl.classList.add('hidden');
 
             const errorEl = document.getElementById('error-msg');
             errorEl.textContent = data.error || "No more questions!";
             errorEl.classList.remove('hidden');
+            errorMsgEl.innerText = data.error || "No more questions!";
+            errorMsgEl.classList.remove('hidden');
             return;
         }
 
         const data = await res.json();
         currentQuestion = data;
 
-        document.getElementById('flashcard-container').classList.remove('hidden');
-        document.getElementById('next-btn').classList.remove('hidden');
-        document.getElementById('eliminate-btn').classList.remove('hidden');
+        flashcardContainerEl.classList.remove('hidden');
+        nextBtnEl.classList.remove('hidden');
+        eliminateBtnEl.classList.remove('hidden');
 
         document.getElementById('question-text').textContent = data.question;
         document.getElementById('answer-text').textContent = data.answer;
@@ -115,6 +133,12 @@ async function loadNextQuestion() {
 
         const choicesContainer = document.getElementById('mcq-choices');
         choicesContainer.textContent = '';
+        questionTextEl.innerText = data.question;
+        answerTextEl.innerText = data.answer;
+
+        selectedChoice = false;
+
+        choicesContainerEl.innerHTML = '';
 
         if (data.choices && data.choices.length > 0) {
             data.choices.forEach(choice => {
@@ -135,7 +159,7 @@ async function loadNextQuestion() {
                 };
                 // Make keyboard accessible within choices
                 btn.setAttribute('aria-label', `Select choice: ${choice}`);
-                choicesContainer.appendChild(btn);
+                choicesContainerEl.appendChild(btn);
             });
         } else {
             const p = document.createElement('p');
@@ -145,6 +169,11 @@ async function loadNextQuestion() {
 
         if (data.stats) {
             document.getElementById('stats-container').textContent =
+            choicesContainerEl.innerHTML = '<p>No choices available</p>';
+        }
+
+        if (data.stats) {
+            statsContainerEl.innerText =
                 `Remaining: ${data.stats.remaining} | Used: ${data.stats.used} | Total: ${data.stats.total}`;
         } else {
             fetchStats();
