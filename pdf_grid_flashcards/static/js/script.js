@@ -33,7 +33,7 @@ uploadForm.addEventListener('submit', async (e) => {
             renderGrid();
             resetBtn.style.display = 'inline-block';
         } else {
-            gridContainer.innerHTML = '';
+            gridContainer.textContent = '';
             const errorMsg = document.createElement('p');
             errorMsg.style.color = 'red';
             errorMsg.setAttribute('role', 'alert');
@@ -44,7 +44,7 @@ uploadForm.addEventListener('submit', async (e) => {
         }
     } catch (error) {
         console.error('Error uploading PDF:', error);
-        gridContainer.innerHTML = '';
+        gridContainer.textContent = '';
         const errorMsg = document.createElement('p');
         errorMsg.style.color = 'red';
         errorMsg.setAttribute('role', 'alert');
@@ -62,7 +62,7 @@ resetBtn.addEventListener('click', renderGrid);
 function renderGrid() {
     if (!currentGridData || currentGridData.length === 0) return;
 
-    gridContainer.innerHTML = '';
+    gridContainer.textContent = '';
 
     // Determine columns dynamically from the first row
     const numCols = currentGridData[0].length;

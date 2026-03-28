@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load next unused chain
     async function loadNextChain() {
         // Hide controls, show loading
-        chainContainer.innerHTML = '';
+        chainContainer.textContent = '';
         navControls.classList.add('hidden');
         errorEl.classList.add('hidden');
         loadingEl.classList.remove('hidden');

@@ -38,6 +38,7 @@ async function fetchStats() {
     try {
         const res = await fetch('/api/stats');
         const data = await res.json();
+        document.getElementById('stats-container').textContent =
         statsContainerEl.innerText =
             `Remaining: ${data.remaining} | Used: ${data.used} | Total: ${data.total}`;
     } catch (error) {
@@ -63,6 +64,14 @@ async function loadNextQuestion() {
         const res = await fetch('/api/question');
         if (!res.ok) {
             const data = await res.json();
+            document.getElementById('flashcard-container').classList.add('hidden');
+            document.getElementById('flip-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('eliminate-btn').classList.add('hidden');
+
+            const errorEl = document.getElementById('error-msg');
+            errorEl.textContent = data.error || "No more questions!";
+            errorEl.classList.remove('hidden');
             flashcardContainerEl.classList.add('hidden');
             flipBtnEl.classList.add('hidden');
             nextBtnEl.classList.add('hidden');
@@ -81,6 +90,11 @@ async function loadNextQuestion() {
         nextBtnEl.classList.remove('hidden');
         eliminateBtnEl.classList.remove('hidden');
 
+        document.getElementById('question-text').textContent = data.question;
+        document.getElementById('answer-text').textContent = data.answer;
+
+        if (data.stats) {
+            document.getElementById('stats-container').textContent =
         questionTextEl.innerText = data.question;
         answerTextEl.innerText = data.answer;
 
