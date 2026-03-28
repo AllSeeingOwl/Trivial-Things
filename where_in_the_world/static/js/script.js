@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function initMap() {
         if (!state.map) {
             state.map = L.map('map').setView([20, 0], 2);
+            // We use standard OSM tiles. When offline, this will naturally fail,
+            // but the map functionality (clicking to place markers) will still work on the gray background.
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap contributors'
@@ -108,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // 3. Check if it's Geohash (simple alpha-numeric check, usually 1-12 chars)
-            if (/^[0123456789bcdefghjkmnpqrstuvwxyz]{4,12}$.test(query)) {
+            if (/^[0123456789bcdefghjkmnpqrstuvwxyz]{4,12}$/.test(query)) {
                 if (window.geohash) {
                     const decoded = geohash.decode(query.toLowerCase());
                     placeGuessMarker(decoded.latitude, decoded.longitude, true);
@@ -124,13 +126,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // 5. Fallback to Nominatim API (Place name search)
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
-            const data = await response.json();
+            if (!navigator.onLine) {
+                alert('You appear to be offline. Place name search requires an internet connection. Please use coordinates, a Plus Code, or a Geohash, or click on the map.');
+                return;
+            }
 
-            if (data && data.length > 0) {
-                placeGuessMarker(parseFloat(data[0].lat), parseFloat(data[0].lon), true);
-            } else {
-                alert('Could not find location. Try a different format or name.');
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    placeGuessMarker(parseFloat(data[0].lat), parseFloat(data[0].lon), true);
+                } else {
+                    alert('Could not find location. Try a different format or name.');
+                }
+            } catch (fetchError) {
+                console.error('Fetch error:', fetchError);
+                alert('Could not connect to the search service. Please check your internet connection or try a different format.');
             }
         } catch (error) {
             console.error('Search error:', error);
@@ -263,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Draw Target Pin and Line
             const redIcon = new L.Icon({
                 iconUrl: '/static/img/marker-icon-2x-red.png',
-                shadowUrl: '/static/img/marker-shadow.png',
+                shadowUrl: '/static/vendor/leaflet/images/marker-shadow.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
                 popupAnchor: [1, -34],
