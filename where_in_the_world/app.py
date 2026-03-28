@@ -47,6 +47,7 @@ def load_data():
 
 
 QUESTIONS = load_data()
+QUESTIONS_BY_ID = {q['id']: q for q in QUESTIONS}
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -102,6 +103,7 @@ def calculate_score():
     guess_lng = data.get('lng')
     target_id = data.get('id')
 
+    target = QUESTIONS_BY_ID.get(target_id)
     # Security: Validate that coordinates are numeric to prevent crashes in haversine_distance
     if not isinstance(guess_lat, (int, float)) or \
        not isinstance(guess_lng, (int, float)):
