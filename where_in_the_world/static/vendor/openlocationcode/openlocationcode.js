@@ -183,19 +183,19 @@
       return false;
     }
     // The separator is required.
-    if (code.indexOf(SEPARATOR_) == -1) {
+    if (code.indexOf(SEPARATOR_) === -1) {
       return false;
     }
-    if (code.indexOf(SEPARATOR_) != code.lastIndexOf(SEPARATOR_)) {
+    if (code.indexOf(SEPARATOR_) !== code.lastIndexOf(SEPARATOR_)) {
       return false;
     }
     // Is it the only character?
-    if (code.length == 1) {
+    if (code.length === 1) {
       return false;
     }
     // Is it in an illegal position?
     if (code.indexOf(SEPARATOR_) > SEPARATOR_POSITION_ ||
-        code.indexOf(SEPARATOR_) % 2 == 1) {
+        code.indexOf(SEPARATOR_) % 2 === 1) {
       return false;
     }
     // We can have an even number of padding characters before the separator,
@@ -206,23 +206,23 @@
         return false;
       }
       // Not allowed to start with them!
-      if (code.indexOf(PADDING_CHARACTER_) == 0) {
+      if (code.indexOf(PADDING_CHARACTER_) === 0) {
         return false;
       }
       // There can only be one group and it must have even length.
       var padMatch = code.match(new RegExp('(' + PADDING_CHARACTER_ + '+)', 'g'));
-      if (padMatch.length > 1 || padMatch[0].length % 2 == 1 ||
+      if (padMatch.length > 1 || padMatch[0].length % 2 === 1 ||
           padMatch[0].length > SEPARATOR_POSITION_ - 2) {
         return false;
       }
       // If the code is long enough to end with a separator, make sure it does.
-      if (code.charAt(code.length - 1) != SEPARATOR_) {
+      if (code.charAt(code.length - 1) !== SEPARATOR_) {
         return false;
       }
     }
     // If there are characters after the separator, make sure there isn't just
     // one of them (not legal).
-    if (code.length - code.indexOf(SEPARATOR_) - 1 == 1) {
+    if (code.length - code.indexOf(SEPARATOR_) - 1 === 1) {
       return false;
     }
 
@@ -232,7 +232,7 @@
     // Check the code contains only valid characters.
     for (var i = 0, len = code.length; i < len; i++) {
       var character = code.charAt(i).toUpperCase();
-      if (character != SEPARATOR_ && CODE_ALPHABET_.indexOf(character) == -1) {
+      if (character !== SEPARATOR_ && CODE_ALPHABET_.indexOf(character) === -1) {
         return false;
       }
     }
@@ -367,7 +367,7 @@
    * @throws {Exception} if any of the input values are not numbers.
    */
   var encodeIntegers = OpenLocationCode.encodeIntegers = function(latInt, lngInt, codeLength) {
-    if (typeof codeLength == 'undefined') {
+    if (typeof codeLength === 'undefined') {
       codeLength = OpenLocationCode.CODE_PRECISION_NORMAL;
     } else {
       codeLength = Math.min(MAX_DIGIT_COUNT_, Number(codeLength));
@@ -376,7 +376,7 @@
       throw new Error('ValueError: Parameters are not numbers');
     }
     if (codeLength < MIN_DIGIT_COUNT_ ||
-        (codeLength < PAIR_CODE_LENGTH_ && codeLength % 2 == 1)) {
+        (codeLength < PAIR_CODE_LENGTH_ && codeLength % 2 === 1)) {
       throw new Error('IllegalArgumentException: Invalid Open Location Code length');
     }
     // Javascript strings are immutable and it doesn't have a native
@@ -593,7 +593,7 @@
     if (!isFull(code)) {
       throw new Error('ValueError: Passed code is not valid and full: ' + code);
     }
-    if (code.indexOf(PADDING_CHARACTER_) != -1) {
+    if (code.indexOf(PADDING_CHARACTER_) !== -1) {
       throw new Error('ValueError: Cannot shorten padded codes: ' + code);
     }
     code = code.toUpperCase();
