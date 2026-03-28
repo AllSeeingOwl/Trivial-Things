@@ -1,7 +1,20 @@
 let currentQuestion = null;
 
-document.getElementById('flashcard').addEventListener('click', flipCard);
-document.getElementById('flashcard').addEventListener('keydown', function(event) {
+// ⚡ Bolt Optimization: Cache DOM Elements
+// Cache frequently accessed DOM elements at the top level to prevent
+// repetitive and expensive document.getElementById lookups during interactions.
+const flashcardEl = document.getElementById('flashcard');
+const answerTextEl = document.getElementById('answer-text');
+const errorMsgEl = document.getElementById('error-msg');
+const flashcardContainerEl = document.getElementById('flashcard-container');
+const flipBtnEl = document.getElementById('flip-btn');
+const nextBtnEl = document.getElementById('next-btn');
+const eliminateBtnEl = document.getElementById('eliminate-btn');
+const questionTextEl = document.getElementById('question-text');
+const statsContainerEl = document.getElementById('stats-container');
+
+flashcardEl.addEventListener('click', flipCard);
+flashcardEl.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         flipCard();
@@ -9,18 +22,15 @@ document.getElementById('flashcard').addEventListener('keydown', function(event)
 });
 
 function flipCard() {
-    const card = document.getElementById('flashcard');
-    const backFace = document.getElementById('answer-text');
-
-    card.classList.toggle('is-flipped');
+    flashcardEl.classList.toggle('is-flipped');
 
     // Manage focus and ARIA attributes for a11y
-    if (card.classList.contains('is-flipped')) {
-        card.setAttribute('aria-expanded', 'true');
-        backFace.setAttribute('aria-hidden', 'false');
+    if (flashcardEl.classList.contains('is-flipped')) {
+        flashcardEl.setAttribute('aria-expanded', 'true');
+        answerTextEl.setAttribute('aria-hidden', 'false');
     } else {
-        card.setAttribute('aria-expanded', 'false');
-        backFace.setAttribute('aria-hidden', 'true');
+        flashcardEl.setAttribute('aria-expanded', 'false');
+        answerTextEl.setAttribute('aria-hidden', 'true');
     }
 }
 
@@ -28,7 +38,7 @@ async function fetchStats() {
     try {
         const res = await fetch('/api/stats');
         const data = await res.json();
-        document.getElementById('stats-container').innerText =
+        statsContainerEl.innerText =
             `Remaining: ${data.remaining} | Used: ${data.used} | Total: ${data.total}`;
     } catch (error) {
         console.error("Failed to load stats", error);
@@ -36,50 +46,46 @@ async function fetchStats() {
 }
 
 async function loadNextQuestion() {
-    const card = document.getElementById('flashcard');
-    const backFace = document.getElementById('answer-text');
-
-    if (card.classList.contains('is-flipped')) {
-        card.classList.remove('is-flipped');
-        card.setAttribute('aria-expanded', 'false');
-        backFace.setAttribute('aria-hidden', 'true');
+    if (flashcardEl.classList.contains('is-flipped')) {
+        flashcardEl.classList.remove('is-flipped');
+        flashcardEl.setAttribute('aria-expanded', 'false');
+        answerTextEl.setAttribute('aria-hidden', 'true');
         // Wait for flip animation to finish before updating text
         await new Promise(r => setTimeout(r, 300));
     } else {
-        card.setAttribute('aria-expanded', 'false');
-        backFace.setAttribute('aria-hidden', 'true');
+        flashcardEl.setAttribute('aria-expanded', 'false');
+        answerTextEl.setAttribute('aria-hidden', 'true');
     }
 
-    document.getElementById('error-msg').classList.add('hidden');
+    errorMsgEl.classList.add('hidden');
 
     try {
         const res = await fetch('/api/question');
         if (!res.ok) {
             const data = await res.json();
-            document.getElementById('flashcard-container').classList.add('hidden');
-            document.getElementById('flip-btn').classList.add('hidden');
-            document.getElementById('next-btn').classList.add('hidden');
-            document.getElementById('eliminate-btn').classList.add('hidden');
+            flashcardContainerEl.classList.add('hidden');
+            flipBtnEl.classList.add('hidden');
+            nextBtnEl.classList.add('hidden');
+            eliminateBtnEl.classList.add('hidden');
 
-            const errorEl = document.getElementById('error-msg');
-            errorEl.innerText = data.error || "No more questions!";
-            errorEl.classList.remove('hidden');
+            errorMsgEl.innerText = data.error || "No more questions!";
+            errorMsgEl.classList.remove('hidden');
             return;
         }
 
         const data = await res.json();
         currentQuestion = data;
 
-        document.getElementById('flashcard-container').classList.remove('hidden');
-        document.getElementById('flip-btn').classList.remove('hidden');
-        document.getElementById('next-btn').classList.remove('hidden');
-        document.getElementById('eliminate-btn').classList.remove('hidden');
+        flashcardContainerEl.classList.remove('hidden');
+        flipBtnEl.classList.remove('hidden');
+        nextBtnEl.classList.remove('hidden');
+        eliminateBtnEl.classList.remove('hidden');
 
-        document.getElementById('question-text').innerText = data.question;
-        document.getElementById('answer-text').innerText = data.answer;
+        questionTextEl.innerText = data.question;
+        answerTextEl.innerText = data.answer;
 
         if (data.stats) {
-            document.getElementById('stats-container').innerText =
+            statsContainerEl.innerText =
                 `Remaining: ${data.stats.remaining} | Used: ${data.stats.used} | Total: ${data.stats.total}`;
         } else {
             fetchStats();
