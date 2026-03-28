@@ -95,9 +95,17 @@ def get_questions():
 @app.route('/api/score', methods=['POST'])
 def calculate_score():
     data = request.json
+    if not data:
+        return jsonify({'error': 'Missing request body'}), 400
+
     guess_lat = data.get('lat')
     guess_lng = data.get('lng')
     target_id = data.get('id')
+
+    # Security: Validate that coordinates are numeric to prevent crashes in haversine_distance
+    if not isinstance(guess_lat, (int, float)) or \
+       not isinstance(guess_lng, (int, float)):
+        return jsonify({'error': 'Coordinates must be numbers'}), 400
 
     target = next((q for q in QUESTIONS if q['id'] == target_id), None)
     if not target:
