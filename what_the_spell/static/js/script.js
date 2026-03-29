@@ -28,6 +28,13 @@ modeBtns.forEach(btn => {
 
 async function loadGrid() {
     const gridIdx = gridSelect.value;
+
+    // Add loading state
+    loadBtn.disabled = true;
+    loadBtn.setAttribute('aria-busy', 'true');
+    const originalText = loadBtn.textContent;
+    loadBtn.textContent = 'Loading...';
+
     try {
         const response = await fetch(`/api/grid/${gridIdx}`);
         const data = await response.json();
@@ -41,6 +48,11 @@ async function loadGrid() {
         }
     } catch (error) {
         console.error('Error fetching grid:', error);
+    } finally {
+        // Restore state
+        loadBtn.disabled = false;
+        loadBtn.setAttribute('aria-busy', 'false');
+        loadBtn.textContent = originalText;
     }
 }
 
