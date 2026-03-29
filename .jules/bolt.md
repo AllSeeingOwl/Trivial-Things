@@ -16,3 +16,7 @@
 ## 2026-03-27 - Redundant Expensive PyMuPDF Method Calls
 **Learning:** In the `pdf_grid_flashcards` application, the expensive `page.get_drawings()` vector graphic extraction was originally called twice for the best matching page—once during the discovery loop and again afterward. Caching expensive method outputs within iterative searches prevents major redundant compute overhead, significantly reducing parsing time (30-50% improvement for typical 1-page files).
 **Action:** When searching through items using an expensive operation, define a tracking variable (`best_drawings = None`) to store the result along with the optimal item, so it does not need to be recomputed when the search loop finishes.
+
+## 2026-03-28 - Removing redundant O(N) operations in lookups
+**Learning:** In `where_in_the_world`, a fast O(1) dictionary lookup for retrieving questions by ID was already implemented, but an older O(N) linear search using a generator expression was still left in the code, completely overriding the fast lookup.
+**Action:** When converting lists to dictionaries for O(1) lookups, ensure that all subsequent O(N) searches using the old list structure within the same scope are completely removed, otherwise the performance optimization is negated.
