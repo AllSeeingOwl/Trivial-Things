@@ -103,13 +103,15 @@ def calculate_score():
     guess_lng = data.get('lng')
     target_id = data.get('id')
 
+    # ⚡ Bolt Optimization: O(1) Dictionary Lookup
+    # Use the pre-computed QUESTIONS_BY_ID dictionary instead of an O(N) linear search
+    # through the QUESTIONS list to find the target location.
     target = QUESTIONS_BY_ID.get(target_id)
     # Security: Validate that coordinates are numeric to prevent crashes in haversine_distance
     if not isinstance(guess_lat, (int, float)) or \
        not isinstance(guess_lng, (int, float)):
         return jsonify({'error': 'Coordinates must be numbers'}), 400
 
-    target = next((q for q in QUESTIONS if q['id'] == target_id), None)
     if not target:
         return jsonify({'error': 'Target not found'}), 404
 
