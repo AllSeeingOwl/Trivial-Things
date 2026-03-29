@@ -9,3 +9,7 @@
 ## 2026-03-24 - Explicit Focus States for Custom Interactive Elements
 **Learning:** Custom interactive elements (like `.row-handle` in `sliding_rows_flashcards`) that use generic `div` tags but act as buttons (`role="button"`, `tabindex="0"`) will not have default browser focus indicators, making them invisible to keyboard navigation users.
 **Action:** Always manually define `:focus-visible` styles with a clear `outline` for any custom interactive components to ensure keyboard accessibility matches standard button behavior.
+
+## 2026-03-24 - Visual Feedback on Async Buttons
+**Learning:** Buttons triggering asynchronous network requests (like loading new data) without disabled states or loading indicators cause user confusion and can lead to duplicate requests. Users may not realize their action was registered, especially on slow connections.
+**Action:** Always add explicit loading states (disabling the button, updating text, and using `aria-busy="true"`) to buttons during async operations, and ensure proper styling for the `:disabled` state (like reduced opacity and `cursor: not-allowed`).
