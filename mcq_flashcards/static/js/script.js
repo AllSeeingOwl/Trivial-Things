@@ -52,21 +52,12 @@ function handleChoice(choiceStr, btnEl) {
     btnEl.textContent = choiceStr + (isCorrect ? ' ✓' : ' ✗');
 
     // Announce choice outcome via ARIA live
-    const liveAnnouncer = document.getElementById('error-msg');
-    liveAnnouncer.classList.remove('hidden');
-    liveAnnouncer.style.color = 'transparent'; // Invisible to sighted users temporarily
-    liveAnnouncer.textContent = isCorrect ? 'Correct!' : 'Incorrect.';
-
-    setTimeout(() => {
-        liveAnnouncer.textContent = '';
-        liveAnnouncer.style.color = 'var(--btn-danger)';
-        liveAnnouncer.classList.add('hidden');
     errorMsgEl.classList.remove('hidden');
     errorMsgEl.style.color = 'transparent'; // Invisible to sighted users temporarily
-    errorMsgEl.innerText = isCorrect ? 'Correct!' : 'Incorrect.';
+    errorMsgEl.textContent = isCorrect ? 'Correct!' : 'Incorrect.';
 
     setTimeout(() => {
-        errorMsgEl.innerText = '';
+        errorMsgEl.textContent = '';
         errorMsgEl.style.color = 'var(--btn-danger)';
         errorMsgEl.classList.add('hidden');
     }, 2000);
@@ -81,8 +72,7 @@ async function fetchStats() {
     try {
         const res = await fetch('/api/stats');
         const data = await res.json();
-        document.getElementById('stats-container').textContent =
-        statsContainerEl.innerText =
+        statsContainerEl.textContent =
             `Remaining: ${data.remaining} | Used: ${data.used} | Total: ${data.total}`;
     } catch (error) {
         console.error("Failed to load stats", error);
@@ -131,14 +121,13 @@ async function loadNextQuestion() {
 
         selectedChoice = false;
 
-        const choicesContainer = document.getElementById('mcq-choices');
-        choicesContainer.textContent = '';
         questionTextEl.innerText = data.question;
         answerTextEl.innerText = data.answer;
 
         selectedChoice = false;
 
-        choicesContainerEl.innerHTML = '';
+        // Sentinel: Prevent DOM-based XSS by using textContent instead of innerHTML
+        choicesContainerEl.textContent = '';
 
         if (data.choices && data.choices.length > 0) {
             data.choices.forEach(choice => {
@@ -164,12 +153,7 @@ async function loadNextQuestion() {
         } else {
             const p = document.createElement('p');
             p.textContent = 'No choices available';
-            choicesContainer.appendChild(p);
-        }
-
-        if (data.stats) {
-            document.getElementById('stats-container').textContent =
-            choicesContainerEl.innerHTML = '<p>No choices available</p>';
+            choicesContainerEl.appendChild(p);
         }
 
         if (data.stats) {
