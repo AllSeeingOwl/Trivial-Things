@@ -19,7 +19,10 @@ def load_questions():
     if _questions_cache is not None:
         return _questions_cache
 
-    questions = []
+    # ⚡ Bolt Optimization: O(1) Cache Lookups
+    # Convert the in-memory list cache to a dictionary to enable O(1) hash map lookups
+    # when updating the used status, eliminating an O(N) linear search on every /api/mark_used request.
+    questions = {}
     if not os.path.exists(CSV_FILE):
         return questions
 
@@ -38,14 +41,14 @@ def load_questions():
                 choices = [row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip()]
                 # filter out empty choices
                 choices = [c for c in choices if c]
-                questions.append({
+                questions[f"{r_idx}"] = {
                     'id': f"{r_idx}",
                     'row': r_idx,
                     'question': q_text,
                     'answer': row[1].strip(),
                     'choices': choices,
                     'used': row[5].strip().upper() == 'TRUE'
-                })
+                }
 
     _questions_cache = questions
     return _questions_cache
@@ -69,19 +72,17 @@ def update_used_status(q_id, used_status):
         writer.writerows(rows)
 
     # Keep the in-memory cache synchronized with the CSV disk writes
+    # ⚡ Bolt Optimization: O(1) hash map lookup completely replaces legacy O(N) loop
     global _questions_cache
-    if _questions_cache is not None:
-        for q in _questions_cache:
-            if q['id'] == q_id:
-                q['used'] = used_status
-                break
+    if _questions_cache is not None and q_id in _questions_cache:
+        _questions_cache[q_id]['used'] = used_status
 
 def reset_all_questions():
     with open(CSV_FILE, 'r', encoding='utf-8') as f:
         rows = list(csv.reader(f))
 
     qs = load_questions()
-    for q in qs:
+    for q in qs.values():
         r_idx = q['row']
         # ⚡ Bolt Optimization: Targeted Row Padding
         # Instead of an O(n) loop padding every single row upfront,
@@ -96,7 +97,7 @@ def reset_all_questions():
     # Synchronize the cache reset with the disk writes
     global _questions_cache
     if _questions_cache is not None:
-        for q in _questions_cache:
+        for q in _questions_cache.values():
             q['used'] = False
 
 @app.route('/')
@@ -107,7 +108,7 @@ def index():
 @app.route('/api/question', methods=['GET'])
 def get_random_question():
     questions = load_questions()
-    unused_questions = [q for q in questions if not q['used']]
+    unused_questions = [q for q in questions.values() if not q['used']]
 
     if not unused_questions:
         return jsonify({'error': 'No unused questions left!'}), 404
@@ -134,7 +135,7 @@ def get_random_question():
 def get_stats():
     questions = load_questions()
     total = len(questions)
-    used = len([q for q in questions if q['used']])
+    used = len([q for q in questions.values() if q['used']])
     return jsonify({'total': total, 'used': used, 'remaining': total - used})
 
 
