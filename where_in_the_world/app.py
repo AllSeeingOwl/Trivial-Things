@@ -75,7 +75,14 @@ def index():
 
 @app.route('/api/questions')
 def get_questions():
-    count = int(request.args.get('count', 5))
+    try:
+        count = int(request.args.get('count', 5))
+        if count <= 0:
+            count = 5
+    except ValueError:
+        # Sentinel: Fallback to default instead of crashing and leaking stack traces
+        count = 5
+
     if count > len(QUESTIONS):
         count = len(QUESTIONS)
 
