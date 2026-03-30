@@ -20,3 +20,7 @@
 ## 2026-03-28 - Removing redundant O(N) operations in lookups
 **Learning:** In `where_in_the_world`, a fast O(1) dictionary lookup for retrieving questions by ID was already implemented, but an older O(N) linear search using a generator expression was still left in the code, completely overriding the fast lookup.
 **Action:** When converting lists to dictionaries for O(1) lookups, ensure that all subsequent O(N) searches using the old list structure within the same scope are completely removed, otherwise the performance optimization is negated.
+
+## 2026-03-29 - O(N) Cache Sync to O(1) Dictionary Lookup
+**Learning:** In the `mcq_flashcards` and `trivia_flashcards` applications, keeping the in-memory cache synchronized with the CSV disk writes caused an O(N) linear search bottleneck inside `update_used_status()`. Converting the entire cache from a `list` to a `dict` (indexed by question ID) changed this operation to an O(1) lookup.
+**Action:** When working with frequently accessed in-memory caches that require updates to individual elements, structure the cache as a dictionary `key: object` instead of a flat list, eliminating costly O(N) loops when modifying state.
