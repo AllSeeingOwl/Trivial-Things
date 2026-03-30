@@ -51,6 +51,14 @@ function handleChoice(choiceStr, btnEl) {
     // Append icon to innerText to avoid relying on color alone (WCAG 1.4.1)
     btnEl.textContent = choiceStr + (isCorrect ? ' ✓' : ' ✗');
 
+    // Palette: Disable all buttons to indicate state
+    const allBtns = choicesContainerEl.querySelectorAll('button');
+    allBtns.forEach(b => {
+        b.disabled = true;
+        b.style.cursor = 'not-allowed';
+        b.style.opacity = '0.7';
+    });
+
     // Announce choice outcome via ARIA live
     errorMsgEl.classList.remove('hidden');
     errorMsgEl.style.color = 'transparent'; // Invisible to sighted users temporarily
