@@ -85,12 +85,18 @@ function renderGrid() {
             cell.dataset.status = cellData.status;
 
             function revealCell(element) {
+                // Prevent duplicate icons
+                if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
+                    return;
+                }
                 element.setAttribute('aria-expanded', 'true');
                 if (element.dataset.status === 'correct') {
                     element.classList.add('correct');
+                    element.textContent += ' ✓';
                     element.setAttribute('aria-label', `${element.textContent} - Correct`);
                 } else if (element.dataset.status === 'incorrect') {
                     element.classList.add('incorrect');
+                    element.textContent += ' ✗';
                     element.setAttribute('aria-label', `${element.textContent} - Incorrect`);
                 }
             }
