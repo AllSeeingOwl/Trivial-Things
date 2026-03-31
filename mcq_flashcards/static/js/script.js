@@ -88,6 +88,12 @@ async function fetchStats() {
 }
 
 async function loadNextQuestion() {
+    // ⚡ Bolt Optimization: Parallelize Network Request
+    // Initiate the fetch request *before* awaiting the flip animation.
+    // This allows the network request to run concurrently with the 300ms animation,
+    // effectively hiding up to 300ms of network latency from the user.
+    const fetchPromise = fetch('/api/question');
+
     if (flashcardEl.classList.contains('is-flipped')) {
         flashcardEl.classList.remove('is-flipped');
         flashcardEl.setAttribute('aria-expanded', 'false');
@@ -102,7 +108,7 @@ async function loadNextQuestion() {
     errorMsgEl.classList.add('hidden');
 
     try {
-        const res = await fetch('/api/question');
+        const res = await fetchPromise;
         if (!res.ok) {
             const data = await res.json();
             flashcardContainerEl.classList.add('hidden');

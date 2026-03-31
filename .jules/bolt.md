@@ -24,3 +24,7 @@
 ## 2026-03-29 - O(N) Cache Sync to O(1) Dictionary Lookup
 **Learning:** In the `mcq_flashcards` and `trivia_flashcards` applications, keeping the in-memory cache synchronized with the CSV disk writes caused an O(N) linear search bottleneck inside `update_used_status()`. Converting the entire cache from a `list` to a `dict` (indexed by question ID) changed this operation to an O(1) lookup.
 **Action:** When working with frequently accessed in-memory caches that require updates to individual elements, structure the cache as a dictionary `key: object` instead of a flat list, eliminating costly O(N) loops when modifying state.
+
+## 2026-03-30 - Parallelize Asynchronous API Calls with UI Animations
+**Learning:** In applications like `mcq_flashcards` and `trivia_flashcards`, the UI sequentially waited for a 300ms CSS flip animation to complete before it even initiated the network request (`fetch('/api/question')`) for the next item. This strictly linear execution meant users experienced both the animation time AND the network latency consecutively.
+**Action:** When transitioning state requires both a UI animation (like a timeout or transition end) and a data fetch, decouple them. Initiate the `fetch()` Promise immediately *before* awaiting the UI animation, and `await` the network response *after* the animation block. This allows the network request to run concurrently, effectively hiding the network latency behind the animation timeframe.
