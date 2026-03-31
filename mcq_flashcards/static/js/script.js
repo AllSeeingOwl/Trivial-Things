@@ -112,8 +112,6 @@ async function loadNextQuestion() {
             const errorEl = document.getElementById('error-msg');
             errorEl.textContent = data.error || "No more questions!";
             errorEl.classList.remove('hidden');
-            errorMsgEl.innerText = data.error || "No more questions!";
-            errorMsgEl.classList.remove('hidden');
             return;
         }
 
@@ -124,13 +122,8 @@ async function loadNextQuestion() {
         nextBtnEl.classList.remove('hidden');
         eliminateBtnEl.classList.remove('hidden');
 
-        document.getElementById('question-text').textContent = data.question;
-        document.getElementById('answer-text').textContent = data.answer;
-
-        selectedChoice = false;
-
-        questionTextEl.innerText = data.question;
-        answerTextEl.innerText = data.answer;
+        questionTextEl.textContent = data.question;
+        answerTextEl.textContent = data.answer;
 
         selectedChoice = false;
 
@@ -165,7 +158,7 @@ async function loadNextQuestion() {
         }
 
         if (data.stats) {
-            statsContainerEl.innerText =
+            statsContainerEl.textContent =
                 `Remaining: ${data.stats.remaining} | Used: ${data.stats.used} | Total: ${data.stats.total}`;
         } else {
             fetchStats();
