@@ -137,6 +137,10 @@ async function loadNextQuestion() {
         choicesContainerEl.textContent = '';
 
         if (data.choices && data.choices.length > 0) {
+            // ⚡ Bolt Optimization: DocumentFragment for DOM insertions
+            // Batch DOM insertions using a DocumentFragment to prevent multiple reflows
+            // and repaints during choices rendering.
+            const fragment = document.createDocumentFragment();
             data.choices.forEach(choice => {
                 const btn = document.createElement('button');
                 btn.textContent = choice;
@@ -155,8 +159,9 @@ async function loadNextQuestion() {
                 };
                 // Make keyboard accessible within choices
                 btn.setAttribute('aria-label', `Select choice: ${choice}`);
-                choicesContainerEl.appendChild(btn);
+                fragment.appendChild(btn);
             });
+            choicesContainerEl.appendChild(fragment);
         } else {
             const p = document.createElement('p');
             p.textContent = 'No choices available';
