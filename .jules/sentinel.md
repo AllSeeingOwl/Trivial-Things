@@ -12,3 +12,8 @@
 **Vulnerability:** Frontend JavaScript files (`mcq_flashcards/static/js/script.js` and `trivia_flashcards/static/js/script.js`) were using `.innerText` to insert untrusted data (questions, answers, stats) into the DOM. While generally safe, `.textContent` provides better performance and security consistency across browsers.
 **Learning:** Using `.textContent` is superior to `.innerText` because it prevents DOM-based XSS attacks natively by preventing HTML tags from being evaluated, and avoids CSS parsing and layout recalculation, increasing performance.
 **Prevention:** Strictly enforce the use of `document.createElement()` and `.textContent` for dynamic DOM insertion, avoiding `.innerHTML` or `.innerText` completely.
+
+## 2024-07-02 - [MEDIUM] Prevent unhandled TypeError (500) during dictionary lookup
+**Vulnerability:** The `/api/score` endpoint in `where_in_the_world/app.py` extracted the `id` from the JSON payload and used it directly in a dictionary lookup (`QUESTIONS_BY_ID.get(target_id)`). Passing an unhashable type (e.g., a list or a dict like `{"id": []}`) caused Python to throw an unhandled `TypeError`, resulting in a 500 Internal Server Error, which can lead to DoS or stack trace leakage.
+**Learning:** Python dictionary lookups (`.get()`) are not safe against unhashable types if the input comes directly from untrusted JSON payloads. User inputs mapping to dictionary keys must be type-checked before usage.
+**Prevention:** Always validate the type of data extracted from `request.json` before passing it to native Python functions that expect specific types. For IDs, explicitly assert `isinstance(target_id, str)` (or `int`, depending on the structure).
