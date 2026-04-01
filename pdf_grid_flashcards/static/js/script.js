@@ -15,6 +15,12 @@ uploadForm.addEventListener('submit', async (e) => {
     const formData = new FormData();
     formData.append('file', file);
 
+    const submitBtn = uploadForm.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Uploading...';
+    submitBtn.setAttribute('aria-busy', 'true');
+
     loadingDiv.style.display = 'block';
     loadingDiv.setAttribute('aria-busy', 'true');
     gridContainer.style.display = 'none';
@@ -54,6 +60,10 @@ uploadForm.addEventListener('submit', async (e) => {
     } finally {
         loadingDiv.style.display = 'none';
         loadingDiv.setAttribute('aria-busy', 'false');
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+        submitBtn.setAttribute('aria-busy', 'false');
     }
 });
 
