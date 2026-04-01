@@ -110,6 +110,11 @@ def calculate_score():
     guess_lng = data.get('lng')
     target_id = data.get('id')
 
+    # Sentinel: Validate that target_id is a string to prevent unhandled TypeErrors
+    # (e.g. unhashable type 'list' or 'dict') during dictionary lookups
+    if not isinstance(target_id, str):
+        return jsonify({'error': 'Invalid target ID format'}), 400
+
     # ⚡ Bolt Optimization: O(1) Dictionary Lookup
     # Use the pre-computed QUESTIONS_BY_ID dictionary instead of an O(N) linear search
     # through the QUESTIONS list to find the target location.
