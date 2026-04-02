@@ -180,14 +180,17 @@ def mark_used():
         return jsonify({'error': 'Failed to process request'}), 500
 
     chains = load_chains()
-    unused_chains = [c for c_id, c in chains.items() if not c['used']]
+    # ⚡ Bolt Optimization: Memory-efficient counting
+    # Used generator expression with sum() instead of creating an intermediate list
+    # for len() to count unused chains, significantly reducing memory overhead.
+    remaining_chains = sum(1 for c in chains.values() if not c['used'])
 
     return jsonify({
         'success': True,
         'stats': {
             'total': len(chains),
-            'used': len(chains) - len(unused_chains),
-            'remaining': len(unused_chains)
+            'used': len(chains) - remaining_chains,
+            'remaining': remaining_chains
         }
     })
 
@@ -197,14 +200,17 @@ def reset():
     reset_all_chains()
 
     chains = load_chains()
-    unused_chains = [c for c_id, c in chains.items() if not c['used']]
+    # ⚡ Bolt Optimization: Memory-efficient counting
+    # Used generator expression with sum() instead of creating an intermediate list
+    # for len() to count unused chains, significantly reducing memory overhead.
+    remaining_chains = sum(1 for c in chains.values() if not c['used'])
 
     return jsonify({
         'success': True,
         'stats': {
             'total': len(chains),
-            'used': len(chains) - len(unused_chains),
-            'remaining': len(unused_chains)
+            'used': len(chains) - remaining_chains,
+            'remaining': remaining_chains
         }
     })
 
@@ -213,7 +219,10 @@ def reset():
 def get_stats():
     chains = load_chains()
     total = len(chains)
-    used = len([c for c in chains.values() if c['used']])
+    # ⚡ Bolt Optimization: Memory-efficient counting
+    # Used generator expression with sum() instead of creating an intermediate list
+    # for len() to count used chains, significantly reducing memory overhead.
+    used = sum(1 for c in chains.values() if c['used'])
     return jsonify({'total': total, 'used': used, 'remaining': total - used})
 
 

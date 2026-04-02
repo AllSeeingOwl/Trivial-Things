@@ -135,7 +135,10 @@ def get_random_question():
 def get_stats():
     questions = load_questions()
     total = len(questions)
-    used = len([q for q in questions.values() if q['used']])
+    # ⚡ Bolt Optimization: Memory-efficient counting
+    # Used generator expression with sum() instead of creating an intermediate list
+    # for len() to count used questions, significantly reducing memory overhead.
+    used = sum(1 for q in questions.values() if q['used'])
     return jsonify({'total': total, 'used': used, 'remaining': total - used})
 
 
