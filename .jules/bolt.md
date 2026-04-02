@@ -28,3 +28,7 @@
 ## 2026-03-30 - Parallelize Asynchronous API Calls with UI Animations
 **Learning:** In applications like `mcq_flashcards` and `trivia_flashcards`, the UI sequentially waited for a 300ms CSS flip animation to complete before it even initiated the network request (`fetch('/api/question')`) for the next item. This strictly linear execution meant users experienced both the animation time AND the network latency consecutively.
 **Action:** When transitioning state requires both a UI animation (like a timeout or transition end) and a data fetch, decouple them. Initiate the `fetch()` Promise immediately *before* awaiting the UI animation, and `await` the network response *after* the animation block. This allows the network request to run concurrently, effectively hiding the network latency behind the animation timeframe.
+
+## 2026-03-31 - Python Generator Expressions vs Intermediate Lists
+**Learning:** In Python, creating intermediate lists using list comprehension just to count items using `len()` (e.g., `len([x for x in items if condition])`) has significant memory overhead, especially for larger datasets.
+**Action:** Always use generator expressions with `sum()` (e.g., `sum(1 for x in items if condition)`) when counting filtered items to avoid constructing and storing unnecessary intermediate lists in memory.
