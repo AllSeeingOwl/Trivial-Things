@@ -58,13 +58,18 @@ h1 {
     transition: background-color var(--transition-speed);
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
     background-color: #1a252f;
 }
 
 .btn:focus-visible {
     outline: 3px solid var(--primary-color);
     outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .primary-btn {
@@ -75,7 +80,7 @@ h1 {
     margin-top: 20px;
 }
 
-.primary-btn:hover {
+.primary-btn:hover:not(:disabled) {
     background-color: #2980b9;
 }
 

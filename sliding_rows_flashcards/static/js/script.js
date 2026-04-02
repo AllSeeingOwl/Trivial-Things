@@ -72,6 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset everything
     async function resetAll() {
+        if (!confirm("Are you sure you want to reset all progress? You will start over.")) {
+            return;
+        }
+
+        const originalText = resetBtn.textContent;
+        resetBtn.disabled = true;
+        resetBtn.setAttribute('aria-busy', 'true');
+        resetBtn.textContent = 'Resetting...';
+
         try {
             const res = await fetch('/api/reset', { method: 'POST' });
             if (res.ok) {
@@ -81,6 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             console.error('Reset failed:', e);
+        } finally {
+            resetBtn.disabled = false;
+            resetBtn.setAttribute('aria-busy', 'false');
+            resetBtn.textContent = originalText;
         }
     }
 
