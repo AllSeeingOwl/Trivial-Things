@@ -17,3 +17,8 @@
 **Vulnerability:** The `/api/score` endpoint in `where_in_the_world/app.py` extracted the `id` from the JSON payload and used it directly in a dictionary lookup (`QUESTIONS_BY_ID.get(target_id)`). Passing an unhashable type (e.g., a list or a dict like `{"id": []}`) caused Python to throw an unhandled `TypeError`, resulting in a 500 Internal Server Error, which can lead to DoS or stack trace leakage.
 **Learning:** Python dictionary lookups (`.get()`) are not safe against unhashable types if the input comes directly from untrusted JSON payloads. User inputs mapping to dictionary keys must be type-checked before usage.
 **Prevention:** Always validate the type of data extracted from `request.json` before passing it to native Python functions that expect specific types. For IDs, explicitly assert `isinstance(target_id, str)` (or `int`, depending on the structure).
+
+## 2024-07-06 - [MEDIUM] Prevent unhandled TypeError (500) during chain dictionary lookup
+**Vulnerability:** The `/api/mark_used` endpoint in `sliding_rows_flashcards/app.py` extracted the `chain_id` from the JSON payload and passed it to `update_chain_used_status`, where it was used directly as a dictionary key (`chains[chain_id]`). Passing an unhashable type (e.g., a dictionary or list) would throw an unhandled `TypeError`, resulting in a 500 error and stack trace leakage.
+**Learning:** Just like with coordinate mapping, any untrusted JSON parameter that will be utilized in a dictionary lookup needs to be verified for appropriate hashable types to prevent 500 crashes and DoS.
+**Prevention:** Always validate the type of data extracted from `request.json`. For `chain_id`, assert `isinstance(chain_id, str)` before calling backend lookup functions.
