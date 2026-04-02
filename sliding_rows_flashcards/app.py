@@ -171,6 +171,9 @@ def mark_used():
     if not chain_id:
         return jsonify({'error': 'Missing chain_id'}), 400
 
+    if not isinstance(chain_id, str):
+        return jsonify({'error': 'Invalid chain_id format'}), 400
+
     try:
         update_chain_used_status(chain_id, True)
     except Exception as e:
