@@ -109,6 +109,11 @@ async function loadNextQuestion() {
 async function eliminateAndNext() {
     if (!currentQuestion) return;
 
+    const originalText = eliminateBtnEl.textContent;
+    eliminateBtnEl.disabled = true;
+    eliminateBtnEl.setAttribute('aria-busy', 'true');
+    eliminateBtnEl.textContent = 'Eliminating...';
+
     try {
         const res = await fetch('/api/mark_used', {
             method: 'POST',
@@ -117,10 +122,14 @@ async function eliminateAndNext() {
         });
 
         if (res.ok) {
-            loadNextQuestion();
+            await loadNextQuestion();
         }
     } catch (error) {
         console.error("Failed to mark question as used", error);
+    } finally {
+        eliminateBtnEl.disabled = false;
+        eliminateBtnEl.setAttribute('aria-busy', 'false');
+        eliminateBtnEl.textContent = originalText;
     }
 }
 
@@ -129,13 +138,23 @@ async function resetAll() {
         return;
     }
 
+    const resetBtn = document.querySelector('.btn-warning');
+    const originalText = resetBtn.textContent;
+    resetBtn.disabled = true;
+    resetBtn.setAttribute('aria-busy', 'true');
+    resetBtn.textContent = 'Resetting...';
+
     try {
         const res = await fetch('/api/reset', { method: 'POST' });
         if (res.ok) {
-            loadNextQuestion();
+            await loadNextQuestion();
         }
     } catch (error) {
         console.error("Failed to reset questions", error);
+    } finally {
+        resetBtn.disabled = false;
+        resetBtn.setAttribute('aria-busy', 'false');
+        resetBtn.textContent = originalText;
     }
 }
 
