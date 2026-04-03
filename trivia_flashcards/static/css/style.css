@@ -125,7 +125,12 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-button:active {
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+button:active:not(:disabled) {
     transform: scale(0.95);
 }
 
@@ -133,7 +138,7 @@ button:active {
     background-color: var(--btn-primary);
     color: white;
 }
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
     background-color: var(--btn-primary-hover);
 }
 
@@ -141,7 +146,7 @@ button:active {
     background-color: var(--btn-danger);
     color: white;
 }
-.btn-danger:hover {
+.btn-danger:hover:not(:disabled) {
     background-color: var(--btn-danger-hover);
 }
 
@@ -149,7 +154,7 @@ button:active {
     background-color: var(--btn-warning);
     color: white;
 }
-.btn-warning:hover {
+.btn-warning:hover:not(:disabled) {
     background-color: var(--btn-warning-hover);
 }
 
@@ -157,7 +162,7 @@ button:active {
     background-color: var(--btn-secondary);
     color: white;
 }
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
     background-color: var(--btn-secondary-hover);
 }
 
