@@ -103,8 +103,8 @@ def get_questions():
 @app.route('/api/score', methods=['POST'])
 def calculate_score():
     data = request.json
-    if not data:
-        return jsonify({'error': 'Missing request body'}), 400
+    if not data or not isinstance(data, dict):
+        return jsonify({'error': 'Invalid or missing request body'}), 400
 
     guess_lat = data.get('lat')
     guess_lng = data.get('lng')
