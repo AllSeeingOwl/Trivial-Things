@@ -22,3 +22,8 @@
 **Vulnerability:** The `/api/mark_used` endpoint in `sliding_rows_flashcards/app.py` extracted the `chain_id` from the JSON payload and passed it to `update_chain_used_status`, where it was used directly as a dictionary key (`chains[chain_id]`). Passing an unhashable type (e.g., a dictionary or list) would throw an unhandled `TypeError`, resulting in a 500 error and stack trace leakage.
 **Learning:** Just like with coordinate mapping, any untrusted JSON parameter that will be utilized in a dictionary lookup needs to be verified for appropriate hashable types to prevent 500 crashes and DoS.
 **Prevention:** Always validate the type of data extracted from `request.json`. For `chain_id`, assert `isinstance(chain_id, str)` before calling backend lookup functions.
+
+## 2024-07-15 - [CRITICAL] Prevent unhandled AttributeError (500) from unexpected JSON payload structure
+**Vulnerability:** The `/api/score` endpoint in `where_in_the_world/app.py` extracted `data = request.json` and immediately called `data.get('lat')`. When a client maliciously or accidentally sent a JSON array (e.g., `[1, 2, 3]`), `request.json` parsed it as a Python list, which lacks a `.get()` method. This triggered an unhandled `AttributeError`, resulting in a 500 Internal Server Error, DoS risk, and potential stack trace leakage.
+**Learning:** `request.json` can be of any valid JSON type (list, bool, string, etc.), not just a dictionary. Calling dictionary-specific methods like `.get()` on it without type validation is unsafe and can lead to immediate application crashes.
+**Prevention:** Always validate the structure of `request.json` (e.g., `isinstance(data, dict)`) before interacting with its keys or methods.
