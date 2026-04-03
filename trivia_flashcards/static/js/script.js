@@ -76,6 +76,11 @@ async function loadNextQuestion() {
 
             errorMsgEl.textContent = data.error || "No more questions!";
             errorMsgEl.classList.remove('hidden');
+
+            if (data.stats) {
+                statsContainerEl.textContent =
+                    `Remaining: ${data.stats.remaining} | Used: ${data.stats.used} | Total: ${data.stats.total}`;
+            }
             return;
         }
 
