@@ -118,6 +118,11 @@ async function loadNextQuestion() {
             const errorEl = document.getElementById('error-msg');
             errorEl.textContent = data.error || "No more questions!";
             errorEl.classList.remove('hidden');
+
+            if (data.stats) {
+                statsContainerEl.textContent =
+                    `Remaining: ${data.stats.remaining} | Used: ${data.stats.used} | Total: ${data.stats.total}`;
+            }
             return;
         }
 
