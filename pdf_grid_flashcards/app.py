@@ -4,6 +4,8 @@ from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+# Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
+app.config['DEBUG'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
 # Sentinel: Limit upload size to 16MB to prevent DoS attacks
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
