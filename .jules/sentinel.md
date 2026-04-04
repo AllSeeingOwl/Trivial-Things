@@ -27,6 +27,10 @@
 **Vulnerability:** The `/api/score` endpoint in `where_in_the_world/app.py` extracted `data = request.json` and immediately called `data.get('lat')`. When a client maliciously or accidentally sent a JSON array (e.g., `[1, 2, 3]`), `request.json` parsed it as a Python list, which lacks a `.get()` method. This triggered an unhandled `AttributeError`, resulting in a 500 Internal Server Error, DoS risk, and potential stack trace leakage.
 **Learning:** `request.json` can be of any valid JSON type (list, bool, string, etc.), not just a dictionary. Calling dictionary-specific methods like `.get()` on it without type validation is unsafe and can lead to immediate application crashes.
 **Prevention:** Always validate the structure of `request.json` (e.g., `isinstance(data, dict)`) before interacting with its keys or methods.
+## 2025-05-15 - Boundary Check on CSV Row Access
+ **Vulnerability:** Missing boundary check when using user-provided IDs to index CSV rows.
+ **Learning:** Directly using integer-converted user input to index lists can lead to IndexError or unauthorized row modification (including header corruption).
+ **Prevention:** Implement explicit range checks against the list length and verify if the index refers to a protected row (like a header) before performing any data operations.
 ## 2024-10-24 - [MEDIUM] Added Security Headers to Flask Response
 **Vulnerability:** Flask web apps were serving content without any baseline HTTP security headers, leaving them vulnerable to MIME-sniffing, clickjacking, and XSS.
 **Learning:** Implementing an `@app.after_request` hook provides a centralized, robust method to enforce global security headers (like CSP, X-Frame-Options, X-Content-Type-Options) without modifying individual route logic.
