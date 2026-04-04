@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!query) return;
 
         ui.searchBtn.disabled = true;
+        ui.searchBtn.setAttribute('aria-busy', 'true');
         ui.searchBtn.textContent = 'Searching...';
 
         try {
@@ -149,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred while searching. Please try again.');
         } finally {
             ui.searchBtn.disabled = false;
+            ui.searchBtn.setAttribute('aria-busy', 'false');
             ui.searchBtn.textContent = 'Locate';
         }
     }
@@ -195,6 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentQuestionIndex = 0;
 
         ui.startBtn.disabled = true;
+        ui.startBtn.setAttribute('aria-busy', 'true');
         ui.startBtn.textContent = 'Loading...';
 
         try {
@@ -204,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.questions.length === 0) {
                 alert("Error: No questions loaded from server.");
                 ui.startBtn.disabled = false;
+                ui.startBtn.setAttribute('aria-busy', 'false');
                 ui.startBtn.textContent = 'Start Game';
                 return;
             }
@@ -214,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Failed to load questions", error);
             alert("Failed to connect to the server.");
             ui.startBtn.disabled = false;
+            ui.startBtn.setAttribute('aria-busy', 'false');
             ui.startBtn.textContent = 'Start Game';
         }
     }
@@ -254,6 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const q = state.questions[state.currentQuestionIndex];
         ui.submitGuessBtn.disabled = true;
+        ui.submitGuessBtn.setAttribute('aria-busy', 'true');
+        ui.submitGuessBtn.textContent = 'Submitting...';
 
         try {
             const response = await fetch('/api/score', {
@@ -269,6 +276,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (data.error) {
                 alert(data.error);
+                ui.submitGuessBtn.disabled = false;
+                ui.submitGuessBtn.setAttribute('aria-busy', 'false');
+                ui.submitGuessBtn.textContent = 'Submit Guess';
                 return;
             }
 
@@ -316,12 +326,17 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 showScreen('result');
                 updateStats();
+                // We keep the button disabled but reset text/busy state
+                ui.submitGuessBtn.setAttribute('aria-busy', 'false');
+                ui.submitGuessBtn.textContent = 'Submit Guess';
             }, 2500); // 2.5 second delay to see the map line
 
         } catch (error) {
             console.error("Submit error:", error);
             alert("Error submitting guess.");
             ui.submitGuessBtn.disabled = false;
+            ui.submitGuessBtn.setAttribute('aria-busy', 'false');
+            ui.submitGuessBtn.textContent = 'Submit Guess';
         }
     }
 
