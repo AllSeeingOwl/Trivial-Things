@@ -27,3 +27,8 @@
 **Vulnerability:** The `/api/score` endpoint in `where_in_the_world/app.py` extracted `data = request.json` and immediately called `data.get('lat')`. When a client maliciously or accidentally sent a JSON array (e.g., `[1, 2, 3]`), `request.json` parsed it as a Python list, which lacks a `.get()` method. This triggered an unhandled `AttributeError`, resulting in a 500 Internal Server Error, DoS risk, and potential stack trace leakage.
 **Learning:** `request.json` can be of any valid JSON type (list, bool, string, etc.), not just a dictionary. Calling dictionary-specific methods like `.get()` on it without type validation is unsafe and can lead to immediate application crashes.
 **Prevention:** Always validate the structure of `request.json` (e.g., `isinstance(data, dict)`) before interacting with its keys or methods.
+
+## 2026-04-04 - [CRITICAL] Harden Flask debug configuration in pdf_grid_flashcards
+**Vulnerability:** Relying solely on `app.run(debug=False)` only disables the Werkzeug debugger when the script is run directly. If the app is launched via the Flask CLI (`flask run`) or a WSGI server, the debugger could still be enabled if `FLASK_DEBUG` is set, leading to RCE.
+**Learning:** Explicitly setting `app.config['DEBUG'] = False` within the application code ensures the debugger is disabled regardless of the execution environment.
+**Prevention:** Always include `app.config['DEBUG'] = False` in the Flask application initialization and maintain `debug=False` in `app.run()`.
