@@ -32,3 +32,11 @@
 **Vulnerability:** Relying solely on `app.run(debug=False)` only disables the Werkzeug debugger when the script is run directly. If the app is launched via the Flask CLI (`flask run`) or a WSGI server, the debugger could still be enabled if `FLASK_DEBUG` is set, leading to RCE.
 **Learning:** Explicitly setting `app.config['DEBUG'] = False` within the application code ensures the debugger is disabled regardless of the execution environment.
 **Prevention:** Always include `app.config['DEBUG'] = False` in the Flask application initialization and maintain `debug=False` in `app.run()`.
+## 2025-05-15 - Boundary Check on CSV Row Access
+ **Vulnerability:** Missing boundary check when using user-provided IDs to index CSV rows.
+ **Learning:** Directly using integer-converted user input to index lists can lead to IndexError or unauthorized row modification (including header corruption).
+ **Prevention:** Implement explicit range checks against the list length and verify if the index refers to a protected row (like a header) before performing any data operations.
+## 2024-10-24 - [MEDIUM] Added Security Headers to Flask Response
+**Vulnerability:** Flask web apps were serving content without any baseline HTTP security headers, leaving them vulnerable to MIME-sniffing, clickjacking, and XSS.
+**Learning:** Implementing an `@app.after_request` hook provides a centralized, robust method to enforce global security headers (like CSP, X-Frame-Options, X-Content-Type-Options) without modifying individual route logic.
+**Prevention:** Establish a default security header middleware or decorator for all Flask applications in the project.
