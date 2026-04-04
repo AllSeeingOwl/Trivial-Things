@@ -13,6 +13,35 @@ let currentWord = '';
 loadBtn.addEventListener('click', loadGrid);
 resetBtn.addEventListener('click', renderGrid);
 
+// ⚡ Bolt Optimization: Event Delegation
+// Attach a single listener to the parent container instead of O(N) listeners
+// on every single cell. This prevents memory leaks on re-renders and reduces overhead.
+function handleGridInteraction(event) {
+    const cell = event.target.closest('.cell.word-cell');
+    if (!cell) return;
+
+    if (event.type === 'keydown' && event.key !== 'Enter' && event.key !== ' ') {
+        return;
+    }
+
+    if (event.type === 'keydown') {
+        event.preventDefault();
+    }
+
+    revealCell(cell);
+}
+
+gridContainer.addEventListener('click', handleGridInteraction);
+gridContainer.addEventListener('keydown', handleGridInteraction);
+
+function revealCell(element) {
+    element.textContent = element.dataset.word;
+    element.classList.add('revealed');
+    element.setAttribute('aria-expanded', 'true');
+    currentWord = element.dataset.word;
+    updateChallenge();
+}
+
 modeBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
         modeBtns.forEach(b => {
@@ -73,25 +102,6 @@ function renderGrid() {
             // Initially hide the word (could show coordinate like A1, B2 instead, or just mask)
             cell.textContent = `Word ${rowIndex + 1}-${colIndex + 1}`;
             cell.dataset.word = word;
-
-            function revealCell(element) {
-                element.textContent = element.dataset.word;
-                element.classList.add('revealed');
-                element.setAttribute('aria-expanded', 'true');
-                currentWord = element.dataset.word;
-                updateChallenge();
-            }
-
-            cell.addEventListener('click', function() {
-                revealCell(this);
-            });
-
-            cell.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    revealCell(this);
-                }
-            });
 
             fragment.appendChild(cell);
         });

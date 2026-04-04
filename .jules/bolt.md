@@ -32,3 +32,7 @@
 ## 2026-03-31 - Python Generator Expressions vs Intermediate Lists
 **Learning:** In Python, creating intermediate lists using list comprehension just to count items using `len()` (e.g., `len([x for x in items if condition])`) has significant memory overhead, especially for larger datasets.
 **Action:** Always use generator expressions with `sum()` (e.g., `sum(1 for x in items if condition)`) when counting filtered items to avoid constructing and storing unnecessary intermediate lists in memory.
+
+## 2026-04-01 - Prevent Memory Leaks in Large DOM Renders using Event Delegation
+**Learning:** In frontend grids (`pdf_grid_flashcards`, `what_the_spell`), generating DOM elements in double-loops and assigning anonymous `click` and `keydown` event listeners directly to every individual cell allocates O(N) separate closures per render. On frequent re-renders (like resetting the board or parsing a new PDF), this causes significant memory overhead and garbage collection pauses.
+**Action:** Always implement the Event Delegation pattern for interactive grid structures. Attach a single `click` and `keydown` event listener to the parent container, and resolve the interacted child using `event.target.closest('.cell')`. This reduces listener count to O(1) and eliminates closure leaks across re-renders.
