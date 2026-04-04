@@ -69,6 +69,44 @@ uploadForm.addEventListener('submit', async (e) => {
 
 resetBtn.addEventListener('click', renderGrid);
 
+// ⚡ Bolt Optimization: Event Delegation
+// Attach a single listener to the parent container instead of O(N) listeners
+// on every single cell. This prevents memory leaks on re-renders and reduces overhead.
+function handleGridInteraction(event) {
+    const cell = event.target.closest('.cell');
+    if (!cell) return;
+
+    if (event.type === 'keydown' && event.key !== 'Enter' && event.key !== ' ') {
+        return;
+    }
+
+    if (event.type === 'keydown') {
+        event.preventDefault();
+    }
+
+    revealCell(cell);
+}
+
+gridContainer.addEventListener('click', handleGridInteraction);
+gridContainer.addEventListener('keydown', handleGridInteraction);
+
+function revealCell(element) {
+    // Prevent duplicate icons
+    if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
+        return;
+    }
+    element.setAttribute('aria-expanded', 'true');
+    if (element.dataset.status === 'correct') {
+        element.classList.add('correct');
+        element.textContent += ' ✓';
+        element.setAttribute('aria-label', `${element.textContent} - Correct`);
+    } else if (element.dataset.status === 'incorrect') {
+        element.classList.add('incorrect');
+        element.textContent += ' ✗';
+        element.setAttribute('aria-label', `${element.textContent} - Incorrect`);
+    }
+}
+
 function renderGrid() {
     if (!currentGridData || currentGridData.length === 0) return;
 
@@ -93,34 +131,6 @@ function renderGrid() {
             cell.setAttribute('role', 'button');
             cell.setAttribute('aria-expanded', 'false');
             cell.dataset.status = cellData.status;
-
-            function revealCell(element) {
-                // Prevent duplicate icons
-                if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
-                    return;
-                }
-                element.setAttribute('aria-expanded', 'true');
-                if (element.dataset.status === 'correct') {
-                    element.classList.add('correct');
-                    element.textContent += ' ✓';
-                    element.setAttribute('aria-label', `${element.textContent} - Correct`);
-                } else if (element.dataset.status === 'incorrect') {
-                    element.classList.add('incorrect');
-                    element.textContent += ' ✗';
-                    element.setAttribute('aria-label', `${element.textContent} - Incorrect`);
-                }
-            }
-
-            cell.addEventListener('click', function() {
-                revealCell(this);
-            });
-
-            cell.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    revealCell(this);
-                }
-            });
 
             fragment.appendChild(cell);
         });

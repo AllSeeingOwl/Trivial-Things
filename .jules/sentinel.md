@@ -31,3 +31,7 @@
  **Vulnerability:** Missing boundary check when using user-provided IDs to index CSV rows.
  **Learning:** Directly using integer-converted user input to index lists can lead to IndexError or unauthorized row modification (including header corruption).
  **Prevention:** Implement explicit range checks against the list length and verify if the index refers to a protected row (like a header) before performing any data operations.
+## 2024-10-24 - [MEDIUM] Added Security Headers to Flask Response
+**Vulnerability:** Flask web apps were serving content without any baseline HTTP security headers, leaving them vulnerable to MIME-sniffing, clickjacking, and XSS.
+**Learning:** Implementing an `@app.after_request` hook provides a centralized, robust method to enforce global security headers (like CSP, X-Frame-Options, X-Content-Type-Options) without modifying individual route logic.
+**Prevention:** Establish a default security header middleware or decorator for all Flask applications in the project.
