@@ -146,6 +146,25 @@ def calculate_score():
     })
 
 
+@app.after_request
+def add_security_headers(response):
+    # Sentinel: Add essential security headers to protect against XSS, clickjacking, and MIME-sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+
+    # Configure CSP to allow only local assets and specific trusted domains required for the map
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https://*.tile.openstreetmap.org; "
+        "connect-src 'self' https://nominatim.openstreetmap.org"
+    )
+    response.headers['Content-Security-Policy'] = csp
+    return response
+
+
 if __name__ == '__main__':
     # Sentinel: Disabled debug=True to prevent RCE and info disclosure
     app.run(port=5004, debug=False)
