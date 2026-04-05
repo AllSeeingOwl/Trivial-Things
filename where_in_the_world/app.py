@@ -5,6 +5,8 @@ import random
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
+# Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
+app.config['DEBUG'] = False
 
 
 def parse_coordinates(location_text):

@@ -4,6 +4,8 @@ import random
 import os
 
 app = Flask(__name__)
+# Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
+app.config['DEBUG'] = False
 
 CSV_FILE = 'Questions_And_Segues.csv'
 
