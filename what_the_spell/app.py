@@ -3,6 +3,8 @@ import os
 from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
+# Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
+app.config['DEBUG'] = False
 
 CSV_FILE = os.path.join(os.path.dirname(__file__), 'What The Spell.csv')
 
