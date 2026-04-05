@@ -36,3 +36,7 @@
 ## 2026-04-01 - Prevent Memory Leaks in Large DOM Renders using Event Delegation
 **Learning:** In frontend grids (`pdf_grid_flashcards`, `what_the_spell`), generating DOM elements in double-loops and assigning anonymous `click` and `keydown` event listeners directly to every individual cell allocates O(N) separate closures per render. On frequent re-renders (like resetting the board or parsing a new PDF), this causes significant memory overhead and garbage collection pauses.
 **Action:** Always implement the Event Delegation pattern for interactive grid structures. Attach a single `click` and `keydown` event listener to the parent container, and resolve the interacted child using `event.target.closest('.cell')`. This reduces listener count to O(1) and eliminates closure leaks across re-renders.
+
+## 2026-04-05 - O(log N) Binary Search for Coordinate Matching
+**Learning:** In the `pdf_grid_flashcards` application, using the built-in `min()` function over an entire array sequentially for every coordinate on every word caused an O(N) performance bottleneck when iterating over thousands of words in a PDF.
+**Action:** When finding the closest numerical value from a large list of elements (e.g. coordinates), sort the list and use `bisect.bisect_left` to perform an O(log N) binary search. This drastically reduces coordinate matching time and improves parsing speeds.

@@ -1,4 +1,5 @@
 import os
+import bisect
 import fitz
 from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
@@ -10,6 +11,26 @@ app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
 # Sentinel: Limit upload size to 16MB to prevent DoS attacks
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def get_closest_index(sorted_list, val):
+    """
+    ⚡ Bolt Optimization: O(log N) Binary Search for Coordinate Matching
+    Instead of performing an O(N) linear scan using min() to find the closest grid row/column
+    for every single word, we use binary search (bisect_left). This drastically speeds up parsing
+    when a PDF contains thousands of individual words.
+    """
+    idx = bisect.bisect_left(sorted_list, val)
+    if idx == 0:
+        return 0
+    if idx == len(sorted_list):
+        return idx - 1
+
+    before = sorted_list[idx - 1]
+    after = sorted_list[idx]
+    if after - val < val - before:
+        return idx
+    else:
+        return idx - 1
 
 def parse_pdf(filepath):
     doc = fitz.open(filepath)
@@ -98,8 +119,8 @@ def parse_pdf(filepath):
     for c in merged_cells:
         x_c = (c["rect"].x0 + c["rect"].x1)/2
         y_c = (c["rect"].y0 + c["rect"].y1)/2
-        c_idx = min(range(len(cols_x)), key=lambda i: abs(cols_x[i] - x_c))
-        r_idx = min(range(len(rows_y)), key=lambda i: abs(rows_y[i] - y_c))
+        c_idx = get_closest_index(cols_x, x_c)
+        r_idx = get_closest_index(rows_y, y_c)
         grid[r_idx][c_idx]["status"] = c["status"]
 
     for w in words:
@@ -107,8 +128,8 @@ def parse_pdf(filepath):
             continue
         x_c = (w[0] + w[2])/2
         y_c = (w[1] + w[3])/2
-        c_idx = min(range(len(cols_x)), key=lambda i: abs(cols_x[i] - x_c))
-        r_idx = min(range(len(rows_y)), key=lambda i: abs(rows_y[i] - y_c))
+        c_idx = get_closest_index(cols_x, x_c)
+        r_idx = get_closest_index(rows_y, y_c)
         grid[r_idx][c_idx]["words"].append(w)
 
     grid_data = []
