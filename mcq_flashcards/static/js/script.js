@@ -13,6 +13,7 @@ const eliminateBtnEl = document.getElementById('eliminate-btn');
 const questionTextEl = document.getElementById('question-text');
 const choicesContainerEl = document.getElementById('mcq-choices');
 const statsContainerEl = document.getElementById('stats-container');
+const emptyStateEl = document.getElementById('empty-state');
 
 flashcardEl.addEventListener('click', flipCard);
 flashcardEl.addEventListener('keydown', function(event) {
@@ -115,9 +116,14 @@ async function loadNextQuestion() {
             nextBtnEl.classList.add('hidden');
             eliminateBtnEl.classList.add('hidden');
 
-            const errorEl = document.getElementById('error-msg');
-            errorEl.textContent = data.error || "No more questions!";
-            errorEl.classList.remove('hidden');
+            // If we've run out of questions, show the pleasant empty state instead of an error alert
+            if (res.status === 404 && data.error === "No unused questions left!") {
+                emptyStateEl.classList.remove('hidden');
+            } else {
+                const errorEl = document.getElementById('error-msg');
+                errorEl.textContent = data.error || "No more questions!";
+                errorEl.classList.remove('hidden');
+            }
 
             if (data.stats) {
                 statsContainerEl.textContent =
@@ -132,6 +138,7 @@ async function loadNextQuestion() {
         flashcardContainerEl.classList.remove('hidden');
         nextBtnEl.classList.remove('hidden');
         eliminateBtnEl.classList.remove('hidden');
+        emptyStateEl.classList.add('hidden'); // Ensure empty state is hidden when a question successfully loads
 
         questionTextEl.textContent = data.question;
         answerTextEl.textContent = data.answer;
@@ -216,11 +223,23 @@ async function resetAll() {
         return;
     }
 
-    const resetBtn = document.querySelector('.btn-warning');
-    const originalText = resetBtn.textContent;
-    resetBtn.disabled = true;
-    resetBtn.setAttribute('aria-busy', 'true');
-    resetBtn.textContent = 'Resetting...';
+    // Palette: Update multiple reset buttons logic safely
+    const adminResetBtn = document.getElementById('admin-reset-btn');
+    const practiceAgainBtn = document.getElementById('practice-again-btn');
+
+    let adminOriginalText = adminResetBtn ? adminResetBtn.textContent : '';
+    let practiceOriginalText = practiceAgainBtn ? practiceAgainBtn.textContent : '';
+
+    if (adminResetBtn) {
+        adminResetBtn.disabled = true;
+        adminResetBtn.setAttribute('aria-busy', 'true');
+        adminResetBtn.textContent = 'Resetting...';
+    }
+    if (practiceAgainBtn) {
+        practiceAgainBtn.disabled = true;
+        practiceAgainBtn.setAttribute('aria-busy', 'true');
+        practiceAgainBtn.textContent = 'Resetting...';
+    }
 
     try {
         const res = await fetch('/api/reset', { method: 'POST' });
@@ -230,9 +249,16 @@ async function resetAll() {
     } catch (error) {
         console.error("Failed to reset questions", error);
     } finally {
-        resetBtn.disabled = false;
-        resetBtn.setAttribute('aria-busy', 'false');
-        resetBtn.textContent = originalText;
+        if (adminResetBtn) {
+            adminResetBtn.disabled = false;
+            adminResetBtn.setAttribute('aria-busy', 'false');
+            adminResetBtn.textContent = adminOriginalText;
+        }
+        if (practiceAgainBtn) {
+            practiceAgainBtn.disabled = false;
+            practiceAgainBtn.setAttribute('aria-busy', 'false');
+            practiceAgainBtn.textContent = practiceOriginalText;
+        }
     }
 }
 
