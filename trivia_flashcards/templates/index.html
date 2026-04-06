@@ -34,7 +34,13 @@
         </section>
 
         <section aria-label="Administrative Actions">
-            <button class="btn-warning" onclick="resetAll()">Reset All Questions</button>
+            <button class="btn-warning" id="admin-reset-btn" onclick="resetAll()">Reset All Questions</button>
+        </section>
+
+        <section id="empty-state" class="hidden stats" aria-live="polite" style="text-align: center; margin-top: 20px;">
+            <h2>🎉 You're all done!</h2>
+            <p>You've completed all the flashcards in this deck.</p>
+            <button class="btn-primary" id="practice-again-btn" onclick="resetAll()">Practice Again</button>
         </section>
 
         <div id="error-msg" class="hidden" role="alert" aria-live="assertive"></div>
