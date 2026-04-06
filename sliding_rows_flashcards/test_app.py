@@ -13,6 +13,9 @@ class MockFlask:
         self.config = {}
         self.routes = {}
 
+    def after_request(self, f):
+        return f
+
     def route(self, rule, **options):
         def decorator(f):
             self.routes[rule] = (f, options.get('methods', ['GET']))
