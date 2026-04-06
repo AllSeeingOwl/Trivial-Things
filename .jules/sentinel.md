@@ -40,3 +40,7 @@
 **Vulnerability:** Flask web apps were serving content without any baseline HTTP security headers, leaving them vulnerable to MIME-sniffing, clickjacking, and XSS.
 **Learning:** Implementing an `@app.after_request` hook provides a centralized, robust method to enforce global security headers (like CSP, X-Frame-Options, X-Content-Type-Options) without modifying individual route logic.
 **Prevention:** Establish a default security header middleware or decorator for all Flask applications in the project.
+## 2024-10-24 - [MEDIUM] Added Security Headers to Flask Response
+**Vulnerability:** Flask web apps were serving content without any baseline HTTP security headers, leaving them vulnerable to MIME-sniffing, clickjacking, and XSS.
+**Learning:** Implementing an `@app.after_request` hook provides a centralized, robust method to enforce global security headers (like CSP, X-Frame-Options, X-Content-Type-Options) without modifying individual route logic.
+**Prevention:** Establish a default security header middleware or decorator for all Flask applications in the project.
