@@ -40,3 +40,7 @@
 ## 2026-04-05 - O(log N) Binary Search for Coordinate Matching
 **Learning:** In the `pdf_grid_flashcards` application, using the built-in `min()` function over an entire array sequentially for every coordinate on every word caused an O(N) performance bottleneck when iterating over thousands of words in a PDF.
 **Action:** When finding the closest numerical value from a large list of elements (e.g. coordinates), sort the list and use `bisect.bisect_left` to perform an O(log N) binary search. This drastically reduces coordinate matching time and improves parsing speeds.
+
+## 2026-04-06 - Caching Rate-Limited External APIs on the Frontend
+**Learning:** When interacting with third-party, rate-limited APIs (like Nominatim for geocoding) on the frontend, redundant network requests for identical user queries can cause unnecessary UI latency and trigger API limits. In `where_in_the_world`, repeated searches for the same location name triggered multiple `fetch` calls.
+**Action:** Use a JavaScript `Map` in the application state to cache responses from external rate-limited APIs, using the user's query as the key. Always check the cache (`.has()`) and return the saved result before initiating a new network fetch, completely avoiding redundant requests.

@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         targetMarker: null,
         polyline: null,
         currentGuessLat: null,
-        currentGuessLng: null
+        currentGuessLng: null,
+        searchCache: new Map() // ⚡ Bolt Optimization: Cache external rate-limited API calls
     };
 
     // --- Map Initialization ---
@@ -132,13 +133,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // ⚡ Bolt Optimization: Caching External API Responses
+            // Check cache before fetching to prevent rate limiting and reduce UI latency on repeated queries.
+            if (state.searchCache.has(query)) {
+                const cachedData = state.searchCache.get(query);
+                if (cachedData) {
+                    placeGuessMarker(cachedData.lat, cachedData.lon, true);
+                } else {
+                    alert('Could not find location. Try a different format or name.');
+                }
+                return;
+            }
+
             try {
                 const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
                 const data = await response.json();
 
                 if (data && data.length > 0) {
-                    placeGuessMarker(parseFloat(data[0].lat), parseFloat(data[0].lon), true);
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    state.searchCache.set(query, { lat, lon });
+                    placeGuessMarker(lat, lon, true);
                 } else {
+                    state.searchCache.set(query, null);
                     alert('Could not find location. Try a different format or name.');
                 }
             } catch (fetchError) {
