@@ -44,3 +44,7 @@
 ## 2026-04-06 - Caching Rate-Limited External APIs on the Frontend
 **Learning:** When interacting with third-party, rate-limited APIs (like Nominatim for geocoding) on the frontend, redundant network requests for identical user queries can cause unnecessary UI latency and trigger API limits. In `where_in_the_world`, repeated searches for the same location name triggered multiple `fetch` calls.
 **Action:** Use a JavaScript `Map` in the application state to cache responses from external rate-limited APIs, using the user's query as the key. Always check the cache (`.has()`) and return the saved result before initiating a new network fetch, completely avoiding redundant requests.
+
+## 2026-04-07 - Event Delegation for Frontend Performance
+**Learning:** Attaching separate `click` and `keydown` event listeners inside loops when generating lists or rows creates O(N) memory overhead and potential garbage collection pauses when those lists are frequently re-rendered. In `sliding_rows_flashcards`, row event listeners also required preserving closure variables for state.
+**Action:** Always use Event Delegation by attaching a single event listener to the parent container. Use DOM data attributes (like `data-state`) to replace closure-bound variables, allowing the generic handler to retrieve and manage individual item state securely.

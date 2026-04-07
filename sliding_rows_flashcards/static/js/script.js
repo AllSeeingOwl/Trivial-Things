@@ -22,6 +22,51 @@ document.addEventListener('DOMContentLoaded', () => {
         nextChainBtn.addEventListener('click', loadNextChain);
         resetBtn.addEventListener('click', resetAll);
         if (practiceAgainBtn) practiceAgainBtn.addEventListener('click', resetAll);
+
+        // ⚡ Bolt Optimization: Event Delegation
+        // Attach a single click and keydown listener to the parent container
+        // instead of attaching them inside a loop for every row.
+        chainContainer.addEventListener('click', handleRowInteraction);
+        chainContainer.addEventListener('keydown', handleRowInteraction);
+    }
+
+    function handleRowInteraction(e) {
+        const handleDiv = e.target.closest('.row-handle');
+        if (!handleDiv) return;
+
+        if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') {
+            return;
+        }
+
+        if (e.type === 'keydown') {
+            e.preventDefault();
+        }
+
+        const rowDiv = handleDiv.closest('.sliding-row');
+        if (!rowDiv) return;
+
+        const statusText = handleDiv.querySelector('.row-status-text');
+        if (!statusText) return;
+
+        let currentState = parseInt(rowDiv.getAttribute('data-state') || '1', 10);
+
+        if (currentState === 1) {
+            // Transition to State 2: Question Revealed
+            rowDiv.setAttribute('data-state', '2');
+            rowDiv.classList.add('state-question');
+            statusText.textContent = "Click for Answer";
+            handleDiv.setAttribute('aria-expanded', 'true');
+        } else if (currentState === 2) {
+            // Transition to State 3: Answer Revealed
+            rowDiv.setAttribute('data-state', '3');
+            rowDiv.classList.remove('state-question');
+            rowDiv.classList.add('state-answer');
+            statusText.textContent = "✓ Answered"; // Avoid relying on color alone!
+
+            revealedAnswersCount++;
+            checkChainCompletion();
+        }
+        // If currentState === 3, do nothing on click.
     }
 
     // Update Stats UI
@@ -130,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const rowDiv = document.createElement('div');
             rowDiv.classList.add('sliding-row');
             // State 1: Hidden (default state, no state class added yet)
+            rowDiv.setAttribute('data-state', '1');
 
             // The clickable handle (just shows the number initially)
             const handleDiv = document.createElement('div');
@@ -166,38 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             rowDiv.appendChild(handleDiv);
             rowDiv.appendChild(contentDiv);
-
-            // Event listener for sliding logic
-            let currentState = 1; // 1=Hidden, 2=Question, 3=Answer
-
-            const advanceState = () => {
-                if (currentState === 1) {
-                    // Transition to State 2: Question Revealed
-                    currentState = 2;
-                    rowDiv.classList.add('state-question');
-                    statusText.textContent = "Click for Answer";
-                    handleDiv.setAttribute('aria-expanded', 'true');
-                } else if (currentState === 2) {
-                    // Transition to State 3: Answer Revealed
-                    currentState = 3;
-                    rowDiv.classList.remove('state-question');
-                    rowDiv.classList.add('state-answer');
-                    statusText.textContent = "✓ Answered"; // Avoid relying on color alone!
-
-                    revealedAnswersCount++;
-                    checkChainCompletion();
-                }
-                // If currentState === 3, do nothing on click.
-            };
-
-            // Support click and enter key for accessibility
-            handleDiv.addEventListener('click', advanceState);
-            handleDiv.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    advanceState();
-                }
-            });
 
             fragment.appendChild(rowDiv);
         });
