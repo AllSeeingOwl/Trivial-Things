@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const navControls = document.getElementById('nav-controls');
     const nextChainBtn = document.getElementById('next-chain-button');
     const resetBtn = document.getElementById('reset-button');
+    const practiceAgainBtn = document.getElementById('practice-again-btn');
+    const emptyStateEl = document.getElementById('empty-state');
     const chainsRemainingEl = document.getElementById('chains-remaining');
     const chainsTotalEl = document.getElementById('chains-total');
 
@@ -19,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadNextChain();
         nextChainBtn.addEventListener('click', loadNextChain);
         resetBtn.addEventListener('click', resetAll);
+        if (practiceAgainBtn) practiceAgainBtn.addEventListener('click', resetAll);
     }
 
     // Update Stats UI
@@ -35,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chainContainer.textContent = '';
         navControls.classList.add('hidden');
         errorEl.classList.add('hidden');
+        if (emptyStateEl) emptyStateEl.classList.add('hidden');
         loadingEl.classList.remove('hidden');
         currentChainId = null;
         currentQuestions = [];
@@ -49,8 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
             updateStats(data);
 
             if (response.status === 404) {
-                errorEl.textContent = "You've completed all available question chains!";
-                errorEl.classList.remove('hidden');
+                if (emptyStateEl) {
+                    emptyStateEl.classList.remove('hidden');
+                } else {
+                    errorEl.textContent = "You've completed all available question chains!";
+                    errorEl.classList.remove('hidden');
+                }
                 return;
             }
 
@@ -81,6 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn.setAttribute('aria-busy', 'true');
         resetBtn.textContent = 'Resetting...';
 
+        let practiceOriginalText = '';
+        if (practiceAgainBtn) {
+            practiceOriginalText = practiceAgainBtn.textContent;
+            practiceAgainBtn.disabled = true;
+            practiceAgainBtn.setAttribute('aria-busy', 'true');
+            practiceAgainBtn.textContent = 'Resetting...';
+        }
+
         try {
             const res = await fetch('/api/reset', { method: 'POST' });
             if (res.ok) {
@@ -94,6 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
             resetBtn.disabled = false;
             resetBtn.setAttribute('aria-busy', 'false');
             resetBtn.textContent = originalText;
+            if (practiceAgainBtn) {
+                practiceAgainBtn.disabled = false;
+                practiceAgainBtn.setAttribute('aria-busy', 'false');
+                practiceAgainBtn.textContent = practiceOriginalText;
+            }
         }
     }
 

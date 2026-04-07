@@ -47,6 +47,27 @@ h1 {
     font-weight: bold;
 }
 
+#empty-state {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#empty-state h2 {
+    margin: 0;
+}
+
+#empty-state p {
+    margin-bottom: 15px;
+    font-weight: normal;
+}
+
+#empty-state button {
+    width: auto;
+    margin-top: 0;
+}
+
 .btn {
     padding: 8px 16px;
     border: none;
