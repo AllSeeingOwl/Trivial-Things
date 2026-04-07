@@ -44,3 +44,8 @@
 **Vulnerability:** Flask web apps were serving content without any baseline HTTP security headers, leaving them vulnerable to MIME-sniffing, clickjacking, and XSS.
 **Learning:** Implementing an `@app.after_request` hook provides a centralized, robust method to enforce global security headers (like CSP, X-Frame-Options, X-Content-Type-Options) without modifying individual route logic.
 **Prevention:** Establish a default security header middleware or decorator for all Flask applications in the project.
+
+## 2025-05-15 - Boundary Check on CSV Row Access in trivia_flashcards
+ **Vulnerability:** Missing boundary check when using user-provided IDs to index CSV rows in trivia_flashcards.
+ **Learning:** Directly using integer-converted user input to index lists can lead to IndexError or unauthorized row modification (including header corruption). By lacking boundary checks, an attacker could attempt to overwrite the header or crash the service with out-of-bounds indices.
+ **Prevention:** Implement explicit range checks against the list length and verify if the index refers to a protected row (like a header) before performing any data operations. This was applied to `update_used_status`.

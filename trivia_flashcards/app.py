@@ -76,6 +76,13 @@ def update_used_status(q_id, used_status):
     with open(CSV_FILE, 'r', encoding='utf-8') as f:
         rows = list(csv.reader(f))
 
+    if row_idx < 0 or row_idx >= len(rows):
+        raise ValueError(f"Question ID {q_id} (row {row_idx}) is out of bounds.")
+
+    # Prevent modifying the header row (index 0)
+    if row_idx == 0:
+        raise ValueError(f"Question ID {q_id} (row {row_idx}) refers to the header row and cannot be modified.")
+
     # ⚡ Bolt Optimization: Targeted Row Padding
     # Instead of an O(n) loop padding every single row in the CSV file,
     # we only pad the specific row we are modifying. This eliminates unnecessary operations.
@@ -178,6 +185,8 @@ def mark_used():
 
     try:
         update_used_status(q_id, True)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 404
     except Exception:
         return jsonify({'error': 'Failed to process request'}), 500
 
