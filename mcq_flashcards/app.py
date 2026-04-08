@@ -99,6 +99,8 @@ def reset_all_questions():
 
     qs = load_questions()
     for q in qs.values():
+        if not q['used']:
+            continue
         r_idx = q['row']
         # ⚡ Bolt Optimization: Targeted Row Padding
         # Instead of an O(n) loop padding every single row upfront,
