@@ -8,3 +8,7 @@
 ## 2026-04-05 - Use Empty States for Completion States
 **Learning:** Handling positive completion states (like finishing a deck of flashcards) with generic error messages (red text, `role="alert"`) creates an alarming and negative user experience. Users need to feel rewarded when they finish a task.
 **Action:** When a user completes all available items or exhausts a list, replace the error alert with a dedicated, visually pleasing `#empty-state` container featuring a success message and a clear call-to-action to restart or continue.
+
+## 2026-04-08 - SPA Focus Management on Screen Transition
+**Learning:** In Single Page Applications, transitioning between virtual 'screens' by simply toggling display classes causes keyboard focus to drop to the `<body>` element. This is a severe accessibility issue because screen readers do not announce the new content, leaving users lost.
+**Action:** When swapping virtual screens, always query the newly active container for its main heading (`<h1>`, `<h2>`, `<h3>`), add `tabindex="-1"`, and programmatically call `.focus()` on it. This forces screen readers to announce the new context and provides a logical starting point for keyboard navigation.
