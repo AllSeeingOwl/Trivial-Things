@@ -93,6 +93,12 @@ def update_chain_used_status(chain_id, used_status):
 
     for q in chains[chain_id]['questions']:
         row_idx = q['row_idx']
+
+        if row_idx < 0 or row_idx >= len(rows):
+            raise ValueError(f"Row index {row_idx} is out of bounds.")
+        if row_idx == 0:
+            raise ValueError(f"Row index {row_idx} refers to the header row and cannot be modified.")
+
         # Pad row just in case
         rows[row_idx] = rows[row_idx] + [''] * \
             (len(header) - len(rows[row_idx]))

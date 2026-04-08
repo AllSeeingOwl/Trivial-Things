@@ -49,3 +49,7 @@
  **Vulnerability:** Missing boundary check when using user-provided IDs to index CSV rows in trivia_flashcards.
  **Learning:** Directly using integer-converted user input to index lists can lead to IndexError or unauthorized row modification (including header corruption). By lacking boundary checks, an attacker could attempt to overwrite the header or crash the service with out-of-bounds indices.
  **Prevention:** Implement explicit range checks against the list length and verify if the index refers to a protected row (like a header) before performing any data operations. This was applied to `update_used_status`.
+## 2026-04-08 - [HIGH] Add Boundary Check to CSV Row Index in sliding_rows_flashcards
+**Vulnerability:** The `/api/mark_used` endpoint calls `update_chain_used_status` which directly used the user-supplied `row_idx` from a JSON payload to modify lines in `Questions_And_Segues.csv`. There was no verification that the index was within bounds (`< len(rows)`) or that it wasn't targeting the header row (`0`).
+**Learning:** Directly using integer-converted user input to index arrays without validation leads to unhandled `IndexError` crashes (DoS vulnerability) and potential unauthorized modification of sensitive data metadata, such as corrupting the CSV header row.
+**Prevention:** Always implement boundary checks (`< 0` or `>= len(rows)`) and protect special indices (like header rows) when using user-supplied indices to retrieve or mutate array elements.
