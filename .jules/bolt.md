@@ -48,3 +48,7 @@
 ## 2026-04-07 - Event Delegation for Frontend Performance
 **Learning:** Attaching separate `click` and `keydown` event listeners inside loops when generating lists or rows creates O(N) memory overhead and potential garbage collection pauses when those lists are frequently re-rendered. In `sliding_rows_flashcards`, row event listeners also required preserving closure variables for state.
 **Action:** Always use Event Delegation by attaching a single event listener to the parent container. Use DOM data attributes (like `data-state`) to replace closure-bound variables, allowing the generic handler to retrieve and manage individual item state securely.
+
+## 2026-04-08 - Skip Default Values During Bulk Resets
+**Learning:** In operations that reset data to a default state (like `reset_all_questions`), iteratively padding and rewriting every single row—including those already in the default state—causes unnecessary memory allocation and string operations.
+**Action:** Always add an early `continue` guard (e.g., `if not item['used']: continue`) inside reset loops. This skips processing for items that are already clean, saving O(N) list operations on mostly-unused data structures.

@@ -122,6 +122,11 @@ def reset_all_chains():
     used_col_idx = header.index('USED')
 
     for r_idx in range(1, len(rows)):
+        # ⚡ Bolt Optimization: Skip Default Values During Bulk Resets
+        # Add an early continue guard inside the reset loop to avoid rewriting and padding unused rows.
+        # This skips processing for items that are already clean, saving O(N) list operations.
+        if len(rows[r_idx]) > used_col_idx and rows[r_idx][used_col_idx].strip().upper() == 'FALSE':
+            continue
         rows[r_idx] = rows[r_idx] + [''] * (len(header) - len(rows[r_idx]))
         rows[r_idx][used_col_idx] = 'FALSE'
 
