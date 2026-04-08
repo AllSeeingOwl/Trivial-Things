@@ -193,7 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Game Flow ---
     function showScreen(screenId) {
         Object.values(screens).forEach(s => s.classList.remove('active'));
-        screens[screenId].classList.add('active');
+        const newScreen = screens[screenId];
+        newScreen.classList.add('active');
+
+        // Palette: Manage focus for screen reader announcements in SPAs
+        const heading = newScreen.querySelector('h1, h2, h3');
+        if (heading) {
+            heading.setAttribute('tabindex', '-1');
+            heading.focus();
+        }
 
         if (screenId === 'game') {
             // Need to invalidate size when map container becomes visible
