@@ -53,3 +53,12 @@
 **Vulnerability:** The `/api/mark_used` endpoint calls `update_chain_used_status` which directly used the user-supplied `row_idx` from a JSON payload to modify lines in `Questions_And_Segues.csv`. There was no verification that the index was within bounds (`< len(rows)`) or that it wasn't targeting the header row (`0`).
 **Learning:** Directly using integer-converted user input to index arrays without validation leads to unhandled `IndexError` crashes (DoS vulnerability) and potential unauthorized modification of sensitive data metadata, such as corrupting the CSV header row.
 **Prevention:** Always implement boundary checks (`< 0` or `>= len(rows)`) and protect special indices (like header rows) when using user-supplied indices to retrieve or mutate array elements.
+## 2024-07-28 - [MEDIUM] Enforce Content-Security-Policy across all Flask micro-apps
+**Vulnerability:** The Flask micro-apps (, , , , and ) were missing a `Content-Security-Policy` header, leaving them susceptible to cross-site scripting (XSS), data injection, and other content-based attacks if existing protections (like using `.textContent`) ever failed.
+**Learning:** Implementing a strict CSP (e.g., `default-src 'self'`) adds an important layer of defense-in-depth by restricting the browser to only load resources from trusted origins, mitigating the impact of potential vulnerabilities.
+**Prevention:** Ensure that all applications, regardless of size or apparent lack of external dependencies, implement a baseline `Content-Security-Policy` via an `@app.after_request` middleware to enforce strict resource loading policies.
+
+## 2024-07-28 - [MEDIUM] Enforce Content-Security-Policy across all Flask micro-apps
+**Vulnerability:** The Flask micro-apps (`mcq_flashcards`, `pdf_grid_flashcards`, `sliding_rows_flashcards`, `trivia_flashcards`, and `what_the_spell`) were missing a `Content-Security-Policy` header, leaving them susceptible to cross-site scripting (XSS), data injection, and other content-based attacks if existing protections (like using `.textContent`) ever failed.
+**Learning:** Implementing a strict CSP (e.g., `default-src 'self'`) adds an important layer of defense-in-depth by restricting the browser to only load resources from trusted origins, mitigating the impact of potential vulnerabilities.
+**Prevention:** Ensure that all applications, regardless of size or apparent lack of external dependencies, implement a baseline `Content-Security-Policy` via an `@app.after_request` middleware to enforce strict resource loading policies.
