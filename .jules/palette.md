@@ -12,3 +12,7 @@
 ## 2026-04-08 - SPA Focus Management on Screen Transition
 **Learning:** In Single Page Applications, transitioning between virtual 'screens' by simply toggling display classes causes keyboard focus to drop to the `<body>` element. This is a severe accessibility issue because screen readers do not announce the new content, leaving users lost.
 **Action:** When swapping virtual screens, always query the newly active container for its main heading (`<h1>`, `<h2>`, `<h3>`), add `tabindex="-1"`, and programmatically call `.focus()` on it. This forces screen readers to announce the new context and provides a logical starting point for keyboard navigation.
+
+## 2026-04-09 - Handle Native Dialogs in Playwright Tests
+**Learning:** When using Playwright to test frontend interactions that trigger native browser dialogs (like `alert()` or `confirm()`), the script will hang indefinitely if these dialogs are not handled.
+**Action:** Always explicitly attach a dialog handler (e.g., `page.on("dialog", lambda dialog: dialog.accept())`) before triggering actions that spawn native browser dialogs during automated tests.
