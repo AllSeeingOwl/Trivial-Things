@@ -11,7 +11,12 @@ let currentMode = 'normal';
 let currentWord = '';
 
 loadBtn.addEventListener('click', loadGrid);
-resetBtn.addEventListener('click', renderGrid);
+resetBtn.addEventListener('click', () => {
+    if (confirm("Are you sure you want to reset the board?")) {
+        renderGrid();
+        resetChallenge();
+    }
+});
 
 // ⚡ Bolt Optimization: Event Delegation
 // Attach a single listener to the parent container instead of O(N) listeners

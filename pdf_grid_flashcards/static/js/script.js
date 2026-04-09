@@ -67,7 +67,11 @@ uploadForm.addEventListener('submit', async (e) => {
     }
 });
 
-resetBtn.addEventListener('click', renderGrid);
+resetBtn.addEventListener('click', () => {
+    if (confirm("Are you sure you want to reset the grid colors?")) {
+        renderGrid();
+    }
+});
 
 // ⚡ Bolt Optimization: Event Delegation
 // Attach a single listener to the parent container instead of O(N) listeners
