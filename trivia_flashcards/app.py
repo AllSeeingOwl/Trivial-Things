@@ -20,12 +20,13 @@ CSV_FILE = 'Questions & All That.csv'
 # Caches the CSV rows in memory to prevent reading and parsing the entire file
 # on every /api/question and /api/stats request, significantly reducing file I/O operations.
 _questions_cache = None
+_raw_csv_cache = None
 
 def load_questions():
-    global _questions_cache
+    global _questions_cache, _raw_csv_cache
 
     # Return cached data if already loaded to skip expensive file I/O
-    if _questions_cache is not None:
+    if _questions_cache is not None and _raw_csv_cache is not None:
         return _questions_cache
 
     # ⚡ Bolt Optimization: O(1) Cache Lookups
@@ -35,35 +36,37 @@ def load_questions():
     if not os.path.exists(CSV_FILE):
         return questions
 
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        reader = csv.reader(f)
-        for r_idx, row in enumerate(reader):
-            # Pad row if necessary to ensure it has 6 columns
-            row = row + [''] * (6 - len(row))
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
 
-            # Check Set A (Cols 0, 1, 2)
-            q_a = row[0].strip()
-            if q_a and q_a not in ['Set A', 'Set B'] and not q_a.startswith(','):
-                questions[f"{r_idx}_A"] = {
-                    'id': f"{r_idx}_A",
-                    'row': r_idx,
-                    'set': 'A',
-                    'question': q_a,
-                    'answer': row[1].strip(),
-                    'used': row[2].strip().upper() == 'TRUE'
-                }
+    for r_idx, row in enumerate(_raw_csv_cache):
+        # Pad row if necessary to ensure it has 6 columns
+        row = row + [''] * (6 - len(row))
 
-            # Check Set B (Cols 3, 4, 5)
-            q_b = row[3].strip()
-            if q_b and q_b not in ['Set A', 'Set B'] and not q_b.startswith(','):
-                questions[f"{r_idx}_B"] = {
-                    'id': f"{r_idx}_B",
-                    'row': r_idx,
-                    'set': 'B',
-                    'question': q_b,
-                    'answer': row[4].strip(),
-                    'used': row[5].strip().upper() == 'TRUE'
-                }
+        # Check Set A (Cols 0, 1, 2)
+        q_a = row[0].strip()
+        if q_a and q_a not in ['Set A', 'Set B'] and not q_a.startswith(','):
+            questions[f"{r_idx}_A"] = {
+                'id': f"{r_idx}_A",
+                'row': r_idx,
+                'set': 'A',
+                'question': q_a,
+                'answer': row[1].strip(),
+                'used': row[2].strip().upper() == 'TRUE'
+            }
+
+        # Check Set B (Cols 3, 4, 5)
+        q_b = row[3].strip()
+        if q_b and q_b not in ['Set A', 'Set B'] and not q_b.startswith(','):
+            questions[f"{r_idx}_B"] = {
+                'id': f"{r_idx}_B",
+                'row': r_idx,
+                'set': 'B',
+                'question': q_b,
+                'answer': row[4].strip(),
+                'used': row[5].strip().upper() == 'TRUE'
+            }
 
     _questions_cache = questions
     return _questions_cache
@@ -73,8 +76,11 @@ def update_used_status(q_id, used_status):
     row_idx_str, set_type = q_id.split('_')
     row_idx = int(row_idx_str)
 
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        rows = list(csv.reader(f))
+    global _raw_csv_cache
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
+    rows = _raw_csv_cache
 
     if row_idx < 0 or row_idx >= len(rows):
         raise ValueError(f"Question ID {q_id} (row {row_idx}) is out of bounds.")
@@ -104,8 +110,11 @@ def update_used_status(q_id, used_status):
         _questions_cache[q_id]['used'] = used_status
 
 def reset_all_questions():
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        rows = list(csv.reader(f))
+    global _raw_csv_cache
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
+    rows = _raw_csv_cache
 
     qs = load_questions()
     for q in qs.values():

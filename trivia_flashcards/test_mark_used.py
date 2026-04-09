@@ -5,6 +5,8 @@ import json
 
 class TestApp(unittest.TestCase):
     def setUp(self):
+        app._raw_csv_cache = None
+        app._questions_cache = None
         self.app = app.test_client()
 
     def test_mark_used_invalid_id(self):

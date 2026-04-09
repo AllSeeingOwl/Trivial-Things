@@ -52,3 +52,7 @@
 ## 2026-04-08 - Skip Default Values During Bulk Resets
 **Learning:** In operations that reset data to a default state (like `reset_all_questions`), iteratively padding and rewriting every single row—including those already in the default state—causes unnecessary memory allocation and string operations.
 **Action:** Always add an early `continue` guard (e.g., `if not item['used']: continue`) inside reset loops. This skips processing for items that are already clean, saving O(N) list operations on mostly-unused data structures.
+
+## 2026-04-09 - Eliminate Redundant Disk Reads on CSV State Updates
+**Learning:** In applications that manage state by writing back to CSV files (like `mcq_flashcards`, `trivia_flashcards`, `sliding_rows_flashcards`), the previous `update_used_status()` and `reset()` functions read the entire CSV from disk just to modify a single row before writing it back. While `_questions_cache` stored the transformed data for fast lookups, it didn't store the raw row structure, forcing this redundant I/O.
+**Action:** Always maintain a synchronized `_raw_csv_cache` (e.g. `list(csv.reader(f))`) alongside the transformed object cache. This allows write operations to instantly modify the in-memory raw array and directly write to disk, completely eliminating the O(N) disk read bottleneck on every state update.

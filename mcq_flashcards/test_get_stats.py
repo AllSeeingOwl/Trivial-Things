@@ -4,6 +4,8 @@ from app import app, load_questions
 
 class TestGetStats(unittest.TestCase):
     def setUp(self):
+        app._raw_csv_cache = None
+        app._questions_cache = None
         self.app = app.test_client()
 
     @patch('app.load_questions')
