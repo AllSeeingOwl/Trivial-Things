@@ -18,51 +18,60 @@ CSV_FILE = 'Questions_And_Segues.csv'
 
 # In-Memory Cache for performance optimization (similar to trivia_flashcards)
 _chains_cache = None
+_raw_csv_cache = None
 
 
 def load_chains():
-    global _chains_cache
+    global _chains_cache, _raw_csv_cache
 
     # Return cached data if already loaded
-    if _chains_cache is not None:
+    if _chains_cache is not None and _raw_csv_cache is not None:
         return _chains_cache
 
     chains = {}
     if not os.path.exists(CSV_FILE):
         return chains
 
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for r_idx, row in enumerate(reader):
-            chain_id = row.get('Chain_ID', '').strip()
-            if not chain_id:
-                continue
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
 
-            order_str = row.get('Order', '').strip()
-            try:
-                order = int(order_str)
-            except ValueError:
-                order = 0
+    if not _raw_csv_cache:
+        return chains
 
-            question_text = row.get('Question', '').strip()
-            answer_text = row.get('Answer', '').strip()
-            used_status = row.get('USED', 'FALSE').strip().upper() == 'TRUE'
+    header = _raw_csv_cache[0]
+    for r_idx in range(1, len(_raw_csv_cache)):
+        row_raw = _raw_csv_cache[r_idx]
+        row = {header[i]: row_raw[i] if i < len(row_raw) else '' for i in range(len(header))}
+        chain_id = row.get('Chain_ID', '').strip()
+        if not chain_id:
+            continue
 
-            if chain_id not in chains:
-                chains[chain_id] = {
-                    'chain_id': chain_id,
-                    # Will determine below if the whole chain is used
-                    'used': True,
-                    'questions': []
-                }
+        order_str = row.get('Order', '').strip()
+        try:
+            order = int(order_str)
+        except ValueError:
+            order = 0
 
-            chains[chain_id]['questions'].append({
-                'row_idx': r_idx + 1,  # +1 because of header
-                'order': order,
-                'question': question_text,
-                'answer': answer_text,
-                'used': used_status
-            })
+        question_text = row.get('Question', '').strip()
+        answer_text = row.get('Answer', '').strip()
+        used_status = row.get('USED', 'FALSE').strip().upper() == 'TRUE'
+
+        if chain_id not in chains:
+            chains[chain_id] = {
+                'chain_id': chain_id,
+                # Will determine below if the whole chain is used
+                'used': True,
+                'questions': []
+            }
+
+        chains[chain_id]['questions'].append({
+            'row_idx': r_idx,  # No +1 needed because r_idx is from 1 to len(raw)
+            'order': order,
+            'question': question_text,
+            'answer': answer_text,
+            'used': used_status
+        })
 
     # Sort questions by order and determine chain used status
     for chain_id, chain_data in chains.items():
@@ -84,8 +93,11 @@ def update_chain_used_status(chain_id, used_status):
         return
 
     # Update CSV File
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        rows = list(csv.reader(f))
+    global _raw_csv_cache
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
+    rows = _raw_csv_cache
 
     # The header is row 0
     header = rows[0]
@@ -118,8 +130,11 @@ def update_chain_used_status(chain_id, used_status):
 
 
 def reset_all_chains():
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        rows = list(csv.reader(f))
+    global _raw_csv_cache
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
+    rows = _raw_csv_cache
 
     if not rows:
         return
@@ -175,7 +190,7 @@ def get_random_chain():
     return jsonify({
         'chain_id': random_chain['chain_id'],
         'questions': [{'order': q['order'], 'question': q['question'],
-                       'answer': q['answer']} for q in
+                   'answer': q['answer']} for q in
                       random_chain['questions']],
         'stats': stats
     })

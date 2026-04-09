@@ -3,6 +3,8 @@ from app import app
 
 class TestIndex(unittest.TestCase):
     def setUp(self):
+        app._raw_csv_cache = None
+        app._questions_cache = None
         self.app = app.test_client()
         self.app.testing = True
 

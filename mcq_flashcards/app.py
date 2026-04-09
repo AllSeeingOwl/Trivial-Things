@@ -20,12 +20,13 @@ CSV_FILE = 'MCQ Questions.csv'
 # Caches the CSV rows in memory to prevent reading and parsing the entire file
 # on every /api/question and /api/stats request, significantly reducing file I/O operations.
 _questions_cache = None
+_raw_csv_cache = None
 
 def load_questions():
-    global _questions_cache
+    global _questions_cache, _raw_csv_cache
 
     # Return cached data if already loaded to skip expensive file I/O
-    if _questions_cache is not None:
+    if _questions_cache is not None and _raw_csv_cache is not None:
         return _questions_cache
 
     # ⚡ Bolt Optimization: O(1) Cache Lookups
@@ -35,29 +36,31 @@ def load_questions():
     if not os.path.exists(CSV_FILE):
         return questions
 
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        reader = csv.reader(f)
-        for r_idx, row in enumerate(reader):
-            # Skip header row
-            if r_idx == 0 and row[0].strip().lower() == 'question':
-                continue
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
 
-            # Pad row if necessary to ensure it has 6 columns
-            row = row + [''] * (6 - len(row))
+    for r_idx, row in enumerate(_raw_csv_cache):
+        # Skip header row
+        if r_idx == 0 and row[0].strip().lower() == 'question':
+            continue
 
-            q_text = row[0].strip()
-            if q_text:
-                choices = [row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip()]
-                # filter out empty choices
-                choices = [c for c in choices if c]
-                questions[f"{r_idx}"] = {
-                    'id': f"{r_idx}",
-                    'row': r_idx,
-                    'question': q_text,
-                    'answer': row[1].strip(),
-                    'choices': choices,
-                    'used': row[5].strip().upper() == 'TRUE'
-                }
+        # Pad row if necessary to ensure it has 6 columns
+        row = row + [''] * (6 - len(row))
+
+        q_text = row[0].strip()
+        if q_text:
+            choices = [row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip()]
+            # filter out empty choices
+            choices = [c for c in choices if c]
+            questions[f"{r_idx}"] = {
+                'id': f"{r_idx}",
+                'row': r_idx,
+                'question': q_text,
+                'answer': row[1].strip(),
+                'choices': choices,
+                'used': row[5].strip().upper() == 'TRUE'
+            }
 
     _questions_cache = questions
     return _questions_cache
@@ -66,8 +69,11 @@ def load_questions():
 def update_used_status(q_id, used_status):
     row_idx = int(q_id)
 
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        rows = list(csv.reader(f))
+    global _raw_csv_cache
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
+    rows = _raw_csv_cache
 
     if row_idx < 0 or row_idx >= len(rows):
         raise ValueError(f"Question ID {q_id} (row {row_idx}) is out of bounds.")
@@ -94,8 +100,11 @@ def update_used_status(q_id, used_status):
         _questions_cache[q_id]['used'] = used_status
 
 def reset_all_questions():
-    with open(CSV_FILE, 'r', encoding='utf-8') as f:
-        rows = list(csv.reader(f))
+    global _raw_csv_cache
+    if _raw_csv_cache is None:
+        with open(CSV_FILE, 'r', encoding='utf-8') as f:
+            _raw_csv_cache = list(csv.reader(f))
+    rows = _raw_csv_cache
 
     qs = load_questions()
     for q in qs.values():

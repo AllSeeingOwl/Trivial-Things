@@ -86,6 +86,7 @@ import app
 class TestAppEndpoints(unittest.TestCase):
     def setUp(self):
         app._chains_cache = None
+        app._raw_csv_cache = None
         self.client = app.app.test_client()
 
     def test_index_endpoint(self):
