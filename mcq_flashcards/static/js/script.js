@@ -15,6 +15,20 @@ const choicesContainerEl = document.getElementById('mcq-choices');
 const statsContainerEl = document.getElementById('stats-container');
 const emptyStateEl = document.getElementById('empty-state');
 
+// ⚡ Bolt Optimization: Event Delegation
+// Delegate clicks for dynamically generated mcq choices to their parent container
+// This avoids creating O(N) event listeners and closure contexts per question.
+choicesContainerEl.addEventListener('click', function(e) {
+    const btn = e.target.closest('.mcq-choice');
+    if (!btn) return;
+
+    e.stopPropagation(); // prevent flashcard click
+    const choice = btn.getAttribute('data-choice');
+    if (choice) {
+        handleChoice(choice, btn);
+    }
+});
+
 flashcardEl.addEventListener('click', flipCard);
 flashcardEl.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -156,19 +170,11 @@ async function loadNextQuestion() {
             data.choices.forEach(choice => {
                 const btn = document.createElement('button');
                 btn.textContent = choice;
-                btn.style.backgroundColor = 'rgba(255,255,255,0.2)';
-                btn.style.color = '#fff';
-                btn.style.border = '2px solid rgba(255,255,255,0.5)';
-                btn.style.padding = '10px';
-                btn.style.cursor = 'pointer';
-                btn.style.borderRadius = '5px';
-                btn.style.transition = 'all 0.2s';
-                btn.onmouseover = () => { if(!selectedChoice) btn.style.backgroundColor = 'rgba(255,255,255,0.4)'; };
-                btn.onmouseout = () => { if(!selectedChoice) btn.style.backgroundColor = 'rgba(255,255,255,0.2)'; };
-                btn.onclick = (e) => {
-                    e.stopPropagation(); // prevent flashcard click
-                    handleChoice(choice, btn);
-                };
+
+                // ⚡ Bolt Optimization: Replace Inline Styles and JS Event Listeners with CSS and Event Delegation
+                btn.classList.add('mcq-choice');
+                btn.setAttribute('data-choice', choice);
+
                 // Make keyboard accessible within choices
                 btn.setAttribute('aria-label', `Select choice: ${choice}`);
                 fragment.appendChild(btn);

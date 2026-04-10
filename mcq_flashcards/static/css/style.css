@@ -81,6 +81,7 @@ h1 {
     height: 100%;
     backface-visibility: hidden;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 30px;
@@ -175,4 +176,27 @@ button:active:not(:disabled) {
     color: var(--btn-danger);
     font-weight: bold;
     margin-top: 20px;
+}
+
+#mcq-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.mcq-choice {
+    background-color: rgba(255,255,255,0.2);
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.5);
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.mcq-choice:not(:disabled):hover {
+    background-color: rgba(255,255,255,0.4);
 }
