@@ -1,0 +1,255 @@
+The Target URLs (Grouped by Subject)
+
+Use these exact URLs. Do not append hardcoded dates.
+
+Sports & Athletics
+
+Best Female Golfers
+
+Primary: https://www.lpga.com/stats-and-rankings/rolex/rolex-womens-world-golf-rankings
+
+Backup: https://www.espn.com/golf/rankings/_/tour/lpga
+
+Best Male Golfers
+
+Primary: https://www.owgr.com/current-world-ranking
+
+Backup: https://www.espn.com/golf/rankings
+
+Best Athletics (Men & Women)
+
+Primary: https://worldathletics.org/world-rankings/overall-ranking/men (and /women)
+
+Backup: https://olympics.com/en/sports/athletics/
+
+Chess Champions
+
+Primary: https://ratings.fide.com/
+
+Backup: https://www.chess.com/ratings
+
+England Football Squads (Men & Women)
+
+Primary: https://www.englandfootball.com/england/mens-senior-team/squad (and /womens-senior-team/squad)
+
+Backup: https://www.bbc.com/sport/football/teams/england
+
+Premier League Standings & Players
+
+Primary: https://www.premierleague.com/tables
+
+Backup: https://www.skysports.com/premier-league-table
+
+Super Bowl Winners
+
+Primary: https://www.nfl.com/super-bowl/history/
+
+Backup: https://www.pro-football-reference.com/super-bowl/
+
+Wimbledon Winners (Ladies & Mens Singles)
+
+Primary: https://www.wimbledon.com/en_GB/draws_and_results/roll_of_honour.html
+
+Backup: https://en.wikipedia.org/wiki/List_of_Wimbledon_gentlemen%27s_singles_champions (and /List_of_Wimbledon_ladies%27_singles_champions)
+
+Entertainment, Books & Pop Culture
+
+Best Selling/Most Read Books
+
+Primary: https://www.amazon.co.uk/charts/mostsold/fiction
+
+Backup: https://www.nytimes.com/books/best-sellers/
+
+Top 250 Movies
+
+Primary: https://www.imdb.com/chart/top/
+
+Backup: https://letterboxd.com/dave/list/official-top-250-narrative-feature-films/
+
+Films of the Week (Box Office)
+
+Primary: https://www.the-numbers.com/weekly-box-office-chart
+
+Backup: https://www.boxofficemojo.com/weekend/
+
+Watching on Netflix Right Now
+
+Primary: https://www.whats-on-netflix.com/most-popular/
+
+Backup: https://www.netflix.com/tudum/top10/
+
+US Billboard Hot 100
+
+Primary: https://www.billboard.com/charts/hot-100/
+
+Backup: https://music.apple.com/us/playlist/top-100-usa/pl.606afc997321427dada042ba28338fac
+
+UK Number One Singles
+
+Primary: https://www.officialcharts.com/charts/singles-chart/
+
+Backup: https://www.bbc.co.uk/programmes/articles/3tqPZB1fjwdTqZGWJ8VnJgT/the-official-uk-top-40-singles-chart
+
+Most Streamed Songs (Global)
+
+Primary: https://kworb.net/spotify/country/global_weekly.html
+
+Backup: https://charts.spotify.com/home
+
+Top Anime Series
+
+Primary: https://myanimelist.net/topanime.php
+
+Backup: https://anilist.co/search/anime?sort=SCORE_DESC
+
+Winners of Eurovision
+
+Primary: https://eurovision.tv/history
+
+Backup: https://eurovisionworld.com/eurovision
+
+Won A Best Actor/Actress Oscar
+
+Primary: https://www.oscars.org/oscars/ceremonies
+
+Backup: https://awardsdatabase.oscars.org/
+
+Gaming & Creators
+
+Most Played Steam Games (Live)
+
+Primary: https://steam250.com/most_played
+
+Backup: https://steamdb.info/charts/
+
+Video Games Of The Week (Steam 7-Day)
+
+Primary: https://steam250.com/7day
+
+Backup: https://store.steampowered.com/charts/topselling/global
+
+Most Watched Twitch Games
+
+Primary: https://twitchtracker.com/games
+
+Backup: https://sullygnome.com/games/watched
+
+YouTube Most Subscribed Channels
+
+Primary: https://socialblade.com/youtube/top/50/mostsubscribed
+
+Backup: https://playboard.co/en/youtube-ranking/most-subscribed-all-channels-in-worldwide-total
+
+Business, Wealth & Tech
+
+Richest People in the World
+
+Primary: https://www.forbes.com/real-time-billionaires/
+
+Backup: https://www.bloomberg.com/billionaires/
+
+Top 500 Companies
+
+Primary: https://fortune.com/ranking/global500/
+
+Backup: https://www.forbes.com/lists/global2000/
+
+Trending Cryptocurrencies
+
+Primary: https://coinmarketcap.com/trending-cryptocurrencies/
+
+Backup: https://www.coingecko.com/en/coins/trending
+
+Trending Code/Tech Projects
+
+Primary: https://github.com/trending
+
+Backup: https://ossinsight.io/trending/repos/
+
+World Figures & Live Global Data
+
+Current World Prime Ministers / Leaders
+
+Primary: https://www.wikiwand.com/en/List_of_current_prime_ministers_by_date_of_assumption_of_office
+
+Backup: https://www.cia.gov/resources/world-leaders/
+
+UK Prime Ministers (History)
+
+Primary: https://www.gov.uk/government/history/past-prime-ministers
+
+Backup: https://en.wikipedia.org/wiki/List_of_prime_ministers_of_the_United_Kingdom
+
+US Vice Presidents
+
+Primary: https://www.senate.gov/about/officers-staff/vice-president/vice-presidents.htm
+
+Backup: https://en.wikipedia.org/wiki/List_of_vice_presidents_of_the_United_States
+
+Roman Catholic Popes
+
+Primary: https://www.vatican.va/content/vatican/en/holy-father.index.html
+
+Backup: https://en.wikipedia.org/wiki/List_of_popes
+
+Won A Nobel Peace Prize
+
+Primary: https://www.nobelprize.org/prizes/lists/all-nobel-peace-prizes/
+
+Backup: https://www.nobelpeaceprize.org/laureates/
+
+Humans In Space Right Now
+
+Primary: https://www.howmanypeopleareinspacerightnow.com/
+
+Backup: https://www.nasa.gov/international-space-station/space-station-crew/
+
+Live Global Earthquakes
+
+Primary (USGS JSON): https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson
+
+Backup: https://www.emsc-csem.org/Earthquake/
+
+Most Read Wikipedia Pages
+
+Primary: https://en.wikipedia.org/wiki/Wikipedia:Top_25_Report
+
+Backup: https://pageviews.wmcloud.org/topviews/
+
+The "Negative" Balancers (Yin/Yang Trends)
+
+Lowest Rated Movies (IMDb Bottom 100)
+
+Primary: https://www.imdb.com/chart/bottom/
+
+Backup: https://letterboxd.com/dave/list/imdb-bottom-100/
+
+Razzie "Winners" (Worst in Film)
+
+Primary: https://razzies.com/
+
+Backup: https://en.wikipedia.org/wiki/Golden_Raspberry_Awards
+
+Latest Data Breaches & Hacks
+
+Primary: https://haveibeenpwned.com/PwnedWebsites
+
+Backup: https://www.informationisbeautiful.net/visualizations/worlds-biggest-data-breaches-hacks/
+
+Worst Rated Games (Steam Bottom 100)
+
+Primary: https://steam250.com/bottom100
+
+Backup: https://steamspy.com/
+
+Most Disliked YouTube Videos
+
+Primary: https://en.wikipedia.org/wiki/List_of_most-disliked_YouTube_videos
+
+Backup: https://simple.wikipedia.org/wiki/List_of_most-disliked_YouTube_videos
+
+Bottom of the Premier League (Relegation Zone)
+
+Primary: https://www.premierleague.com/tables (Configure to fetch bottom 3 rows)
+
+Backup: https://www.bbc.com/sport/football/premier-league/table
