@@ -62,3 +62,7 @@
 **Vulnerability:** The Flask micro-apps (`mcq_flashcards`, `pdf_grid_flashcards`, `sliding_rows_flashcards`, `trivia_flashcards`, and `what_the_spell`) were missing a `Content-Security-Policy` header, leaving them susceptible to cross-site scripting (XSS), data injection, and other content-based attacks if existing protections (like using `.textContent`) ever failed.
 **Learning:** Implementing a strict CSP (e.g., `default-src 'self'`) adds an important layer of defense-in-depth by restricting the browser to only load resources from trusted origins, mitigating the impact of potential vulnerabilities.
 **Prevention:** Ensure that all applications, regardless of size or apparent lack of external dependencies, implement a baseline `Content-Security-Policy` via an `@app.after_request` middleware to enforce strict resource loading policies.
+## 2026-04-10 - Removed unsafe-eval from CSP
+**Vulnerability:** The 'where_in_the_world' application's Content Security Policy included 'unsafe-eval' in the 'script-src' directive, unnecessarily exposing the application to DOM-based XSS attacks via arbitrary code execution.
+**Learning:** Mapping libraries like Leaflet do not inherently require 'unsafe-eval' to function. Its inclusion is often a misconfiguration or leftover from development.
+**Prevention:** Strictly verify whether external libraries genuinely require 'unsafe-eval' before including it in CSP headers. Omit it by default to maintain robust protection against XSS.
