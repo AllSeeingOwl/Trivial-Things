@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import patch
 from app import app
-import json
 
 class TestApp(unittest.TestCase):
     def setUp(self):
