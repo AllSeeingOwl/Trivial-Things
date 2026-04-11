@@ -16,3 +16,7 @@
 ## 2026-04-09 - Handle Native Dialogs in Playwright Tests
 **Learning:** When using Playwright to test frontend interactions that trigger native browser dialogs (like `alert()` or `confirm()`), the script will hang indefinitely if these dialogs are not handled.
 **Action:** Always explicitly attach a dialog handler (e.g., `page.on("dialog", lambda dialog: dialog.accept())`) before triggering actions that spawn native browser dialogs during automated tests.
+
+## 2024-04-11 - Navigation Accessibility in Next.js Filter Buttons
+**Learning:** When using Next.js `Link` components as filter buttons mapped over categories, they often lack proper semantic grouping and active state announcement for screen readers. Since they act as a sub-navigation rather than standalone actions, wrapping them in a `<nav aria-label="Category filters">` significantly improves context.
+**Action:** Always wrap filter link groups in `<nav>` elements with descriptive `aria-label`s, and explicitly set `aria-current="page"` (or `"true"`) on the active link based on the current pathname so screen readers correctly identify the selected state among alternatives. Add clear `focus-visible` styling for keyboard users since default link focus rings might clash with rounded button designs.
