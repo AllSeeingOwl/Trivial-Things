@@ -107,11 +107,12 @@ input[type="text"]:focus {
 }
 
 #map {
+    position: relative;
     height: 400px;
     width: 100%;
     border-radius: var(--border-radius);
     margin-bottom: 20px;
-    z-index: 1; /* Fix for leaflet control z-index issues */
+    z-index: 0; /* Creates a stacking context to properly contain Leaflet controls */
 }
 
 .controls {
