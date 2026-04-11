@@ -36,9 +36,11 @@ Backup: https://www.bbc.com/sport/football/teams/england
 
 Premier League Standings & Players
 
-Primary: https://www.premierleague.com/tables
+Primary: https://footballapi.pulselive.com/football/standings?compSeasons=719&altIds=true&detail=2&FOOTBALL_COMPETITION=1 (API fallback due to JS-rendered site)
 
 Backup: https://www.skysports.com/premier-league-table
+
+* Note: If an exact URL listed in this file is unscrapeable because it relies on client-side JS to render data, it is acceptable to find and use the alternative backend JSON API that the site queries to reliably extract the information.
 
 Super Bowl Winners
 

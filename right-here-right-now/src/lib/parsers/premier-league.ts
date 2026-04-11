@@ -1,27 +1,23 @@
 import * as cheerio from 'cheerio';
 import { WidgetItem } from '../scraper';
 
-export function parsePremierLeaguePrimary(html: string): WidgetItem[] {
-  const $ = cheerio.load(html);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parsePremierLeaguePrimary(json: any): WidgetItem[] {
   const items: WidgetItem[] = [];
 
-  // Premier League website table rows
-  $('tr[data-filtered-table-row-name]').each((i, el) => {
-    if (i >= 10) return false;
+  if (!json || !json.tables || !json.tables[0] || !json.tables[0].entries) {
+    return items;
+  }
 
-    const rank = $(el).find('.league-table__pos-number').text().trim();
-    const teamName = $(el).find('.league-table__team-name').text().trim();
-    const points = $(el).find('.league-table__pts').text().trim();
-
-    if (teamName) {
-      items.push({
-        id: `pl-primary-${i}`,
-        rank: rank || (i + 1).toString(),
-        title: teamName,
-        subtitle: `Points: ${points}`
-      });
-    }
-  });
+  const entries = json.tables[0].entries;
+  for (let i = 0; i < Math.min(10, entries.length); i++) {
+    items.push({
+      id: `pl-primary-${i}`,
+      rank: entries[i].position.toString(),
+      title: entries[i].team.name,
+      subtitle: `Points: ${entries[i].overall.points}`
+    });
+  }
 
   return items;
 }
@@ -31,15 +27,15 @@ export function parsePremierLeagueBackup(html: string): WidgetItem[] {
   const items: WidgetItem[] = [];
 
   // Sky Sports website table rows
-  $('.standing-table__row').each((i, el) => {
+  $('.sdc-site-table__row').each((i, el) => {
     // Skip header row
-    if ($(el).hasClass('standing-table__row--heading')) return;
+    if ($(el).find('th').length > 0) return;
 
     if (items.length >= 10) return false;
 
-    const rank = $(el).find('.standing-table__cell:first-child').text().trim();
-    const teamName = $(el).find('.standing-table__cell--name').text().trim();
-    const points = $(el).find('.standing-table__cell:nth-child(10)').text().trim(); // Points usually the 10th col
+    const rank = $(el).find('.sdc-site-table__cell').first().text().trim();
+    const teamName = $(el).find('.sdc-site-table__name-target').text().trim();
+    const points = $(el).find('.sdc-site-table__cell').eq(9).text().trim(); // Points usually the 10th col
 
     if (teamName) {
       items.push({

@@ -18,10 +18,15 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
 
   const showPremierLeague = categoryFilter === 'all' || categoryFilter === WIDGET_CATEGORIES.premierLeague;
   const premierLeagueData = showPremierLeague ? fetchWidgetData({
-    primaryUrl: 'https://www.premierleague.com/tables',
+    primaryUrl: 'https://footballapi.pulselive.com/football/standings?compSeasons=719&altIds=true&detail=2&FOOTBALL_COMPETITION=1',
     backupUrl: 'https://www.skysports.com/premier-league-table',
     primaryParser: parsePremierLeaguePrimary,
-    backupParser: parsePremierLeagueBackup
+    backupParser: parsePremierLeagueBackup,
+    isPrimaryJson: true,
+    extraHeaders: {
+      "Origin": "https://www.premierleague.com",
+      "Referer": "https://www.premierleague.com/"
+    }
   }) : null;
 
   const showEarthquakes = categoryFilter === 'all' || categoryFilter === WIDGET_CATEGORIES.earthquakes;

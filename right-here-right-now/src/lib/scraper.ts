@@ -22,6 +22,7 @@ export interface ScraperConfig {
   backupParser: ScrapeFunction | JsonFunction;
   isPrimaryJson?: boolean;
   isBackupJson?: boolean;
+  extraHeaders?: Record<string, string>;
 }
 
 async function fetchWithTimeout(resource: RequestInfo | URL, options: RequestInit & { timeout?: number } = {}) {
@@ -49,7 +50,7 @@ const COMMON_HEADERS = {
 export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData> {
   // Use Next.js 15+ fetch options: caching with revalidate tag
   const fetchOptions: RequestInit = {
-    headers: COMMON_HEADERS,
+    headers: { ...COMMON_HEADERS, ...config.extraHeaders },
     next: {
       revalidate: 86400, // Cache for 24 hours
       tags: ['widgets']  // Allow manual revalidation via cron
