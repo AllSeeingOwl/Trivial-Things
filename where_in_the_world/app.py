@@ -8,6 +8,9 @@ app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
 app.config['DEBUG'] = False
 
+# ⚡ Bolt Optimization: Pre-compile regex for coordinates to improve performance in loops
+COORD_REGEX = re.compile(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)')
+
 
 def parse_coordinates(location_text):
     """
@@ -16,7 +19,7 @@ def parse_coordinates(location_text):
     """
     lines = location_text.split('\n')
     for line in lines:
-        match = re.search(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)', line)
+        match = COORD_REGEX.search(line)
         if match:
             return float(match.group(1)), float(match.group(2))
     return None, None
