@@ -6,6 +6,8 @@ import os
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
 app.config['DEBUG'] = False
+# Sentinel: Limit upload size/payload to 1MB to prevent DoS attacks
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 @app.after_request
 def add_security_headers(response):
