@@ -23,8 +23,8 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
 
       <div className="p-4 flex-grow">
         {data.source === 'error' ? (
-          <div className="flex flex-col items-center justify-center h-48 text-center">
-            <span className="text-3xl mb-2">⚠️</span>
+          <div className="flex flex-col items-center justify-center h-48 text-center" role="alert" aria-live="assertive">
+            <span className="text-3xl mb-2" aria-hidden="true">⚠️</span>
             <p className="text-[var(--error)] font-medium mb-1">{data.error}</p>
             <p className="text-xs text-[var(--text-muted)]">Please try again later</p>
           </div>
@@ -61,7 +61,7 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
 
 export function WidgetCardSkeleton({ title }: { title: string }) {
   return (
-    <div className="bg-[var(--card-background)] border border-[var(--card-border)] rounded-xl shadow-lg overflow-hidden flex flex-col h-full animate-pulse">
+    <div className="bg-[var(--card-background)] border border-[var(--card-border)] rounded-xl shadow-lg overflow-hidden flex flex-col h-full animate-pulse" role="status" aria-busy="true" aria-label={`Loading ${title}`}>
       <div className="bg-[#202020] p-4 border-b border-[var(--card-border)]">
         <h3 className="font-bold text-lg text-transparent bg-gray-700 rounded w-1/2">{title}</h3>
       </div>
