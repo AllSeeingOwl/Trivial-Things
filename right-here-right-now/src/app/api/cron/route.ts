@@ -7,8 +7,9 @@ export async function GET(request: Request) {
 
     // Simple protection: Check if CRON_SECRET is defined and matches the auth header.
     // In Vercel, cron jobs automatically send the CRON_SECRET as a Bearer token.
+    // Sentinel: Fail securely if the CRON_SECRET is missing from the environment.
     if (
-      process.env.CRON_SECRET &&
+      !process.env.CRON_SECRET ||
       authHeader !== `Bearer ${process.env.CRON_SECRET}`
     ) {
       return new NextResponse('Unauthorized', { status: 401 });
