@@ -66,3 +66,8 @@
 **Vulnerability:** The 'where_in_the_world' application's Content Security Policy included 'unsafe-eval' in the 'script-src' directive, unnecessarily exposing the application to DOM-based XSS attacks via arbitrary code execution.
 **Learning:** Mapping libraries like Leaflet do not inherently require 'unsafe-eval' to function. Its inclusion is often a misconfiguration or leftover from development.
 **Prevention:** Strictly verify whether external libraries genuinely require 'unsafe-eval' before including it in CSP headers. Omit it by default to maintain robust protection against XSS.
+
+## 2026-04-12 - [HIGH] Fix Authorization Bypass in Cron Endpoints
+**Vulnerability:** The `/api/cron/route.ts` endpoint verified the authorization header against the `CRON_SECRET` environment variable, but it skipped the check entirely if the variable was not defined (`if (process.env.CRON_SECRET && ...)`). This meant that if the environment variable was missing (e.g., in a local or misconfigured environment), the endpoint became completely open to unauthenticated requests.
+**Learning:** Authorization checks should fail securely. If a required authentication secret is missing from the environment, the application should reject all requests rather than bypassing the check, preventing unauthorized access.
+**Prevention:** Use an explicit missing variable check (`if (!process.env.CRON_SECRET || authHeader !== ...)`) to ensure the route fails securely.
