@@ -56,3 +56,7 @@
 ## 2026-04-09 - Eliminate Redundant Disk Reads on CSV State Updates
 **Learning:** In applications that manage state by writing back to CSV files (like `mcq_flashcards`, `trivia_flashcards`, `sliding_rows_flashcards`), the previous `update_used_status()` and `reset()` functions read the entire CSV from disk just to modify a single row before writing it back. While `_questions_cache` stored the transformed data for fast lookups, it didn't store the raw row structure, forcing this redundant I/O.
 **Action:** Always maintain a synchronized `_raw_csv_cache` (e.g. `list(csv.reader(f))`) alongside the transformed object cache. This allows write operations to instantly modify the in-memory raw array and directly write to disk, completely eliminating the O(N) disk read bottleneck on every state update.
+
+## 2026-04-10 - Stabilizing Object References to Prevent Re-renders
+**Learning:** In the React component `DashboardMasonry` for the Next.js `right-here-right-now` app, passing an inline or locally instantiated object (like `breakpointColumnsObj`) as a prop to a complex layout component (like `Masonry`) causes it to be re-created on every render. This forces the child component to unnecessarily re-render, consuming CPU cycles and potentially causing layout shifts.
+**Action:** Always move static configuration objects outside the React component function definition, so they hold a stable reference across renders, preventing expensive unnecessary layout re-renders.
