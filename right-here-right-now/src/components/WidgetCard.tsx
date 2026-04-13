@@ -15,7 +15,10 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
       <div className="bg-[#202020] p-4 border-b border-[var(--card-border)] flex justify-between items-center">
         <h3 className="font-bold text-lg">{title}</h3>
         {data.source === 'backup' && (
-          <span className="text-xs bg-yellow-600/20 text-yellow-500 px-2 py-1 rounded-full border border-yellow-600/30">
+          <span
+            className="text-xs bg-yellow-600/20 text-yellow-500 px-2 py-1 rounded-full border border-yellow-600/30 cursor-help"
+            title="Data loaded from secondary source. Primary source is currently unavailable."
+          >
             Backup Source
           </span>
         )}

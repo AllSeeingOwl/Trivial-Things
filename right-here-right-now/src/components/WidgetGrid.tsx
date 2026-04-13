@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import Link from 'next/link';
 import DashboardMasonry from '@/components/DashboardMasonry';
 import { WidgetCard, WidgetCardSkeleton } from '@/components/WidgetCard';
 import { fetchWidgetData } from '@/lib/scraper';
@@ -50,9 +51,15 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
   if (!showPremierLeague && !showEarthquakes && !showBooks) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center">
-        <span className="text-4xl mb-4 text-gray-600">🏗️</span>
+        <span className="text-4xl mb-4 text-gray-600" aria-hidden="true">🏗️</span>
         <h3 className="text-xl font-medium mb-2">No widgets yet</h3>
-        <p className="text-[var(--text-muted)]">Check back later for updates to this category.</p>
+        <p className="text-[var(--text-muted)] mb-6">Check back later for updates to this category.</p>
+        <Link
+          href="/"
+          className="px-6 py-2 bg-white text-black rounded-full font-medium text-sm hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+        >
+          View all widgets
+        </Link>
       </div>
     );
   }
