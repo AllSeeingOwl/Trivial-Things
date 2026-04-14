@@ -339,13 +339,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.resultPoints.textContent = data.score;
 
             if (data.score === 10) {
-                ui.resultTitle.textContent = "Bullseye! 🎯";
+                ui.resultTitle.innerHTML = "Bullseye! <span aria-hidden=\"true\">🎯</span>";
             } else if (data.score === 5) {
-                ui.resultTitle.textContent = "Very Close! 🔥";
+                ui.resultTitle.innerHTML = "Very Close! <span aria-hidden=\"true\">🔥</span>";
             } else if (data.score === 2) {
-                ui.resultTitle.textContent = "Close! 👏";
+                ui.resultTitle.innerHTML = "Close! <span aria-hidden=\"true\">👏</span>";
             } else {
-                ui.resultTitle.textContent = "Far Away! ❄️";
+                ui.resultTitle.innerHTML = "Far Away! <span aria-hidden=\"true\">❄️</span>";
             }
 
             setTimeout(() => {
