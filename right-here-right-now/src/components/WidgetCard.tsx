@@ -62,6 +62,11 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
   );
 }
 
+// ⚡ Bolt Optimization: Stabilize Array Reference
+// Pre-defining the array outside the component prevents it from being allocated and
+// garbage collected on every single render cycle of the skeleton, reducing overhead.
+const SKELETON_ROWS = Array.from({ length: 5 }, (_, i) => i);
+
 export function WidgetCardSkeleton({ title }: { title: string }) {
   return (
     <div className="bg-[var(--card-background)] border border-[var(--card-border)] rounded-xl shadow-lg overflow-hidden flex flex-col h-full animate-pulse" role="status" aria-busy="true" aria-label={`Loading ${title}`}>
@@ -69,7 +74,7 @@ export function WidgetCardSkeleton({ title }: { title: string }) {
         <h3 className="font-bold text-lg text-transparent bg-gray-700 rounded w-1/2">{title}</h3>
       </div>
       <div className="p-4 space-y-4">
-        {[...Array(5)].map((_, i) => (
+        {SKELETON_ROWS.map((i) => (
           <div key={i} className="flex items-start">
             <div className="w-4 h-4 bg-gray-700 rounded mr-3 mt-0.5"></div>
             <div className="flex-1 space-y-2">
