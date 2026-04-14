@@ -7,6 +7,8 @@ from flask import Flask, jsonify, request, render_template
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
 app.config['DEBUG'] = False
+# Sentinel: Limit upload size/payload to 1MB to prevent DoS attacks
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 # ⚡ Bolt Optimization: Pre-compile regex for coordinates to improve performance in loops
 COORD_REGEX = re.compile(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)')
