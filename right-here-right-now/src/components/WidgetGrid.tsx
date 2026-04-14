@@ -9,6 +9,7 @@ import { WIDGET_CATEGORIES } from '@/lib/categories';
 import { parsePremierLeaguePrimary, parsePremierLeagueBackup } from '@/lib/parsers/premier-league';
 import { parseEarthquakesPrimary, parseEarthquakesBackup } from '@/lib/parsers/earthquakes';
 import { parseBooksPrimary, parseBooksBackup } from '@/lib/parsers/books';
+import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
 
 interface WidgetGridProps {
   categoryFilter?: string;
@@ -47,8 +48,12 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
     backupParser: parseBooksBackup
   }) : null;
 
+  const showWrestling = categoryFilter === WIDGET_CATEGORIES.wrestling;
+  const wrestlingData1 = showWrestling ? fetchWrestlingData1() : null;
+  const wrestlingData2 = showWrestling ? fetchWrestlingData2() : null;
+
   // Check if we have any widgets to show for this category
-  if (!showPremierLeague && !showEarthquakes && !showBooks) {
+  if (!showPremierLeague && !showEarthquakes && !showBooks && !showWrestling) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center">
         <span className="text-4xl mb-4 text-gray-600" aria-hidden="true">🏗️</span>
@@ -81,6 +86,18 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
       {showBooks && booksData && (
         <Suspense fallback={<WidgetCardSkeleton title="Best Selling Books" />}>
           <WidgetCard title="Best Selling Books" dataPromise={booksData} />
+        </Suspense>
+      )}
+
+      {showWrestling && wrestlingData1 && (
+        <Suspense fallback={<WidgetCardSkeleton title="Wrestling Championships (Part 1)" />}>
+          <WidgetCard title="Wrestling Championships (Part 1)" dataPromise={wrestlingData1} />
+        </Suspense>
+      )}
+
+      {showWrestling && wrestlingData2 && (
+        <Suspense fallback={<WidgetCardSkeleton title="Wrestling Championships (Part 2)" />}>
+          <WidgetCard title="Wrestling Championships (Part 2)" dataPromise={wrestlingData2} />
         </Suspense>
       )}
     </DashboardMasonry>
