@@ -60,3 +60,6 @@
 ## 2026-04-10 - Stabilizing Object References to Prevent Re-renders
 **Learning:** In the React component `DashboardMasonry` for the Next.js `right-here-right-now` app, passing an inline or locally instantiated object (like `breakpointColumnsObj`) as a prop to a complex layout component (like `Masonry`) causes it to be re-created on every render. This forces the child component to unnecessarily re-render, consuming CPU cycles and potentially causing layout shifts.
 **Action:** Always move static configuration objects outside the React component function definition, so they hold a stable reference across renders, preventing expensive unnecessary layout re-renders.
+## 2026-04-14 - Stabilizing array reference in WidgetCardSkeleton
+**Learning:** In the `right-here-right-now` application, using inline array creation `[...Array(5)]` inside a frequently rendered component like `WidgetCardSkeleton` causes unnecessary memory allocation and garbage collection overhead on every render cycle.
+**Action:** Always extract static arrays and objects (like `SKELETON_ROWS`) outside of React component definitions so they maintain a stable reference across renders.
