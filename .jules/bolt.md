@@ -63,3 +63,7 @@
 ## 2026-04-14 - Stabilizing array reference in WidgetCardSkeleton
 **Learning:** In the `right-here-right-now` application, using inline array creation `[...Array(5)]` inside a frequently rendered component like `WidgetCardSkeleton` causes unnecessary memory allocation and garbage collection overhead on every render cycle.
 **Action:** Always extract static arrays and objects (like `SKELETON_ROWS`) outside of React component definitions so they maintain a stable reference across renders.
+
+## 2026-04-17 - Pure CSS Replacement for Client-Side Masonry
+**Learning:** In the `right-here-right-now` application, the `DashboardMasonry` component relied on the `react-masonry-css` library. This necessitated the `'use client'` directive, pulling down JavaScript layout code to the browser and executing layout calculations on window resizes (causing layout thrashing). Next.js Server Components are completely bypassed by this.
+**Action:** Always replace heavy JS-driven layout libraries with native CSS features when possible. Using Tailwind's `columns-1 md:columns-1 lg:columns-2 xl:columns-3 2xl:columns-4` alongside `break-inside-avoid` completely replicates masonry. Crucially, removing the `'use client'` directive converts the component into a 100% Server Component, massively reducing client JS bundle size and improving Time to Interactive.
