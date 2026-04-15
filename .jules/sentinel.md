@@ -75,3 +75,8 @@
 **Vulnerability:** Several Flask web applications (`trivia_flashcards`, `sliding_rows_flashcards`, `what_the_spell`, and `where_in_the_world`) were accepting arbitrary-length payload sizes by default. This missing boundary allows an attacker to send an excessively large payload, leading to a Denial of Service (DoS) by exhausting the server's memory.
 **Learning:** Default Flask configurations do not enforce a maximum payload size. You must explicitly instruct the server to drop large requests using `MAX_CONTENT_LENGTH`.
 **Prevention:** Always set `app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024` (or whatever size is appropriate for the application) to ensure large payloads are rejected safely at the framework level before application logic processes them.
+
+## 2026-04-10 - Removed unsafe-eval and unsafe-inline from Next.js CSP
+**Vulnerability:** The 'right-here-right-now' Next.js application's Content Security Policy included 'unsafe-eval' and 'unsafe-inline' in the 'script-src' directive, exposing the application to XSS attacks.
+**Learning:** Next.js production builds generally do not require 'unsafe-eval' or 'unsafe-inline' for scripts to function properly.
+**Prevention:** Remove 'unsafe-eval' and 'unsafe-inline' from 'script-src' in the CSP headers to enforce a strict security policy against unauthorized script execution.
