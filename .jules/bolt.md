@@ -67,3 +67,7 @@
 ## 2026-04-17 - Pure CSS Replacement for Client-Side Masonry
 **Learning:** In the `right-here-right-now` application, the `DashboardMasonry` component relied on the `react-masonry-css` library. This necessitated the `'use client'` directive, pulling down JavaScript layout code to the browser and executing layout calculations on window resizes (causing layout thrashing). Next.js Server Components are completely bypassed by this.
 **Action:** Always replace heavy JS-driven layout libraries with native CSS features when possible. Using Tailwind's `columns-1 md:columns-1 lg:columns-2 xl:columns-3 2xl:columns-4` alongside `break-inside-avoid` completely replicates masonry. Crucially, removing the `'use client'` directive converts the component into a 100% Server Component, massively reducing client JS bundle size and improving Time to Interactive.
+
+## 2024-04-18 - Avoid string splitting before regex search
+**Learning:** In the `where_in_the_world` application, the text was split by newline (`text.split('\n')`) creating an intermediate list of string segments, before iterating over them with `re.search()`. Python's `re.search()` naturally searches multiline strings without needing this. This redundant split caused significant memory allocation overhead.
+**Action:** Always let `re.search()` search over a complete string if you only need a single match anywhere in the string, rather than manually splitting the string and searching line-by-line.
