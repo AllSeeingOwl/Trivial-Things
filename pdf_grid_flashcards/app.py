@@ -1,6 +1,7 @@
 import os
 import bisect
 import fitz
+import uuid
 from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 
@@ -183,7 +184,8 @@ def upload_file():
 
     if file and file.filename.lower().endswith('.pdf'):
         filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         file.save(filepath)
 
         try:
