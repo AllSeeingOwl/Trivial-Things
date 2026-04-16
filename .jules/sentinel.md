@@ -80,3 +80,8 @@
 **Vulnerability:** The 'right-here-right-now' Next.js application's Content Security Policy included 'unsafe-eval' and 'unsafe-inline' in the 'script-src' directive, exposing the application to XSS attacks.
 **Learning:** Next.js production builds generally do not require 'unsafe-eval' or 'unsafe-inline' for scripts to function properly.
 **Prevention:** Remove 'unsafe-eval' and 'unsafe-inline' from 'script-src' in the CSP headers to enforce a strict security policy against unauthorized script execution.
+
+## 2026-04-16 - [HIGH] Prevent File Upload Race Condition in pdf_grid_flashcards
+**Vulnerability:** The `/api/upload` endpoint in `pdf_grid_flashcards/app.py` saved uploaded files using their sanitized original filename (`secure_filename(file.filename)`). If multiple users uploaded a file with the same name simultaneously, the application would overwrite the files on disk, causing a race condition where one user could receive the parsed grid data of another user's PDF.
+**Learning:** Relying solely on the client-provided filename (even when sanitized) for temporary storage on a shared filesystem introduces race conditions and potential information disclosure during concurrent requests.
+**Prevention:** Always append or prepend a unique identifier (like a UUID) to the filename before saving temporary user uploads to the filesystem, ensuring complete isolation between concurrent request processing.
