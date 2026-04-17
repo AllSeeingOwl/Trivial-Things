@@ -149,7 +149,8 @@ const App = () => {
                             type="submit"
                             disabled={loading || !startActor.trim() || !targetDoctor.trim()}
                             aria-busy={loading}
-                            className="w-full sm:w-auto px-6 py-3 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={(!startActor.trim() || !targetDoctor.trim()) ? "Please enter an actor and select a Doctor to find a connection" : "Find Connection"}
+                            className="w-full sm:w-auto px-6 py-3 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
                         >
                             {loading ? (
                                 <>
@@ -167,7 +168,7 @@ const App = () => {
                             type="button"
                             onClick={resetGame}
                             disabled={loading}
-                            className="w-full sm:w-auto px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full sm:w-auto px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
                         >
                             Reset
                         </button>
