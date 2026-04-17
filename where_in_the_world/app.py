@@ -165,7 +165,7 @@ def add_security_headers(response):
     # Configure CSP to allow only local assets and specific trusted domains required for the map
     csp = (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline'; "
+        "script-src 'self'; "
         "style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data: https://*.tile.openstreetmap.org; "
         "connect-src 'self' https://nominatim.openstreetmap.org"
