@@ -184,7 +184,7 @@ def mark_used():
     if not q_id:
         return jsonify({'error': 'Missing question ID'}), 400
 
-    if not isinstance(q_id, str) or not q_id.isdigit():
+    if not isinstance(q_id, str) or not q_id.isdigit() or len(q_id) > 50:
         return jsonify({'error': 'Invalid question ID format'}), 400
 
     try:

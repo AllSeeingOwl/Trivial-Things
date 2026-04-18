@@ -209,7 +209,7 @@ def mark_used():
     if not chain_id:
         return jsonify({'error': 'Missing chain_id'}), 400
 
-    if not isinstance(chain_id, str):
+    if not isinstance(chain_id, str) or len(chain_id) > 100:
         return jsonify({'error': 'Invalid chain_id format'}), 400
 
     try:
