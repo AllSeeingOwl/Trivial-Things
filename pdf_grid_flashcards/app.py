@@ -83,16 +83,50 @@ def parse_pdf(filepath):
                 colored_rects.append({"rect": rect, "status": "correct" if is_green else "incorrect"})
 
     merged_cells = []
+    # ⚡ Bolt Optimization: Spatial Grid-based Merging (O(N) instead of O(N^2))
+    # We use a grid with 50x40 buckets (matching the distance thresholds) to limit the search space.
+    grid = {} # (gx, gy) -> list of indices in merged_cells
     for c in colored_rects:
-        merged = False
-        for mc in merged_cells:
-            if abs((c["rect"].x0 + c["rect"].x1)/2 - (mc["rect"].x0 + mc["rect"].x1)/2) < 50:
-                if abs((c["rect"].y0 + c["rect"].y1)/2 - (mc["rect"].y0 + mc["rect"].y1)/2) < 40:
-                    mc["rect"] |= c["rect"]
-                    merged = True
-                    break
-        if not merged:
-            merged_cells.append({"rect": c["rect"], "status": c["status"]})
+        c_rect = c["rect"]
+        cx = (c_rect.x0 + c_rect.x1) / 2
+        cy = (c_rect.y0 + c_rect.y1) / 2
+        gx, gy = int(cx / 50), int(cy / 40)
+
+        candidates = []
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                for mc_idx in grid.get((gx + dx, gy + dy), []):
+                    mc = merged_cells[mc_idx]
+                    mc_rect = mc["rect"]
+                    mc_cx = (mc_rect.x0 + mc_rect.x1) / 2
+                    mc_cy = (mc_rect.y0 + mc_rect.y1) / 2
+                    if abs(cx - mc_cx) < 50 and abs(cy - mc_cy) < 40:
+                        candidates.append(mc_idx)
+
+        if candidates:
+            # Maintain original behavior: merge with the FIRST matching cell (minimum index)
+            mc_idx_to_update = min(candidates)
+            mc = merged_cells[mc_idx_to_update]
+
+            old_mc_rect = mc["rect"]
+            old_mc_cx = (old_mc_rect.x0 + old_mc_rect.x1) / 2
+            old_mc_cy = (old_mc_rect.y0 + old_mc_rect.y1) / 2
+            old_gx, old_gy = int(old_mc_cx / 50), int(old_mc_cy / 40)
+
+            mc["rect"] |= c_rect
+
+            new_mc_rect = mc["rect"]
+            new_mc_cx = (new_mc_rect.x0 + new_mc_rect.x1) / 2
+            new_mc_cy = (new_mc_rect.y0 + new_mc_rect.y1) / 2
+            new_gx, new_gy = int(new_mc_cx / 50), int(new_mc_cy / 40)
+
+            if old_gx != new_gx or old_gy != new_gy:
+                grid[(old_gx, old_gy)].remove(mc_idx_to_update)
+                grid.setdefault((new_gx, new_gy), []).append(mc_idx_to_update)
+        else:
+            new_idx = len(merged_cells)
+            merged_cells.append({"rect": c_rect, "status": c["status"]})
+            grid.setdefault((gx, gy), []).append(new_idx)
 
     if not merged_cells:
         return []
