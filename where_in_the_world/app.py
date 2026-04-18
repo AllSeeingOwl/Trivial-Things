@@ -121,7 +121,7 @@ def calculate_score():
 
     # Sentinel: Validate that target_id is a string to prevent unhandled TypeErrors
     # (e.g. unhashable type 'list' or 'dict') during dictionary lookups
-    if not isinstance(target_id, str):
+    if not isinstance(target_id, str) or len(target_id) > 100:
         return jsonify({'error': 'Invalid target ID format'}), 400
 
     # ⚡ Bolt Optimization: O(1) Dictionary Lookup
