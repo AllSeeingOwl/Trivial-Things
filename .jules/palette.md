@@ -9,3 +9,7 @@
 ## 2024-04-15 - [Add Skip to Content Link in Main Layout]
 **Learning:** Single Page Applications (SPAs) and layouts with fixed or prominent headers often trap screen reader and keyboard users. A "Skip to main content" link must be implemented early in the DOM tree, visually hidden by default, but revealed upon focus, directing users strictly to the primary interactive container.
 **Action:** Always include a `href="#main-content"` skip link right after the `<body>` tag, and ensure the target main container has `id="main-content"` and `tabIndex={-1}` to accept programmatic focus without affecting natural tab order.
+
+## 2024-04-18 - [Ensure Keyboard Accessibility for Native Tooltips]
+**Learning:** Native `title` tooltips placed on non-interactive elements (like `<span>` or `<div>` badges) are completely inaccessible to keyboard-only users who cannot trigger mouse hover states.
+**Action:** Always verify that status badges or decorative elements utilizing native tooltips also include `tabIndex={0}`, an appropriate explicit role (e.g., `role="status"`), a descriptive `aria-label`, and `focus-visible` CSS rules to ensure they can be reached, focused, and read by screen readers or keyboard navigators.

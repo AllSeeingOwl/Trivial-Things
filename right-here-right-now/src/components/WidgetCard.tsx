@@ -16,8 +16,11 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
         <h3 className="font-bold text-lg">{title}</h3>
         {data.source === 'backup' && (
           <span
-            className="text-xs bg-yellow-600/20 text-yellow-500 px-2 py-1 rounded-full border border-yellow-600/30 cursor-help"
+            className="text-xs bg-yellow-600/20 text-yellow-500 px-2 py-1 rounded-full border border-yellow-600/30 cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#202020]"
             title="Data loaded from secondary source. Primary source is currently unavailable."
+            tabIndex={0}
+            role="status"
+            aria-label="Backup Source: Data loaded from secondary source. Primary source is currently unavailable."
           >
             Backup Source
           </span>
