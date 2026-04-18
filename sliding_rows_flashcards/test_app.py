@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import patch, mock_open, MagicMock
 import sys
 import os
-import json
 
 # Ensure the app directory is in sys.path
 sys.path.append(os.path.dirname(__file__))
@@ -29,7 +28,7 @@ class MockClient:
     def __init__(self, app):
         self.app = app
 
-    def _simulate_request(self, path, method, data=None, content_type=None):
+    def _simulate_request(self, path, method, data=None, content_type=None, json=None):
         if path not in self.app.routes:
             return MockResponse({'error': 'Not Found'}, 404)
 
@@ -39,8 +38,14 @@ class MockClient:
 
         # Mocking the global request object behavior if needed
         with patch('app.request') as mock_req:
-            if data:
-                mock_req.json = json.loads(data) if isinstance(data, str) else data
+            if json is not None:
+                mock_req.json = json
+            elif data:
+                if isinstance(data, str):
+                    import json as json_module
+                    mock_req.json = json_module.loads(data)
+                else:
+                    mock_req.json = data
             else:
                 mock_req.json = None
 
@@ -56,8 +61,8 @@ class MockClient:
     def get(self, path):
         return self._simulate_request(path, 'GET')
 
-    def post(self, path, data=None, content_type=None):
-        return self._simulate_request(path, 'POST', data, content_type)
+    def post(self, path, data=None, content_type=None, json=None):
+        return self._simulate_request(path, 'POST', data, content_type, json=json)
 
 class MockResponse:
     def __init__(self, data, status_code):
@@ -72,7 +77,8 @@ class MockResponse:
         # To simulate response.data.decode()
         if isinstance(self._data, str):
             return self._data.encode()
-        return json.dumps(self._data).encode()
+        import json as json_module
+        return json_module.dumps(self._data).encode()
 
 # Setup the mocks BEFORE importing app
 mock_flask_module = MagicMock()
@@ -129,7 +135,7 @@ class TestAppEndpoints(unittest.TestCase):
         mock_load.return_value = {'Chain_1': {'chain_id': 'Chain_1', 'used': True}}
 
         payload = {'chain_id': 'Chain_1'}
-        response = self.client.post('/api/mark_used', data=json.dumps(payload))
+        response = self.client.post('/api/mark_used', json=payload)
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.get_json()['success'])
