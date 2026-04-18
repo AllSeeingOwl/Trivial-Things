@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+// import React, { useState } from 'react'; // Commented out for browser-side Babel standalone compatibility
 
 // List of the 14 main actors who played Doctor Who
 const doctorActors = [
@@ -10,11 +10,11 @@ const doctorActors = [
 
 // Main App component for the Whovian Degrees game
 const App = () => {
-    const [startActor, setStartActor] = useState(''); // State for the starting actor input
-    const [targetDoctor, setTargetDoctor] = useState(''); // State for the selected target Doctor
-    const [connectionPath, setConnectionPath] = useState(''); // State to display the found connection path
-    const [loading, setLoading] = useState(false); // State for loading indicator
-    const [message, setMessage] = useState(''); // State for general messages/errors
+    const [startActor, setStartActor] = React.useState(''); // State for the starting actor input
+    const [targetDoctor, setTargetDoctor] = React.useState(''); // State for the selected target Doctor
+    const [connectionPath, setConnectionPath] = React.useState(''); // State to display the found connection path
+    const [loading, setLoading] = React.useState(false); // State for loading indicator
+    const [message, setMessage] = React.useState(''); // State for general messages/errors
 
     /**
      * Handles the "Find Connection" form submission.
@@ -32,50 +32,24 @@ const App = () => {
         setConnectionPath(''); // Clear previous path
         setMessage(''); // Clear previous messages
 
-        // Construct the prompt for the LLM
-        const prompt = `Find a connection path between two actors, "${startActor}" and "${targetDoctor}", through shared film or television projects. The path should be no more than 6 steps (where a step is a shared project leading to a co-star).
-        For each step in the path, provide the actor, the project they were in, and the co-star they shared that project with.
-        Format each step as:
-        "[Actor Name 1] was in "[Project Title]" with [Actor Name 2]."
-        If no direct path within 6 steps is easily found, state that clearly (e.g., "No direct path found within 6 steps.").
-        The target actor, "${targetDoctor}", is one of the actors who played Doctor Who. Here is a list of the main actors who played Doctor Who for your reference: ${doctorActors.join(', ')}.
-
-        Please provide the shortest possible path you can find.`;
-
         try {
-            // Prepare the chat history for the LLM call
-            let chatHistory = [];
-            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-            const payload = { contents: chatHistory };
-            const apiKey = process.env.REACT_APP_GEMINI_API_KEY || ""; // API key should be provided by environment or Canvas
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-            // Make the fetch call to the Gemini API
-            const response = await fetch(apiUrl, {
+            // Call the backend API instead of the external AI service directly
+            const response = await fetch('/api/connect', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ startActor, targetDoctor })
             });
 
-            const result = await response.json(); // Parse the JSON response
+            const result = await response.json();
 
             if (!response.ok) {
-                 if (result.error && result.error.message) {
-                     throw new Error(result.error.message);
-                 }
-                 throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(result.error || `HTTP error! status: ${response.status}`);
             }
 
-            // Check if the response contains valid content
-            if (result.candidates && result.candidates.length > 0 &&
-                result.candidates[0].content && result.candidates[0].content.parts &&
-                result.candidates[0].content.parts.length > 0) {
-                const text = result.candidates[0].content.parts[0].text;
-                setConnectionPath(text); // Set the connection path from the LLM response
+            if (result.connectionPath) {
+                setConnectionPath(result.connectionPath);
             } else {
-                setMessage('Could not find a connection or received an unexpected response. Please try again or with different actors.');
-                console.error('Unexpected LLM response structure:', result);
+                setMessage('Could not find a connection. Please try again or with different actors.');
             }
         } catch (error) {
             console.error('Error fetching connection:', error);
