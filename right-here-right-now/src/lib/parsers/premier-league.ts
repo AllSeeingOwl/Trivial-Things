@@ -28,14 +28,19 @@ export function parsePremierLeagueBackup(html: string): WidgetItem[] {
 
   // Sky Sports website table rows
   $('.sdc-site-table__row').each((i, el) => {
+    // ⚡ Bolt Optimization: Cache Cheerio Wrapper
+    // Caching $(el) prevents creating a new Cheerio instance and re-traversing the
+    // element context multiple times per loop iteration, significantly reducing parsing overhead.
+    const $el = $(el);
+
     // Skip header row
-    if ($(el).find('th').length > 0) return;
+    if ($el.find('th').length > 0) return;
 
     if (items.length >= 10) return false;
 
-    const rank = $(el).find('.sdc-site-table__cell').first().text().trim();
-    const teamName = $(el).find('.sdc-site-table__name-target').text().trim();
-    const points = $(el).find('.sdc-site-table__cell').eq(9).text().trim(); // Points usually the 10th col
+    const rank = $el.find('.sdc-site-table__cell').first().text().trim();
+    const teamName = $el.find('.sdc-site-table__name-target').text().trim();
+    const points = $el.find('.sdc-site-table__cell').eq(9).text().trim(); // Points usually the 10th col
 
     if (teamName) {
       items.push({
