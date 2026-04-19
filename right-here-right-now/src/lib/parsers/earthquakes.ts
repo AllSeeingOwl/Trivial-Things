@@ -31,10 +31,15 @@ export function parseEarthquakesBackup(html: string): WidgetItem[] {
   $('#tbody-events tr.normalEvent').each((i: number, el: any) => {
     if (i >= 10) return false;
 
+    // ⚡ Bolt Optimization: Cache Cheerio Wrapper
+    // Caching $(el) prevents creating a new Cheerio instance and re-traversing the
+    // element context 3 separate times per loop iteration, significantly reducing parsing overhead.
+    const $el = $(el);
+
     // Quick approximation for EMSC
-    const mag = $(el).find('td.tabev6').text().trim();
-    const region = $(el).find('td.tb_region').text().trim();
-    const time = $(el).find('td.tabev1').text().trim();
+    const mag = $el.find('td.tabev6').text().trim();
+    const region = $el.find('td.tb_region').text().trim();
+    const time = $el.find('td.tabev1').text().trim();
 
     if (region) {
       items.push({

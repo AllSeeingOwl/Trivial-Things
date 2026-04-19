@@ -64,8 +64,12 @@ async function fetchWrestlingItems(urls: { url: string; name: string }[]): Promi
 
       let championName = 'Unknown';
       if (itemConfig.url.includes('cagematch.net')) {
-        championName = $('.TableContents tr').eq(1).find('.TextBold a').first().text().trim();
-        if (!championName) championName = $('.TableContents tr').eq(1).find('a').first().text().trim();
+        // ⚡ Bolt Optimization: Cache DOM Selection
+        // Querying the DOM for '.TableContents tr' creates a full traversal and array allocation.
+        // Caching the result in $row skips the redundant O(N) search on the fallback line.
+        const $row = $('.TableContents tr').eq(1);
+        championName = $row.find('.TextBold a').first().text().trim();
+        if (!championName) championName = $row.find('a').first().text().trim();
       } else if (itemConfig.url.includes('thesmackdownhotel.com')) {
         championName = $('table tbody tr').first().find('.reign-info h3 a').text().trim();
       }
