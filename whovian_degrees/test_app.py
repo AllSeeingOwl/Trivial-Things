@@ -87,5 +87,25 @@ class TestWhovianBackend(unittest.TestCase):
         self.assertIn('error', result[0])
         self.assertEqual(result[1], 500)
 
+    def test_connect_actors_invalid_type(self):
+        whovian_app.request.json = {
+            'startActor': ['Not', 'A', 'String'],
+            'targetDoctor': 'David Tennant'
+        }
+        result = whovian_app.connect_actors()
+        self.assertIn('error', result[0])
+        self.assertEqual(result[1], 400)
+        self.assertEqual(result[0]['error'], 'Invalid input format or length exceeded')
+
+    def test_connect_actors_too_long(self):
+        whovian_app.request.json = {
+            'startActor': 'A' * 101,
+            'targetDoctor': 'David Tennant'
+        }
+        result = whovian_app.connect_actors()
+        self.assertIn('error', result[0])
+        self.assertEqual(result[1], 400)
+        self.assertEqual(result[0]['error'], 'Invalid input format or length exceeded')
+
 if __name__ == '__main__':
     unittest.main()

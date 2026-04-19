@@ -44,8 +44,17 @@ def connect_actors():
     if not data or not isinstance(data, dict):
         return jsonify({'error': 'Invalid or missing request body'}), 400
 
-    start_actor = data.get('startActor', '').strip()
-    target_doctor = data.get('targetDoctor', '').strip()
+    start_actor = data.get('startActor', '')
+    target_doctor = data.get('targetDoctor', '')
+
+    # Sentinel: Type validation to prevent unhandled AttributeErrors (e.g., .strip() on lists)
+    # Sentinel: Length validation to prevent DoS via excessive processing and Gemini payload size
+    if not isinstance(start_actor, str) or not isinstance(target_doctor, str) or \
+       len(start_actor) > 100 or len(target_doctor) > 100:
+        return jsonify({'error': 'Invalid input format or length exceeded'}), 400
+
+    start_actor = start_actor.strip()
+    target_doctor = target_doctor.strip()
 
     if not start_actor or not target_doctor:
         return jsonify({'error': 'Missing startActor or targetDoctor'}), 400
