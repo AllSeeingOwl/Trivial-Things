@@ -131,7 +131,11 @@ def parse_pdf(filepath):
     if not merged_cells:
         return []
 
-    x_centers = sorted(list(set([(c["rect"].x0 + c["rect"].x1)/2 for c in merged_cells])))
+    # ⚡ Bolt Optimization: Avoid intermediate lists and redundant casting
+    # Using a generator expression directly inside set() prevents allocating an O(N) list
+    # in memory. Removing the list() cast saves another O(N) allocation, since sorted()
+    # natively consumes iterables and returns a list.
+    x_centers = sorted(set((c["rect"].x0 + c["rect"].x1)/2 for c in merged_cells))
     cols_x = []
     curr = []
     for x in x_centers:
@@ -144,7 +148,7 @@ def parse_pdf(filepath):
             curr = [x]
     if curr: cols_x.append(sum(curr)/len(curr))
 
-    y_centers = sorted(list(set([(c["rect"].y0 + c["rect"].y1)/2 for c in merged_cells])))
+    y_centers = sorted(set((c["rect"].y0 + c["rect"].y1)/2 for c in merged_cells))
     rows_y = []
     curr = []
     for y in y_centers:
