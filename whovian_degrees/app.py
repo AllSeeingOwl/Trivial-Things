@@ -95,7 +95,8 @@ def connect_actors():
             headers={'Content-Type': 'application/json'},
             method='POST'
         )
-        with urllib.request.urlopen(req) as response:
+        # Sentinel: Add timeout to prevent DoS from hanging external API calls
+        with urllib.request.urlopen(req, timeout=10) as response:
             result = json.loads(response.read().decode('utf-8'))
 
             if 'candidates' in result and len(result['candidates']) > 0:
@@ -115,7 +116,9 @@ def connect_actors():
             msg = f"HTTP error {e.code}"
         return jsonify({'error': msg}), e.code
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # Sentinel: Log actual error but return generic message to avoid leaking internals
+        print(f"Security/Error connecting to external API: {e}")
+        return jsonify({'error': 'An internal error occurred'}), 500
 
 if __name__ == '__main__':
     # Sentinel: Disabled debug=True to prevent RCE and info disclosure
