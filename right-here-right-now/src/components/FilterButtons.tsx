@@ -9,7 +9,7 @@ export default function FilterButtons() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Category filters" className="flex flex-wrap gap-2 mb-8 mt-6">
+    <nav aria-label="Category filters" className="flex flex-wrap gap-2 mt-4">
       {CATEGORIES.map((cat) => {
         const isActive = pathname === cat.path;
         return (
