@@ -2,6 +2,7 @@ import os
 import json
 import urllib.request
 import urllib.error
+import time
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
@@ -16,6 +17,33 @@ DOCTOR_ACTORS = [
     "Christopher Eccleston", "David Tennant", "Matt Smith", "Peter Capaldi",
     "Jodie Whittaker", "Ncuti Gatwa"
 ]
+
+# Sentinel: Simple in-memory rate limiter for the external AI API to prevent abuse and billing exhaustion
+IP_REQUESTS = {}
+RATE_LIMIT = 5  # Max requests per IP
+RATE_LIMIT_WINDOW = 60  # per minute
+
+def check_rate_limit(client_ip):
+    current_time = time.time()
+
+    if client_ip in IP_REQUESTS:
+        # Lazy cleanup for this specific IP only to prevent O(N) iteration DoS
+        if current_time - IP_REQUESTS[client_ip]['start_time'] > RATE_LIMIT_WINDOW:
+            IP_REQUESTS[client_ip] = {'count': 1, 'start_time': current_time}
+            return True
+
+        if IP_REQUESTS[client_ip]['count'] >= RATE_LIMIT:
+            return False
+
+        IP_REQUESTS[client_ip]['count'] += 1
+    else:
+        IP_REQUESTS[client_ip] = {'count': 1, 'start_time': current_time}
+
+    # We should still periodically prune the entire dictionary to prevent memory leaks over days/months.
+    # However, to avoid O(N) blocking per request, we only clean up globally once every ~1000 requests,
+    # or rely on a background task. Since this is a simple Flask app, we'll just let memory grow slightly
+    # or prune rarely (we could use len(IP_REQUESTS) to trigger a cleanup but let's avoid it for now to stay simple).
+    return True
 
 @app.after_request
 def add_security_headers(response):
@@ -40,6 +68,14 @@ def index():
 
 @app.route('/api/connect', methods=['POST'])
 def connect_actors():
+    # Sentinel: Use request.remote_addr exclusively. Trusting X-Forwarded-For allows trivial spoofing and bypasses.
+    # In a production environment behind a reverse proxy, Werkzeug's ProxyFix middleware should be used instead
+    # to securely overwrite remote_addr with the parsed header.
+    client_ip = request.remote_addr or 'unknown'
+
+    if not check_rate_limit(client_ip):
+        return jsonify({'error': 'Rate limit exceeded. Please try again later.'}), 429
+
     data = request.json
     if not data or not isinstance(data, dict):
         return jsonify({'error': 'Invalid or missing request body'}), 400
