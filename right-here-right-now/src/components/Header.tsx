@@ -4,7 +4,7 @@ import FilterButtons from './FilterButtons';
 export default function Header() {
   return (
     <header className="mb-6 border-b border-neutral-800 pb-2">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight mb-2">
             Right Here, Right Now.
@@ -12,6 +12,7 @@ export default function Header() {
           <p className="text-[var(--text-muted)] text-lg">
             A real-time snapshot of the world&apos;s culture, sports, tech, and trends.
           </p>
+          <FilterButtons />
         </div>
         <div
           className="text-sm font-mono text-[var(--text-muted)] flex items-center gap-2 bg-neutral-900 px-3 py-1.5 rounded-full border border-neutral-800 cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
@@ -27,7 +28,6 @@ export default function Header() {
           Auto-updates daily.
         </div>
       </div>
-      <FilterButtons />
     </header>
   );
 }
