@@ -71,3 +71,7 @@
 ## 2024-04-18 - Avoid string splitting before regex search
 **Learning:** In the `where_in_the_world` application, the text was split by newline (`text.split('\n')`) creating an intermediate list of string segments, before iterating over them with `re.search()`. Python's `re.search()` naturally searches multiline strings without needing this. This redundant split caused significant memory allocation overhead.
 **Action:** Always let `re.search()` search over a complete string if you only need a single match anywhere in the string, rather than manually splitting the string and searching line-by-line.
+
+## 2026-05-20 - Avoid Intermediate Array Allocation in Slice
+**Learning:** In the `right-here-right-now` Next.js application, processing the large GeoJSON response from the USGS earthquake API used `features.slice(0, 10).forEach(...)`. The `slice()` method creates a shallow copy array in memory before iteration, causing unnecessary garbage collection overhead, particularly with large data payloads.
+**Action:** Replace `.slice(0, N).forEach()` with a traditional `for` loop bounded by `Math.min(N, array.length)`. This strictly avoids creating intermediate arrays while still maintaining safe bounds checking.
