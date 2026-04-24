@@ -5,7 +5,12 @@ export function parseEarthquakesPrimary(json: Record<string, unknown>): WidgetIt
   const items: WidgetItem[] = [];
   const features = (json.features as Record<string, unknown>[]) || [];
 
-  features.slice(0, 10).forEach((feature: Record<string, unknown>, i: number) => {
+  // ⚡ Bolt Optimization: Avoid intermediate array allocation
+  // Using a traditional for loop instead of `features.slice(0, 10).forEach()`
+  // prevents the creation of an intermediate shallow copy array in memory,
+  // which reduces overhead when dealing with large GeoJSON feature arrays.
+  for (let i = 0; i < Math.min(10, features.length); i++) {
+    const feature = features[i];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const props = feature.properties as Record<string, any>;
     items.push({
@@ -15,7 +20,7 @@ export function parseEarthquakesPrimary(json: Record<string, unknown>): WidgetIt
       subtitle: `Magnitude: ${props.mag}`,
       metadata: new Date(props.time as number).toLocaleString()
     });
-  });
+  }
 
   return items;
 }
