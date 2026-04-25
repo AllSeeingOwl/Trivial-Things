@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import patch, MagicMock
 import json
 import sys
-import os
 
 # Mock Flask because it's not installed in the environment
 class MockFlask:
