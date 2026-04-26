@@ -72,7 +72,11 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
     }
 
     if (items.length > 0) {
-      return { items: items.slice(0, 10), source: 'primary' };
+      // ⚡ Bolt Optimization: O(1) In-place Array Truncation
+      // By mutating the length property directly, we truncate the array in-place,
+      // avoiding the memory allocation and garbage collection overhead of `items.slice()`.
+      if (items.length > 10) items.length = 10;
+      return { items, source: 'primary' };
     }
     throw new Error('Primary parser returned 0 items');
   } catch (primaryError) {
@@ -93,7 +97,10 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
       }
 
       if (items.length > 0) {
-        return { items: items.slice(0, 10), source: 'backup' };
+        // ⚡ Bolt Optimization: O(1) In-place Array Truncation
+        // Truncating the array by modifying length avoids intermediate array allocation.
+        if (items.length > 10) items.length = 10;
+        return { items, source: 'backup' };
       }
       throw new Error('Backup parser returned 0 items');
     } catch (backupError) {
