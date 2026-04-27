@@ -17,6 +17,12 @@ export async function GET(request: Request) {
     const expectedAuthHeader = `Bearer ${cronSecret}`;
     const actualAuthHeader = authHeader || '';
 
+    // Sentinel: Enforce strict length limits on auth headers to prevent CPU exhaustion DoS
+    // during the hashing process if an attacker sends an excessively large payload.
+    if (actualAuthHeader.length > 200) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
     // Use timing-safe comparison to prevent timing attacks.
     // We hash both strings to ensure they have the same length before comparison.
     const expectedHash = crypto.createHash('sha256').update(expectedAuthHeader).digest();
