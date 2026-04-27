@@ -15,38 +15,48 @@ interface WidgetGridProps {
   categoryFilter?: string;
 }
 
+// ⚡ Bolt Optimization: Stabilize Configuration Objects
+// Explicitly defining these static configuration objects outside the component prevents them
+// from being allocated in memory on every render, avoiding unnecessary garbage collection
+// overhead and maintaining stable references.
+const PREMIER_LEAGUE_CONFIG = {
+  primaryUrl: 'https://footballapi.pulselive.com/football/standings?compSeasons=719&altIds=true&detail=2&FOOTBALL_COMPETITION=1',
+  backupUrl: 'https://www.skysports.com/premier-league-table',
+  primaryParser: parsePremierLeaguePrimary,
+  backupParser: parsePremierLeagueBackup,
+  isPrimaryJson: true,
+  extraHeaders: {
+    "Origin": "https://www.premierleague.com",
+    "Referer": "https://www.premierleague.com/"
+  }
+};
+
+const EARTHQUAKES_CONFIG = {
+  primaryUrl: 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson',
+  backupUrl: 'https://www.emsc-csem.org/Earthquake/',
+  primaryParser: parseEarthquakesPrimary,
+  backupParser: parseEarthquakesBackup,
+  isPrimaryJson: true
+};
+
+const BOOKS_CONFIG = {
+  primaryUrl: 'https://www.amazon.co.uk/charts/mostsold/fiction',
+  backupUrl: 'https://www.nytimes.com/books/best-sellers/',
+  primaryParser: parseBooksPrimary,
+  backupParser: parseBooksBackup
+};
+
 export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) {
   // We only fetch and display widgets that match the category filter
 
   const showPremierLeague = categoryFilter === 'all' || categoryFilter === WIDGET_CATEGORIES.premierLeague;
-  const premierLeagueData = showPremierLeague ? fetchWidgetData({
-    primaryUrl: 'https://footballapi.pulselive.com/football/standings?compSeasons=719&altIds=true&detail=2&FOOTBALL_COMPETITION=1',
-    backupUrl: 'https://www.skysports.com/premier-league-table',
-    primaryParser: parsePremierLeaguePrimary,
-    backupParser: parsePremierLeagueBackup,
-    isPrimaryJson: true,
-    extraHeaders: {
-      "Origin": "https://www.premierleague.com",
-      "Referer": "https://www.premierleague.com/"
-    }
-  }) : null;
+  const premierLeagueData = showPremierLeague ? fetchWidgetData(PREMIER_LEAGUE_CONFIG) : null;
 
   const showEarthquakes = categoryFilter === 'all' || categoryFilter === WIDGET_CATEGORIES.earthquakes;
-  const earthquakesData = showEarthquakes ? fetchWidgetData({
-    primaryUrl: 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson',
-    backupUrl: 'https://www.emsc-csem.org/Earthquake/',
-    primaryParser: parseEarthquakesPrimary,
-    backupParser: parseEarthquakesBackup,
-    isPrimaryJson: true
-  }) : null;
+  const earthquakesData = showEarthquakes ? fetchWidgetData(EARTHQUAKES_CONFIG) : null;
 
   const showBooks = categoryFilter === 'all' || categoryFilter === WIDGET_CATEGORIES.books;
-  const booksData = showBooks ? fetchWidgetData({
-    primaryUrl: 'https://www.amazon.co.uk/charts/mostsold/fiction',
-    backupUrl: 'https://www.nytimes.com/books/best-sellers/',
-    primaryParser: parseBooksPrimary,
-    backupParser: parseBooksBackup
-  }) : null;
+  const booksData = showBooks ? fetchWidgetData(BOOKS_CONFIG) : null;
 
   const showWrestling = categoryFilter === WIDGET_CATEGORIES.wrestling;
   const wrestlingData1 = showWrestling ? fetchWrestlingData1() : null;
