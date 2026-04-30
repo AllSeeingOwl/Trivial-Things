@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Scoreboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            outline: none;
+            color: #555;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #3498db;
+            color: #3498db;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: #fff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .btn-success {
+            background: #2ecc71;
+        }
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        .default-avatar {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ccc;
+            vertical-align: middle;
+            margin-right: 10px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <h1>Interactive Scoreboard</h1>
+            <a href="/api/export" class="btn btn-success">Export to CSV</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('rankings')">Rankings</button>
+            <button class="tab-btn" onclick="showTab('statistics')">Player Statistics</button>
+            <button class="tab-btn" onclick="showTab('add-score')">Add Score</button>
+        </div>
+
+        <div id="rankings" class="tab-content active">
+            <h2>Global Rankings</h2>
+            <table id="scores-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                        <th>Time Taken (s)</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="statistics" class="tab-content">
+            <h2>Player Statistics</h2>
+            <table id="stats-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Games Played</th>
+                        <th>Average Score</th>
+                        <th>High Score</th>
+                        <th>Latest Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="add-score" class="tab-content">
+            <h2>Submit New Score</h2>
+            <form id="score-form">
+                <div class="form-group">
+                    <label for="player_name">Player Name</label>
+                    <input type="text" id="player_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="score">Score</label>
+                    <input type="number" id="score" required>
+                </div>
+                <div class="form-group">
+                    <label for="time_taken">Time Taken (seconds) - Optional</label>
+                    <input type="number" step="0.1" id="time_taken">
+                </div>
+                <div class="form-group">
+                    <label for="avatar_url">Avatar URL - Optional</label>
+                    <input type="url" id="avatar_url" placeholder="https://example.com/avatar.png">
+                </div>
+                <button type="submit" class="btn">Submit Score</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabId === 'rankings') loadScores();
+            if (tabId === 'statistics') loadStats();
+        }
+
+        function escapeHtml(unsafe) {
+            return (unsafe || '').toString()
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        function getAvatarHtml(url, name) {
+            const escapedName = escapeHtml(name);
+            if (url) {
+                const escapedUrl = escapeHtml(url);
+                return `<img src="${escapedUrl}" alt="${escapedName}'s avatar" class="avatar" onerror="this.outerHTML=getDefaultAvatar('${escapedName}')">`;
+            }
+            return getDefaultAvatar(escapedName);
+        }
+
+        function getDefaultAvatar(name) {
+            const initial = name ? escapeHtml(name).charAt(0).toUpperCase() : '?';
+            return `<span class="default-avatar">${initial}</span>`;
+        }
+
+        async function loadScores() {
+            try {
+                const response = await fetch('/api/scores');
+                const scores = await response.json();
+
+                const tbody = document.querySelector('#scores-table tbody');
+                tbody.innerHTML = '';
+
+                scores.forEach((entry, index) => {
+                    const date = entry.timestamp ? escapeHtml(new Date(entry.timestamp).toLocaleString()) : 'N/A';
+                    const timeTaken = entry.time_taken !== null ? escapeHtml(entry.time_taken) : 'N/A';
+                    const safeName = escapeHtml(entry.player_name);
+                    const safeScore = escapeHtml(entry.score);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>
+                            ${getAvatarHtml(entry.avatar_url, entry.player_name)}
+                            ${safeName}
+                        </td>
+                        <td><strong>${safeScore}</strong></td>
+                        <td>${timeTaken}</td>
+                        <td>${date}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading scores:', error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+
+                // Sort by high score descending
+                stats.sort((a, b) => b.high_score - a.high_score);
+
+                const tbody = document.querySelector('#stats-table tbody');
+                tbody.innerHTML = '';
+
+                stats.forEach(player => {
+                    const safeName = escapeHtml(player.player_name);
+                    const safeGamesPlayed = escapeHtml(player.games_played);
+                    const safeAverageScore = escapeHtml(player.average_score);
+                    const safeHighScore = escapeHtml(player.high_score);
+                    const safeLatestScore = escapeHtml(player.latest_score);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            ${getAvatarHtml(player.avatar_url, player.player_name)}
+                            ${safeName}
+                        </td>
+                        <td>${safeGamesPlayed}</td>
+                        <td>${safeAverageScore}</td>
+                        <td><strong>${safeHighScore}</strong></td>
+                        <td>${safeLatestScore}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        document.getElementById('score-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                player_name: document.getElementById('player_name').value,
+                score: document.getElementById('score').value,
+                time_taken: document.getElementById('time_taken').value || null,
+                avatar_url: document.getElementById('avatar_url').value || null
+            };
+
+            try {
+                const response = await fetch('/api/scores', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Score submitted successfully!');
+                    document.getElementById('score-form').reset();
+                    showTab('rankings');
+                    // Find the tab button for rankings and make it active manually since we're calling showTab programmatically
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        if(btn.textContent === 'Rankings') btn.classList.add('active');
+                        else btn.classList.remove('active');
+                    });
+                } else {
+                    const err = await response.json();
+                    alert('Error submitting score: ' + (err.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting score');
+            }
+        });
+
+        // Load initial data
+        loadScores();
+    </script>
+</body>
+</html>
