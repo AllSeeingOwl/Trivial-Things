@@ -245,4 +245,6 @@ def upload_file():
 
 if __name__ == '__main__':
     # Sentinel: Disable debug mode to prevent Werkzeug debugger RCE in production
-    app.run(debug=False, port=5002, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5002))
+    host = os.environ.get('HOST', '0.0.0.0')
+    app.run(debug=False, port=port, host=host)

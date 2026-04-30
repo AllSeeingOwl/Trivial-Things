@@ -1,3 +1,4 @@
+import os
 import csv
 import re
 import math
@@ -33,7 +34,7 @@ def load_data():
     data = []
     try:
         with open(
-                'Where In The World Is.csv', mode='r', encoding='utf-8') as f:
+                os.environ.get('CSV_FILE', 'Where In The World Is.csv'), mode='r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for i, row in enumerate(reader):
                 prompt = row.get('...This Thing...', '').strip()
@@ -181,4 +182,6 @@ def add_security_headers(response):
 
 if __name__ == '__main__':
     # Sentinel: Disabled debug=True to prevent RCE and info disclosure
-    app.run(port=5004, debug=False)
+    port = int(os.environ.get('PORT', 5004))
+    host = os.environ.get('HOST', '0.0.0.0')
+    app.run(debug=False, port=port, host=host)
