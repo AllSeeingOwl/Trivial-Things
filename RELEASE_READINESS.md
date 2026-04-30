@@ -26,9 +26,9 @@ Currently, **none** of the applications meet the 80% readiness benchmark for a f
 *   **Recommendation:** Docker container (with a mounted volume for the CSV) or PyInstaller executable. Needs path virtualization for the CSV.
 
 ### 2. `pdf_grid_flashcards`
-*   **Readiness:** ~20%
+*   **Readiness:** ~30%
 *   **Documentation:** Missing `README.md`.
-*   **Dependencies:** Missing `requirements.txt` (needs `flask` and `PyMuPDF`).
+*   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has `test_app.py`, but it has namespace conflicts.
 *   **Issues:** Contains hardcoded directory paths (`bbc_big_read_flashcards/`) in `parse_pdf.py` that don't even exist in the repo. Port is now configurable via environment variables.
 *   **Recommendation:** Docker container. Needs major refactoring to remove missing hardcoded local directories.
@@ -58,9 +58,9 @@ Currently, **none** of the applications meet the 80% readiness benchmark for a f
 *   **Recommendation:** Docker container (with mounted volume) or PyInstaller. Needs configuration abstraction.
 
 ### 6. `what_the_spell`
-*   **Readiness:** ~20%
+*   **Readiness:** ~30%
 *   **Documentation:** Missing `README.md`. (Has `What The Spell Grids.md` but no setup info).
-*   **Dependencies:** Missing `requirements.txt`.
+*   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has `test_app.py`, but failing.
 *   **Issues:** Port is configurable via environment variables.
 *   **Recommendation:** Docker container or PyInstaller. Needs `requirements.txt` and a README.
@@ -88,7 +88,7 @@ Currently, **none** of the applications meet the 80% readiness benchmark for a f
 To make these apps ready for release, the following generic steps should be applied to the repository:
 
 1. **Decouple Configuration:** ~~Replace hardcoded paths (like `CSV_FILE = '...'`), ports, and host addresses in Flask apps with environment variables (e.g., `os.environ.get('PORT', 5000)`).~~ (Completed)
-2. **Complete Dependencies:** Add `requirements.txt` to `pdf_grid_flashcards` and `what_the_spell`.
+2. **Complete Dependencies:** ~~Add `requirements.txt` to `pdf_grid_flashcards` and `what_the_spell`.~~ (Completed)
 3. **Write Documentation:** Add a standardized `README.md` to the apps currently missing one.
 4. **Fix Test Discovery:** Rename `app.py` in each folder to something unique, or fix the `pytest` configuration (e.g., adding `__init__.py` files or using isolated test tox/nox environments) so tests run reliably.
 5. **Add Packaging:** Create a basic `Dockerfile` for each application. This is the most universal and reliable way to package these types of web apps.
