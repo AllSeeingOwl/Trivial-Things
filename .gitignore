@@ -3,3 +3,5 @@ __pycache__/
 flask.log
 venv/
 backups/
+server.log
+interactive_scoreboard/scoreboard.db
