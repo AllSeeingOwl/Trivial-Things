@@ -158,4 +158,6 @@ def connect_actors():
 
 if __name__ == '__main__':
     # Sentinel: Disabled debug=True to prevent RCE and info disclosure
-    app.run(port=5005, debug=False)
+    port = int(os.environ.get('PORT', 5005))
+    host = os.environ.get('HOST', '0.0.0.0')
+    app.run(debug=False, port=port, host=host)

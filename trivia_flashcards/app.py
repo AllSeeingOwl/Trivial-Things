@@ -17,7 +17,7 @@ def add_security_headers(response):
     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'none';"
     return response
 
-CSV_FILE = 'Questions & All That.csv'
+CSV_FILE = os.environ.get('CSV_FILE', 'Questions & All That.csv')
 
 # ⚡ Bolt Optimization: In-Memory Cache
 # Caches the CSV rows in memory to prevent reading and parsing the entire file
@@ -214,4 +214,6 @@ def reset():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, port=5000, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    app.run(debug=False, port=port, host=host)

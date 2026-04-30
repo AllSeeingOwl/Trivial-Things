@@ -17,7 +17,7 @@ def add_security_headers(response):
     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'none';"
     return response
 
-CSV_FILE = 'Questions_And_Segues.csv'
+CSV_FILE = os.environ.get('CSV_FILE', 'Questions_And_Segues.csv')
 
 # In-Memory Cache for performance optimization (similar to trivia_flashcards)
 _chains_cache = None
@@ -270,4 +270,6 @@ def get_stats():
 if __name__ == '__main__':
     # Use port 5003 for this application so it doesn't conflict
     # with trivia_flashcards (5000), what_the_spell (5001), etc.
-    app.run(debug=False, port=5003, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5003))
+    host = os.environ.get('HOST', '0.0.0.0')
+    app.run(debug=False, port=port, host=host)
