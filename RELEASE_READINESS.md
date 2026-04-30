@@ -26,8 +26,8 @@ Currently, **none** of the applications meet the 80% readiness benchmark for a f
 *   **Recommendation:** Docker container (with a mounted volume for the CSV) or PyInstaller executable. Needs path virtualization for the CSV.
 
 ### 2. `pdf_grid_flashcards`
-*   **Readiness:** ~30%
-*   **Documentation:** Missing `README.md`.
+*   **Readiness:** ~40%
+*   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has `test_app.py`, but it has namespace conflicts.
 *   **Issues:** Contains hardcoded directory paths (`bbc_big_read_flashcards/`) in `parse_pdf.py` that don't even exist in the repo. Port is now configurable via environment variables.
@@ -42,12 +42,12 @@ Currently, **none** of the applications meet the 80% readiness benchmark for a f
 *   **Recommendation:** Vercel deployment or Docker container (via Next.js standalone build). Needs tests and a proper README.
 
 ### 4. `sliding_rows_flashcards`
-*   **Readiness:** ~30%
-*   **Documentation:** Missing `README.md`.
+*   **Readiness:** ~40%
+*   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has `test_app.py`, but failing due to imports.
 *   **Issues:** Port and CSV file path are now configurable via environment variables. Modifies state in place.
-*   **Recommendation:** Docker container or PyInstaller. Needs a README and state/configuration decoupling.
+*   **Recommendation:** Docker container or PyInstaller. Needs state/configuration decoupling.
 
 ### 5. `trivia_flashcards`
 *   **Readiness:** ~40%
@@ -58,28 +58,28 @@ Currently, **none** of the applications meet the 80% readiness benchmark for a f
 *   **Recommendation:** Docker container (with mounted volume) or PyInstaller. Needs configuration abstraction.
 
 ### 6. `what_the_spell`
-*   **Readiness:** ~30%
-*   **Documentation:** Missing `README.md`. (Has `What The Spell Grids.md` but no setup info).
+*   **Readiness:** ~40%
+*   **Documentation:** Has a good `README.md`. (Also has `What The Spell Grids.md`).
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has `test_app.py`, but failing.
 *   **Issues:** Port is configurable via environment variables.
-*   **Recommendation:** Docker container or PyInstaller. Needs `requirements.txt` and a README.
+*   **Recommendation:** Docker container or PyInstaller.
 
 ### 7. `where_in_the_world`
-*   **Readiness:** ~40%
-*   **Documentation:** Missing `README.md`.
+*   **Readiness:** ~50%
+*   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has a decent test suite, but failing environment.
 *   **Issues:** Port and CSV read path are configurable via environment variables. Security updates have been applied (no `debug=True`), but lacks packaging structure.
-*   **Recommendation:** Docker container or Python Package (if bundled with static assets). Needs a README.
+*   **Recommendation:** Docker container or Python Package (if bundled with static assets).
 
 ### 8. `whovian_degrees`
-*   **Readiness:** ~40%
-*   **Documentation:** Missing `README.md`.
+*   **Readiness:** ~50%
+*   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has `test_app.py`, but failing.
-*   **Issues:** Port is configurable via environment variables. Relies on `GEMINI_API_KEY` (which is good practice for secrets), but has no documentation explaining this requirement to the user.
-*   **Recommendation:** Docker container. Needs a README explicitly documenting the required environment variables.
+*   **Issues:** Port is configurable via environment variables. Relies on `GEMINI_API_KEY` (which is good practice for secrets).
+*   **Recommendation:** Docker container.
 
 ---
 
@@ -89,6 +89,6 @@ To make these apps ready for release, the following generic steps should be appl
 
 1. **Decouple Configuration:** ~~Replace hardcoded paths (like `CSV_FILE = '...'`), ports, and host addresses in Flask apps with environment variables (e.g., `os.environ.get('PORT', 5000)`).~~ (Completed)
 2. **Complete Dependencies:** ~~Add `requirements.txt` to `pdf_grid_flashcards` and `what_the_spell`.~~ (Completed)
-3. **Write Documentation:** Add a standardized `README.md` to the apps currently missing one.
+3. **Write Documentation:** ~~Add a standardized `README.md` to the apps currently missing one.~~ (Completed)
 4. **Fix Test Discovery:** Rename `app.py` in each folder to something unique, or fix the `pytest` configuration (e.g., adding `__init__.py` files or using isolated test tox/nox environments) so tests run reliably.
 5. **Add Packaging:** Create a basic `Dockerfile` for each application. This is the most universal and reliable way to package these types of web apps.
