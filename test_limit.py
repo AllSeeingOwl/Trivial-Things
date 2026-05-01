@@ -6,8 +6,6 @@ import json
 import unittest
 import sys
 
-# Mock Flask for testing without the actual flask package
-
 
 from mcq_flashcards.mcq_flashcards_app import mark_used as mark_used_mcq
 from trivia_flashcards.trivia_flashcards_app import mark_used as mark_used_trivia

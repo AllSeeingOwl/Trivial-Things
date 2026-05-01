@@ -32,7 +32,8 @@ class TestApp(unittest.TestCase):
     @patch('pdf_grid_flashcards_app.parse_pdf')
     @patch('os.path.exists', return_value=True)
     @patch('os.remove')
-    def test_upload_pdf_success(self, mock_remove, mock_exists, mock_parse):
+    @patch('werkzeug.datastructures.FileStorage.save')
+    def test_upload_pdf_success(self, mock_save, mock_remove, mock_exists, mock_parse):
         mock_parse.return_value = [[{'text': 'test', 'status': 'correct'}]]
         data = {'file': (io.BytesIO(b'%PDF-1.4 dummy content'), 'test.pdf')}
         response = self.client.post('/api/upload', data=data, content_type='multipart/form-data')
@@ -41,7 +42,8 @@ class TestApp(unittest.TestCase):
     @patch('pdf_grid_flashcards_app.parse_pdf')
     @patch('os.path.exists', return_value=True)
     @patch('os.remove')
-    def test_upload_pdf_processing_error(self, mock_remove, mock_exists, mock_parse):
+    @patch('werkzeug.datastructures.FileStorage.save')
+    def test_upload_pdf_processing_error(self, mock_save, mock_remove, mock_exists, mock_parse):
         mock_parse.side_effect = Exception("Parsing failed")
         data = {'file': (io.BytesIO(b'%PDF-1.4 dummy content'), 'test.pdf')}
         response = self.client.post('/api/upload', data=data, content_type='multipart/form-data')

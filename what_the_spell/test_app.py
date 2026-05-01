@@ -8,7 +8,6 @@ import re
 # Ensure the app directory is in sys.path
 sys.path.append(os.path.dirname(__file__))
 
-# Generic Mock Flask and related classes to allow testing without the flask package
 
 # Test regex conversion before importing app
 def test_regex():
