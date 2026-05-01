@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from app import app, load_questions
+from mcq_flashcards.mcq_flashcards_app import app, load_questions
 
 class TestGetQuestion(unittest.TestCase):
     def setUp(self):
@@ -8,7 +8,7 @@ class TestGetQuestion(unittest.TestCase):
         app._questions_cache = None
         self.app = app.test_client()
 
-    @patch('app.load_questions')
+    @patch('mcq_flashcards.mcq_flashcards_app.load_questions')
     def test_get_question_success(self, mock_load):
         # Mocking load_questions to return a controlled list
         mock_load.return_value = {
@@ -26,7 +26,7 @@ class TestGetQuestion(unittest.TestCase):
         self.assertEqual(response.json['stats']['used'], 1)
         self.assertEqual(response.json['stats']['remaining'], 1)
 
-    @patch('app.load_questions')
+    @patch('mcq_flashcards.mcq_flashcards_app.load_questions')
     def test_get_question_no_unused(self, mock_load):
         # Mocking load_questions where all are used
         mock_load.return_value = {
@@ -37,7 +37,7 @@ class TestGetQuestion(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json['error'], 'No unused questions left!')
 
-    @patch('app.load_questions')
+    @patch('mcq_flashcards.mcq_flashcards_app.load_questions')
     def test_get_question_empty_list(self, mock_load):
         # Mocking load_questions with no questions at all
         mock_load.return_value = {}

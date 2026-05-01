@@ -30,7 +30,7 @@ A Flask web application that acts as a Doctor Who trivia game, utilizing the Gem
 
 Start the Flask server:
 ```bash
-python app.py
+python3 whovian_degrees_app.py
 ```
 
 By default, the server runs on port `5005` (configurable via the `PORT` environment variable).

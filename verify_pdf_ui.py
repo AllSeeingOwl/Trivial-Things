@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 import os
 
 def run_server():
-    os.system("cd pdf_grid_flashcards && python3 app.py")
+    os.system("cd pdf_grid_flashcards && python3 pdf_grid_flashcards_app.py")
 
 def test_upload_invalid_pdf():
     # Start server in background

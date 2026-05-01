@@ -26,7 +26,7 @@ A Flask web application that presents a geography guessing game based on a CSV f
 
 Start the Flask server:
 ```bash
-python app.py
+python3 where_in_the_world_app.py
 ```
 
 By default, the server runs on port `5004` (configurable via the `PORT` environment variable).

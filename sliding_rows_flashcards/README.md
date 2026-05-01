@@ -27,7 +27,7 @@ A Flask web application that creates interactive "sliding row" flashcards from a
 
 Start the Flask server:
 ```bash
-python app.py
+python3 sliding_rows_flashcards_app.py
 ```
 
 By default, the server runs on port `5003` (configurable via the `PORT` environment variable).

@@ -37,7 +37,7 @@ Make sure the top row is exactly `Question,Correct Answer,Wrong 1,Wrong 2,Wrong 
 
 Start the Flask server:
 ```bash
-python app.py
+python3 mcq_flashcards_app.py
 ```
 
 Then open your browser and go to:

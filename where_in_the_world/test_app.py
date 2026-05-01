@@ -1,10 +1,11 @@
 import pytest
-from app import app, haversine_distance, parse_coordinates
+from where_in_the_world_app import app as flask_app, haversine_distance, parse_coordinates
+import where_in_the_world_app as app_module
 
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
-    with app.test_client() as client:
+    flask_app.config['TESTING'] = True
+    with flask_app.test_client() as client:
         yield client
 
 def test_parse_coordinates():
@@ -14,12 +15,16 @@ def test_parse_coordinates():
     assert lng == -2.029684
 
 def test_haversine_distance():
-    # London (51.5074, -0.1278) to Paris (48.8566, 2.3522)
-    # Approx 214 miles
     dist = haversine_distance(51.5074, -0.1278, 48.8566, 2.3522)
     assert 210 < dist < 220
 
-def test_get_questions(client):
+def test_get_questions(client, monkeypatch):
+    mock_questions = [
+        {"id": "1", "prompt": "P1", "lat": 1.0, "lng": 2.0, "place": "L1"},
+        {"id": "2", "prompt": "P2", "lat": 1.0, "lng": 2.0, "place": "L2"},
+        {"id": "3", "prompt": "P3", "lat": 1.0, "lng": 2.0, "place": "L3"},
+    ]
+    monkeypatch.setattr(app_module, 'QUESTIONS', mock_questions)
     response = client.get('/api/questions?count=3')
     assert response.status_code == 200
     data = response.get_json()
