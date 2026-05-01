@@ -26,12 +26,12 @@ Many applications have progressed significantly and are much closer to the 80% r
 *   **Recommendation:** Docker container or PyInstaller executable. State is decoupled so no volume mount is necessary.
 
 ### 2. `pdf_grid_flashcards`
-*   **Readiness:** ~60%
+*   **Readiness:** ~80%
 *   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has passing unit tests using `tox`.
-*   **Issues:** Contains hardcoded directory paths (`bbc_big_read_flashcards/`) in `parse_pdf.py` that don't even exist in the repo. Port is now configurable via environment variables.
-*   **Recommendation:** Docker container. Needs major refactoring to remove missing hardcoded local directories.
+*   **Issues:** Port is now configurable via environment variables. Hardcoded directory paths have been removed.
+*   **Recommendation:** Docker container.
 
 ### 3. `right-here-right-now`
 *   **Readiness:** ~80%
@@ -99,6 +99,6 @@ To make these apps ready for release, the following generic steps should be appl
 To push the applications beyond the current 60-70% readiness threshold and make them viable for public release, the following action items must be prioritized:
 
 7. **State Management & Data Persistence:** ~~Apps like `mcq_flashcards`, `sliding_rows_flashcards`, and `trivia_flashcards` currently modify CSV files in place to track usage. To support read-only container environments and robust deployment, mutable state must be decoupled (e.g., migrating state to a lightweight SQLite database or enforcing explicit Docker volume mounts for data persistence).~~ (Completed via SQLite migration)
-8. **Refactor Hardcoded Paths:** Remove remaining hardcoded local directory paths (specifically the missing `bbc_big_read_flashcards/` references in `pdf_grid_flashcards`) to ensure the application logic executes correctly across universal environments.
+8. **Refactor Hardcoded Paths:** ~~Remove remaining hardcoded local directory paths (specifically the missing `bbc_big_read_flashcards/` references in `pdf_grid_flashcards`) to ensure the application logic executes correctly across universal environments.~~ (Completed)
 9. **Frontend & Next.js Testing:** Implement a testing suite (e.g., Jest and Playwright/Cypress) and improve functional documentation for the `right-here-right-now` Next.js dashboard, as it currently lacks testing validation.
 10. **Production WSGI Servers:** Update the Flask applications' execution commands and `Dockerfile`s to run via a production-ready WSGI server (such as `gunicorn` or `waitress`) rather than relying on the built-in Flask development server (`app.run()`).
