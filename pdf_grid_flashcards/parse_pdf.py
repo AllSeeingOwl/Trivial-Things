@@ -1,8 +1,11 @@
 import fitz
 import json
+import os
 
 def extract_grid():
-    doc = fitz.open("bbc_big_read_flashcards/BBC's Big Read.pdf")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    pdf_path = os.path.join(base_dir, "BBC's Big Read.pdf")
+    doc = fitz.open(pdf_path)
     page = doc.load_page(1)
 
     words = page.get_text("words")
@@ -90,7 +93,9 @@ def extract_grid():
             grid_data[r][c] = {"text": text, "status": status}
             print(f"Row {r} Col {c} [{status}] {text}")
 
-    with open("bbc_big_read_flashcards/grid_data.json", "w") as f:
+    json_path = os.path.join(base_dir, "grid_data.json")
+    with open(json_path, "w") as f:
         json.dump(grid_data, f, indent=2)
 
-extract_grid()
+if __name__ == "__main__":
+    extract_grid()
