@@ -1,10 +1,10 @@
 # Trivia and Flashcards Apps
 
-Welcome to the Trivia and Flashcards repository! This collection features six interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
+Welcome to the Trivia and Flashcards repository! This collection features ten interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
 
 ## The Applications
 
-The repository is organized into six distinct Flask applications:
+The repository is organized into ten distinct applications (nine Flask, one Next.js):
 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
@@ -36,11 +36,31 @@ An interactive map-based game application.
 *   **Features**: Serves an interactive game using Leaflet.js maps and `Where In The World Is.csv` as its data source. Scores guesses based on Haversine distance between the guessed location (via click, Plus Codes, Geohash, Decimal/DMS Coordinates, or Nominatim search) and the target.
 *   **Running**: `cd where_in_the_world && python3 where_in_the_world_app.py` (Runs on port 5004 by default).
 
+### 7. Interactive Scoreboard (`interactive_scoreboard/`)
+A standalone interactive scoreboard application that allows users to track scores, view rankings, calculate player statistics, and export data.
+*   **Features**: Features both a web UI for manual input and API endpoints for automated digital recording. Includes persistent storage via SQLite.
+*   **Running**: `cd interactive_scoreboard && python3 scoreboard_app.py` (Runs on port 5000 by default).
+
+### 8. Price Time Machine (`price_time_machine/`)
+An application to see historical prices adjusted for inflation.
+*   **Features**: View prices of global and local items from different countries adjusted for inflation to modern prices.
+*   **Running**: `cd price_time_machine && python3 price_time_machine_app.py` (Runs on port 5000 by default).
+
+### 9. Right Here Right Now (`right-here-right-now/`)
+A Next.js dashboard application.
+*   **Features**: Uses Tailwind CSS, native CSS columns for a Pinterest-like masonry layout, and Vercel Cron to trigger daily API routes.
+*   **Running**: `cd right-here-right-now && pnpm dev` (Runs on port 3000 by default).
+
+### 10. Whovian Degrees (`whovian_degrees/`)
+A Doctor Who trivia game.
+*   **Features**: Challenges users to connect various actors to the Doctor, using the Gemini API to verify and provide context for the connections.
+*   **Running**: `cd whovian_degrees && python3 whovian_degrees_app.py` (Runs on port 5005 by default).
+
 ## Tech Stack
 
-All applications in this repository share a similar underlying architecture:
-*   **Backend**: Python 3.6+ with the Flask web framework.
-*   **Frontend**: Standard HTML, CSS, and Vanilla JavaScript (using Jinja2 templating).
+Most applications in this repository share a similar underlying architecture, with one exception:
+*   **Backend**: Python 3.6+ with the Flask web framework (except the Next.js app).
+*   **Frontend**: Standard HTML, CSS, and Vanilla JavaScript (using Jinja2 templating). The Next.js app uses React and Tailwind CSS.
 *   **Data Storage**: Local CSV files or parsed PDF data (depending on the app). Caching is implemented for performance optimizations.
 
 ## Installation and Setup
