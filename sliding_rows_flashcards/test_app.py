@@ -6,7 +6,6 @@ import os
 # Ensure the app directory is in sys.path
 sys.path.append(os.path.dirname(__file__))
 
-# Define a mock Flask and other necessary classes
 
 import sliding_rows_flashcards_app as app
 
