@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 import csv
 import random
 import os
+import sqlite3
 
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
@@ -17,17 +18,37 @@ def add_security_headers(response):
     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'none';"
     return response
 
+
 CSV_FILE = os.environ.get('CSV_FILE', 'Questions_And_Segues.csv')
+DB_FILE = os.environ.get('DB_FILE', 'state.db')
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    with get_db_connection() as conn:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS chain_state (
+                id TEXT PRIMARY KEY,
+                used BOOLEAN NOT NULL
+            )
+        ''')
+        conn.commit()
+
+init_db()
+
 
 # In-Memory Cache for performance optimization (similar to trivia_flashcards)
 _chains_cache = None
 _raw_csv_cache = None
 
 
+
 def load_chains():
     global _chains_cache, _raw_csv_cache
 
-    # Return cached data if already loaded
     if _chains_cache is not None and _raw_csv_cache is not None:
         return _chains_cache
 
@@ -41,6 +62,13 @@ def load_chains():
 
     if not _raw_csv_cache:
         return chains
+
+    # Read state from SQLite
+    state_map = {}
+    with get_db_connection() as conn:
+        rows = conn.execute('SELECT id, used FROM chain_state').fetchall()
+        for r in rows:
+            state_map[r['id']] = bool(r['used'])
 
     header = _raw_csv_cache[0]
     for r_idx in range(1, len(_raw_csv_cache)):
@@ -58,15 +86,16 @@ def load_chains():
 
         question_text = row.get('Question', '').strip()
         answer_text = row.get('Answer', '').strip()
-        used_status = row.get('USED', 'FALSE').strip().upper() == 'TRUE'
 
         if chain_id not in chains:
             chains[chain_id] = {
                 'chain_id': chain_id,
-                # Will determine below if the whole chain is used
                 'used': True,
                 'questions': []
             }
+
+        # Check SQLite state first, fall back to CSV value
+        used_status = state_map.get(f"{chain_id}_{order}", row.get('USED', 'FALSE').strip().upper() == 'TRUE')
 
         chains[chain_id]['questions'].append({
             'row_idx': r_idx,  # No +1 needed because r_idx is from 1 to len(raw)
@@ -79,49 +108,26 @@ def load_chains():
     # Sort questions by order and determine chain used status
     for chain_id, chain_data in chains.items():
         chain_data['questions'].sort(key=lambda x: x['order'])
-        # If any question in the chain is NOT used, the chain is
-        # considered NOT used.
-        # Alternatively, we could just say if ALL questions are used,
-        # the chain is used.
         all_used = all(q['used'] for q in chain_data['questions'])
         chain_data['used'] = all_used
 
     _chains_cache = chains
     return _chains_cache
 
-
 def update_chain_used_status(chain_id, used_status):
     chains = load_chains()
     if chain_id not in chains:
         return
 
-    # Update CSV File
-    global _raw_csv_cache
-    if _raw_csv_cache is None:
-        with open(CSV_FILE, 'r', encoding='utf-8') as f:
-            _raw_csv_cache = list(csv.reader(f))
-    rows = _raw_csv_cache
-
-    # The header is row 0
-    header = rows[0]
-    used_col_idx = header.index('USED')
-
-    for q in chains[chain_id]['questions']:
-        row_idx = q['row_idx']
-
-        if row_idx < 0 or row_idx >= len(rows):
-            raise ValueError(f"Row index {row_idx} is out of bounds.")
-        if row_idx == 0:
-            raise ValueError(f"Row index {row_idx} refers to the header row and cannot be modified.")
-
-        # Pad row just in case
-        rows[row_idx] = rows[row_idx] + [''] * \
-            (len(header) - len(rows[row_idx]))
-        rows[row_idx][used_col_idx] = 'TRUE' if used_status else 'FALSE'
-
-    with open(CSV_FILE, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(rows)
+    # Update SQLite File instead of CSV
+    with get_db_connection() as conn:
+        for q in chains[chain_id]['questions']:
+            q_id = f"{chain_id}_{q['order']}"
+            conn.execute('''
+                INSERT INTO chain_state (id, used) VALUES (?, ?)
+                ON CONFLICT(id) DO UPDATE SET used = excluded.used
+            ''', (q_id, used_status))
+        conn.commit()
 
     # Update cache
     if _chains_cache is not None:
@@ -131,39 +137,31 @@ def update_chain_used_status(chain_id, used_status):
             for q in chain_to_update['questions']:
                 q['used'] = used_status
 
-
 def reset_all_chains():
-    global _raw_csv_cache
-    if _raw_csv_cache is None:
-        with open(CSV_FILE, 'r', encoding='utf-8') as f:
-            _raw_csv_cache = list(csv.reader(f))
-    rows = _raw_csv_cache
+    # Reset in SQLite
+    with get_db_connection() as conn:
+        conn.execute('UPDATE chain_state SET used = 0')
+        conn.commit()
 
-    if not rows:
-        return
+        # Mark all known questions as FALSE in DB
+        chains = load_chains()
+        for chain_id, chain_data in chains.items():
+            if chain_data['used'] or any(q['used'] for q in chain_data['questions']):
+                for q in chain_data['questions']:
+                    q_id = f"{chain_id}_{q['order']}"
+                    conn.execute('''
+                        INSERT INTO chain_state (id, used) VALUES (?, ?)
+                        ON CONFLICT(id) DO UPDATE SET used = excluded.used
+                    ''', (q_id, False))
+        conn.commit()
 
-    header = rows[0]
-    used_col_idx = header.index('USED')
-
-    for r_idx in range(1, len(rows)):
-        # ⚡ Bolt Optimization: Skip Default Values During Bulk Resets
-        # Add an early continue guard inside the reset loop to avoid rewriting and padding unused rows.
-        # This skips processing for items that are already clean, saving O(N) list operations.
-        if len(rows[r_idx]) > used_col_idx and rows[r_idx][used_col_idx].strip().upper() == 'FALSE':
-            continue
-        rows[r_idx] = rows[r_idx] + [''] * (len(header) - len(rows[r_idx]))
-        rows[r_idx][used_col_idx] = 'FALSE'
-
-    with open(CSV_FILE, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(rows)
-
+    # Synchronize cache
+    global _chains_cache
     if _chains_cache is not None:
         for chain_id, chain_data in _chains_cache.items():
             chain_data['used'] = False
             for q in chain_data['questions']:
                 q['used'] = False
-
 
 @app.route('/')
 def index():

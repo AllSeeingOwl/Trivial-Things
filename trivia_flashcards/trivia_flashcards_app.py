@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 import csv
 import random
 import os
+import sqlite3
 
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
@@ -17,7 +18,27 @@ def add_security_headers(response):
     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'none';"
     return response
 
+
 CSV_FILE = os.environ.get('CSV_FILE', 'Questions & All That.csv')
+DB_FILE = os.environ.get('DB_FILE', 'state.db')
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    with get_db_connection() as conn:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS question_state (
+                id TEXT PRIMARY KEY,
+                used BOOLEAN NOT NULL
+            )
+        ''')
+        conn.commit()
+
+init_db()
+
 
 # ⚡ Bolt Optimization: In-Memory Cache
 # Caches the CSV rows in memory to prevent reading and parsing the entire file
@@ -25,16 +46,13 @@ CSV_FILE = os.environ.get('CSV_FILE', 'Questions & All That.csv')
 _questions_cache = None
 _raw_csv_cache = None
 
+
 def load_questions():
     global _questions_cache, _raw_csv_cache
 
-    # Return cached data if already loaded to skip expensive file I/O
     if _questions_cache is not None and _raw_csv_cache is not None:
         return _questions_cache
 
-    # ⚡ Bolt Optimization: O(1) Cache Lookups
-    # Convert the in-memory list cache to a dictionary to enable O(1) hash map lookups
-    # when updating the used status, eliminating an O(N) linear search on every /api/mark_used request.
     questions = {}
     if not os.path.exists(CSV_FILE):
         return questions
@@ -43,6 +61,13 @@ def load_questions():
         with open(CSV_FILE, 'r', encoding='utf-8') as f:
             _raw_csv_cache = list(csv.reader(f))
 
+    # Read state from SQLite
+    state_map = {}
+    with get_db_connection() as conn:
+        rows = conn.execute('SELECT id, used FROM question_state').fetchall()
+        for r in rows:
+            state_map[r['id']] = bool(r['used'])
+
     for r_idx, row in enumerate(_raw_csv_cache):
         # Pad row if necessary to ensure it has 6 columns
         row = row + [''] * (6 - len(row))
@@ -50,30 +75,33 @@ def load_questions():
         # Check Set A (Cols 0, 1, 2)
         q_a = row[0].strip()
         if q_a and q_a not in ['Set A', 'Set B'] and not q_a.startswith(','):
-            questions[f"{r_idx}_A"] = {
-                'id': f"{r_idx}_A",
+            q_id = f"{r_idx}_A"
+            used_status = state_map.get(q_id, row[2].strip().upper() == 'TRUE')
+            questions[q_id] = {
+                'id': q_id,
                 'row': r_idx,
                 'set': 'A',
                 'question': q_a,
                 'answer': row[1].strip(),
-                'used': row[2].strip().upper() == 'TRUE'
+                'used': used_status
             }
 
         # Check Set B (Cols 3, 4, 5)
         q_b = row[3].strip()
         if q_b and q_b not in ['Set A', 'Set B'] and not q_b.startswith(','):
-            questions[f"{r_idx}_B"] = {
-                'id': f"{r_idx}_B",
+            q_id = f"{r_idx}_B"
+            used_status = state_map.get(q_id, row[5].strip().upper() == 'TRUE')
+            questions[q_id] = {
+                'id': q_id,
                 'row': r_idx,
                 'set': 'B',
                 'question': q_b,
                 'answer': row[4].strip(),
-                'used': row[5].strip().upper() == 'TRUE'
+                'used': used_status
             }
 
     _questions_cache = questions
     return _questions_cache
-
 
 def update_used_status(q_id, used_status):
     row_idx_str, set_type = q_id.split('_')
@@ -92,52 +120,36 @@ def update_used_status(q_id, used_status):
     if row_idx == 0:
         raise ValueError(f"Question ID {q_id} (row {row_idx}) refers to the header row and cannot be modified.")
 
-    # ⚡ Bolt Optimization: Targeted Row Padding
-    # Instead of an O(n) loop padding every single row in the CSV file,
-    # we only pad the specific row we are modifying. This eliminates unnecessary operations.
-    rows[row_idx] = rows[row_idx] + [''] * (6 - len(rows[row_idx]))
+    # Save to SQLite instead of CSV
+    with get_db_connection() as conn:
+        conn.execute('''
+            INSERT INTO question_state (id, used) VALUES (?, ?)
+            ON CONFLICT(id) DO UPDATE SET used = excluded.used
+        ''', (q_id, used_status))
+        conn.commit()
 
-    if set_type == 'A':
-        rows[row_idx][2] = 'TRUE' if used_status else 'FALSE'
-    elif set_type == 'B':
-        rows[row_idx][5] = 'TRUE' if used_status else 'FALSE'
-
-    with open(CSV_FILE, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(rows)
-
-    # Keep the in-memory cache synchronized with the CSV disk writes
-    # ⚡ Bolt Optimization: O(1) hash map lookup completely replaces legacy O(N) loop
+    # Keep the in-memory cache synchronized
     global _questions_cache
     if _questions_cache is not None and q_id in _questions_cache:
         _questions_cache[q_id]['used'] = used_status
 
 def reset_all_questions():
-    global _raw_csv_cache
-    if _raw_csv_cache is None:
-        with open(CSV_FILE, 'r', encoding='utf-8') as f:
-            _raw_csv_cache = list(csv.reader(f))
-    rows = _raw_csv_cache
+    # Reset in SQLite
+    with get_db_connection() as conn:
+        conn.execute('UPDATE question_state SET used = 0')
+        conn.commit()
 
-    qs = load_questions()
-    for q in qs.values():
-        if not q['used']:
-            continue
-        r_idx = q['row']
-        # ⚡ Bolt Optimization: Targeted Row Padding
-        # Instead of an O(n) loop padding every single row upfront,
-        # we only pad the rows that are actually being reset.
-        rows[r_idx] = rows[r_idx] + [''] * (6 - len(rows[r_idx]))
-        if q['set'] == 'A':
-            rows[r_idx][2] = 'FALSE'
-        elif q['set'] == 'B':
-            rows[r_idx][5] = 'FALSE'
+        # Mark all questions as FALSE in DB
+        qs = load_questions()
+        for q_id, q_data in qs.items():
+            if q_data['used']:
+                conn.execute('''
+                    INSERT INTO question_state (id, used) VALUES (?, ?)
+                    ON CONFLICT(id) DO UPDATE SET used = excluded.used
+                ''', (q_id, False))
+        conn.commit()
 
-    with open(CSV_FILE, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(rows)
-
-    # Synchronize the cache reset with the disk writes
+    # Synchronize cache
     global _questions_cache
     if _questions_cache is not None:
         for q in _questions_cache.values():

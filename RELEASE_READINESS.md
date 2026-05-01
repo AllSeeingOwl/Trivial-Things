@@ -18,12 +18,12 @@ Many applications have progressed significantly and are much closer to the 80% r
 ## Individual App Assessments
 
 ### 1. `mcq_flashcards`
-*   **Readiness:** ~60%
+*   **Readiness:** ~80%
 *   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has passing unit tests using `tox`.
-*   **Issues:** CSV file path is configurable but defaults to local. Modifies the CSV in place, which makes it unsuitable for a read-only Docker container or installed Python package unless state is decoupled.
-*   **Recommendation:** Docker container (with a mounted volume for the CSV) or PyInstaller executable. Needs path virtualization for the CSV.
+*   **Issues:** CSV file path is configurable but defaults to local. Mutable state has been successfully decoupled into SQLite, enabling read-only container deployments.
+*   **Recommendation:** Docker container or PyInstaller executable. State is decoupled so no volume mount is necessary.
 
 ### 2. `pdf_grid_flashcards`
 *   **Readiness:** ~60%
@@ -42,20 +42,20 @@ Many applications have progressed significantly and are much closer to the 80% r
 *   **Recommendation:** Vercel deployment or Docker container (via Next.js standalone build). Needs tests and a proper README.
 
 ### 4. `sliding_rows_flashcards`
-*   **Readiness:** ~60%
+*   **Readiness:** ~80%
 *   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has passing unit tests using `tox`.
-*   **Issues:** Port and CSV file path are now configurable via environment variables. Modifies state in place.
-*   **Recommendation:** Docker container or PyInstaller. Needs state/configuration decoupling.
+*   **Issues:** Port and CSV file path are now configurable via environment variables. Mutable state has been decoupled into SQLite.
+*   **Recommendation:** Docker container or PyInstaller.
 
 ### 5. `trivia_flashcards`
-*   **Readiness:** ~60%
+*   **Readiness:** ~80%
 *   **Documentation:** Has a good `README.md`.
 *   **Dependencies:** Has `requirements.txt`.
 *   **Testing:** Has passing unit tests using `tox`.
-*   **Issues:** Similar to MCQ Flashcards. Port is configurable. CSV file is modified in-place (configurable path).
-*   **Recommendation:** Docker container (with mounted volume) or PyInstaller. Needs configuration abstraction.
+*   **Issues:** Port is configurable. Mutable state has been decoupled into SQLite, preventing in-place CSV modification.
+*   **Recommendation:** Docker container or PyInstaller.
 
 ### 6. `what_the_spell`
 *   **Readiness:** ~60%
@@ -98,7 +98,7 @@ To make these apps ready for release, the following generic steps should be appl
 
 To push the applications beyond the current 60-70% readiness threshold and make them viable for public release, the following action items must be prioritized:
 
-7. **State Management & Data Persistence:** Apps like `mcq_flashcards`, `sliding_rows_flashcards`, and `trivia_flashcards` currently modify CSV files in place to track usage. To support read-only container environments and robust deployment, mutable state must be decoupled (e.g., migrating state to a lightweight SQLite database or enforcing explicit Docker volume mounts for data persistence).
+7. **State Management & Data Persistence:** ~~Apps like `mcq_flashcards`, `sliding_rows_flashcards`, and `trivia_flashcards` currently modify CSV files in place to track usage. To support read-only container environments and robust deployment, mutable state must be decoupled (e.g., migrating state to a lightweight SQLite database or enforcing explicit Docker volume mounts for data persistence).~~ (Completed via SQLite migration)
 8. **Refactor Hardcoded Paths:** Remove remaining hardcoded local directory paths (specifically the missing `bbc_big_read_flashcards/` references in `pdf_grid_flashcards`) to ensure the application logic executes correctly across universal environments.
 9. **Frontend & Next.js Testing:** Implement a testing suite (e.g., Jest and Playwright/Cypress) and improve functional documentation for the `right-here-right-now` Next.js dashboard, as it currently lacks testing validation.
 10. **Production WSGI Servers:** Update the Flask applications' execution commands and `Dockerfile`s to run via a production-ready WSGI server (such as `gunicorn` or `waitress`) rather than relying on the built-in Flask development server (`app.run()`).
