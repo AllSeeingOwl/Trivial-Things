@@ -1,5 +1,5 @@
 import unittest
-from app import app
+from trivia_flashcards.trivia_flashcards_app import app
 
 class TestIndex(unittest.TestCase):
     def setUp(self):

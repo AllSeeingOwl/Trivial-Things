@@ -25,7 +25,7 @@ A Flask web application that generates interactive spelling grids/games based on
 
 Start the Flask server:
 ```bash
-python app.py
+python3 what_the_spell_app.py
 ```
 
 By default, the server runs on port `5001` (configurable via the `PORT` environment variable).

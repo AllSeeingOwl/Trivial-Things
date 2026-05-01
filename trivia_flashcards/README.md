@@ -29,7 +29,7 @@ Unlike other flashcard apps, this app randomizes the questions from your spreads
 
 Start the Flask server:
 ```bash
-python app.py
+python3 trivia_flashcards_app.py
 ```
 
 Then open your browser and go to:

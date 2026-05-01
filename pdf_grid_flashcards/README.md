@@ -26,7 +26,7 @@ A Flask web application that extracts text from PDF grids and turns them into in
 
 Start the Flask server:
 ```bash
-python app.py
+python3 pdf_grid_flashcards_app.py
 ```
 
 By default, the server runs on port `5002` (configurable via the `PORT` environment variable).

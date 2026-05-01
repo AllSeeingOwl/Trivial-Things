@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from app import app, load_questions
+from trivia_flashcards.trivia_flashcards_app import app, load_questions
 
 class TestGetStats(unittest.TestCase):
     def setUp(self):
@@ -8,7 +8,7 @@ class TestGetStats(unittest.TestCase):
         app._questions_cache = None
         self.app = app.test_client()
 
-    @patch('app.load_questions')
+    @patch('trivia_flashcards.trivia_flashcards_app.load_questions')
     def test_get_stats_success(self, mock_load):
         # Mocking load_questions to return a controlled list
         mock_load.return_value = {
@@ -23,7 +23,7 @@ class TestGetStats(unittest.TestCase):
         self.assertEqual(response.json['used'], 2)
         self.assertEqual(response.json['remaining'], 1)
 
-    @patch('app.load_questions')
+    @patch('trivia_flashcards.trivia_flashcards_app.load_questions')
     def test_get_stats_empty(self, mock_load):
         # Mocking load_questions with no questions at all
         mock_load.return_value = {}
@@ -34,7 +34,7 @@ class TestGetStats(unittest.TestCase):
         self.assertEqual(response.json['used'], 0)
         self.assertEqual(response.json['remaining'], 0)
 
-    @patch('app.load_questions')
+    @patch('trivia_flashcards.trivia_flashcards_app.load_questions')
     def test_get_stats_all_used(self, mock_load):
         # Mocking load_questions where all are used
         mock_load.return_value = {
@@ -48,7 +48,7 @@ class TestGetStats(unittest.TestCase):
         self.assertEqual(response.json['used'], 2)
         self.assertEqual(response.json['remaining'], 0)
 
-    @patch('app.load_questions')
+    @patch('trivia_flashcards.trivia_flashcards_app.load_questions')
     def test_get_stats_none_used(self, mock_load):
         # Mocking load_questions where none are used
         mock_load.return_value = {

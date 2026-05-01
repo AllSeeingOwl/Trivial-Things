@@ -1,5 +1,5 @@
 import pytest
-from app import app
+from where_in_the_world_app import app
 
 @pytest.fixture
 def client():

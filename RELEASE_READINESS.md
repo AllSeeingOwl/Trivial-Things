@@ -90,5 +90,5 @@ To make these apps ready for release, the following generic steps should be appl
 1. **Decouple Configuration:** ~~Replace hardcoded paths (like `CSV_FILE = '...'`), ports, and host addresses in Flask apps with environment variables (e.g., `os.environ.get('PORT', 5000)`).~~ (Completed)
 2. **Complete Dependencies:** ~~Add `requirements.txt` to `pdf_grid_flashcards` and `what_the_spell`.~~ (Completed)
 3. **Write Documentation:** ~~Add a standardized `README.md` to the apps currently missing one.~~ (Completed)
-4. **Fix Test Discovery:** Rename `app.py` in each folder to something unique, or fix the `pytest` configuration (e.g., adding `__init__.py` files or using isolated test tox/nox environments) so tests run reliably.
+4. **Fix Test Discovery:** ~~Rename `app.py` in each folder to something unique, or fix the `pytest` configuration (e.g., adding `__init__.py` files or using isolated test tox/nox environments) so tests run reliably.~~ (Completed)
 5. **Add Packaging:** Create a basic `Dockerfile` for each application. This is the most universal and reliable way to package these types of web apps.

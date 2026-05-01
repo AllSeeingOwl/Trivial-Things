@@ -9,100 +9,6 @@ import re
 sys.path.append(os.path.dirname(__file__))
 
 # Generic Mock Flask and related classes to allow testing without the flask package
-class MockFlask:
-    def __init__(self, name):
-        self.config = {}
-        self.routes = []
-        self.after_request_funcs = []
-
-    def after_request(self, f):
-        self.after_request_funcs.append(f)
-        return f
-
-    def route(self, rule, **options):
-        def decorator(f):
-            # Convert Flask route rule to regex
-            # e.g., /api/grid/<int:grid_idx> -> ^/api/grid/(?P<grid_idx>\d+)$
-            regex_rule = rule
-            # Replace <int:var> with (?P<var>\d+)
-            regex_rule = re.sub(r'<int:(\w+)>', r'@@@\1@@@', regex_rule)
-            # Replace <var> with (?P<var>[^/]+)
-            regex_rule = re.sub(r'<(\w+)>', r'###\1###', regex_rule)
-
-            # Final conversion to regex
-            regex_rule = regex_rule.replace('.', '\\.')
-            regex_rule = re.sub(r'@@@(\w+)@@@', r'(?P<\1>\\d+)', regex_rule)
-            regex_rule = re.sub(r'###(\w+)###', r'(?P<\1>[^/]+)', regex_rule)
-            regex_rule = '^' + regex_rule + '$'
-
-            self.routes.append({
-                'rule': rule,
-                'regex': re.compile(regex_rule),
-                'handler': f,
-                'methods': options.get('methods', ['GET'])
-            })
-            return f
-        return decorator
-
-    def test_client(self):
-        return MockClient(self)
-
-class MockClient:
-    def __init__(self, app):
-        self.app = app
-
-    def _simulate_request(self, path, method, json_data=None):
-        for route in self.app.routes:
-            match = route['regex'].match(path)
-            if match:
-                if method not in route['methods']:
-                    return MockResponse({'error': 'Method Not Allowed'}, 405)
-
-                # Extract URL parameters and convert to appropriate types
-                kwargs = match.groupdict()
-                # Attempt to convert digits to ints (basic Flask behavior simulation)
-                for key, value in kwargs.items():
-                    if value.isdigit():
-                        kwargs[key] = int(value)
-
-                result = route['handler'](**kwargs)
-
-                if isinstance(result, tuple):
-                    body, status = result
-                    response = MockResponse(body, status)
-                else:
-                    response = MockResponse(result, 200)
-
-                for func in self.app.after_request_funcs:
-                    response = func(response)
-                return response
-
-        return MockResponse({'error': 'Not Found'}, 404)
-
-    def get(self, path):
-        return self._simulate_request(path, 'GET')
-
-class MockResponse:
-    def __init__(self, data, status_code):
-        self.status_code = status_code
-        self._data = data
-        self.headers = {}
-
-    def get_json(self):
-        return self._data
-
-    @property
-    def data(self):
-        if isinstance(self._data, str):
-            return self._data.encode()
-        return json.dumps(self._data).encode()
-
-# Setup the mocks BEFORE importing app
-mock_flask_module = MagicMock()
-mock_flask_module.Flask = MockFlask
-mock_flask_module.jsonify = lambda x: x
-mock_flask_module.render_template = lambda name, **kwargs: f"Rendered {name} with {kwargs}"
-sys.modules['flask'] = mock_flask_module
 
 # Test regex conversion before importing app
 def test_regex():
@@ -128,7 +34,7 @@ if __name__ == '__main__':
         print(f"Regex test failed: {e}")
         sys.exit(1)
 
-import app
+import what_the_spell_app as app
 
 class TestWhatTheSpell(unittest.TestCase):
     def setUp(self):
@@ -166,7 +72,7 @@ class TestWhatTheSpell(unittest.TestCase):
             with patch('builtins.open', mock_open(read_data=csv_content)):
                 response = self.client.get('/')
                 self.assertEqual(response.status_code, 200)
-                self.assertIn("Rendered index.html with {'num_grids': 1}", response.data.decode())
+                self.assertIn('w11', response.data.decode())
 
     def test_get_grid_api(self):
         csv_content = "1,2,3,4,5,6,\n"
