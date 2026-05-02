@@ -2,6 +2,7 @@ import os
 import tempfile
 import pytest
 import json
+from unittest.mock import patch
 from scoreboard_app import app, db, ScoreEntry
 
 @pytest.fixture
@@ -100,3 +101,21 @@ def test_export_csv(client):
     csv_data = rv.data.decode('utf-8')
     assert 'Player Name,Score' in csv_data
     assert 'Alice,100' in csv_data
+
+def test_add_score_database_error(client):
+    """Test that a database error during commit returns 500 and rolls back."""
+    post_data = {
+        'player_name': 'Alice',
+        'score': 150
+    }
+
+    with patch('scoreboard_app.db.session.commit') as mock_commit, \
+         patch('scoreboard_app.db.session.rollback') as mock_rollback:
+
+        mock_commit.side_effect = Exception("Database error")
+
+        rv = client.post('/api/scores', json=post_data)
+
+        assert rv.status_code == 500
+        assert json.loads(rv.data) == {'error': 'Failed to add score'}
+        mock_rollback.assert_called_once()
