@@ -119,14 +119,14 @@ def update_chain_used_status(chain_id, used_status):
     if chain_id not in chains:
         return
 
-    # Update SQLite File instead of CSV
+    # ⚡ Bolt Optimization: Use executemany to avoid N+1 query pattern
+    # Batch all question status updates into a single database operation.
     with get_db_connection() as conn:
-        for q in chains[chain_id]['questions']:
-            q_id = f"{chain_id}_{q['order']}"
-            conn.execute('''
-                INSERT INTO chain_state (id, used) VALUES (?, ?)
-                ON CONFLICT(id) DO UPDATE SET used = excluded.used
-            ''', (q_id, used_status))
+        data = [(f"{chain_id}_{q['order']}", used_status) for q in chains[chain_id]['questions']]
+        conn.executemany('''
+            INSERT INTO chain_state (id, used) VALUES (?, ?)
+            ON CONFLICT(id) DO UPDATE SET used = excluded.used
+        ''', data)
         conn.commit()
 
     # Update cache
@@ -143,17 +143,21 @@ def reset_all_chains():
         conn.execute('UPDATE chain_state SET used = 0')
         conn.commit()
 
-        # Mark all known questions as FALSE in DB
+        # ⚡ Bolt Optimization: Use executemany to avoid N+1 query pattern
+        # Mark all known questions as FALSE in DB in a single batch operation.
         chains = load_chains()
+        all_data = []
         for chain_id, chain_data in chains.items():
             if chain_data['used'] or any(q['used'] for q in chain_data['questions']):
                 for q in chain_data['questions']:
-                    q_id = f"{chain_id}_{q['order']}"
-                    conn.execute('''
-                        INSERT INTO chain_state (id, used) VALUES (?, ?)
-                        ON CONFLICT(id) DO UPDATE SET used = excluded.used
-                    ''', (q_id, False))
-        conn.commit()
+                    all_data.append((f"{chain_id}_{q['order']}", False))
+
+        if all_data:
+            conn.executemany('''
+                INSERT INTO chain_state (id, used) VALUES (?, ?)
+                ON CONFLICT(id) DO UPDATE SET used = excluded.used
+            ''', all_data)
+            conn.commit()
 
     # Synchronize cache
     global _chains_cache
