@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from trivia_flashcards.trivia_flashcards_app import app, load_questions
+from trivia_flashcards.trivia_flashcards_app import app
 
 class TestGetQuestion(unittest.TestCase):
     def setUp(self):
