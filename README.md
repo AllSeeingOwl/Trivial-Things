@@ -8,12 +8,12 @@ The repository is organized into ten distinct applications (nine Flask, one Next
 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
-*   **Features**: Randomizes questions from a CSV file (`Questions & All That.csv`), presenting a "front" (question) and a "back" (answer). You can eliminate questions as they are asked, ensuring they won't repeat, with state saved back directly to the CSV.
+*   **Features**: Randomizes questions from a CSV file (`Questions & All That.csv`), presenting a "front" (question) and a "back" (answer). You can eliminate questions as they are asked, ensuring they won't repeat, with state tracked via an SQLite database.
 *   **Running**: `cd trivia_flashcards && python3 trivia_flashcards_app.py` (Runs on port 5000 by default).
 
 ### 2. MCQ Flashcards (`mcq_flashcards/`)
 A multiple-choice variant of the trivia flashcards.
-*   **Features**: Reads from `MCQ Questions.csv` and presents four randomized choices per question. Includes visual feedback for correct/incorrect choices before revealing the back of the card. State is also saved to prevent repeats.
+*   **Features**: Reads from `MCQ Questions.csv` and presents four randomized choices per question. Includes visual feedback for correct/incorrect choices before revealing the back of the card. State is also saved via an SQLite database to prevent repeats.
 *   **Running**: `cd mcq_flashcards && python3 mcq_flashcards_app.py` (Runs on port 5000 by default).
 
 ### 3. What The Spell (`what_the_spell/`)
@@ -28,7 +28,7 @@ An application that generates interactive grid views by parsing structured PDFs.
 
 ### 5. Sliding Rows Flashcards (`sliding_rows_flashcards/`)
 An application that presents sliding rows of flashcards and segues.
-*   **Features**: Reads data from `Questions_And_Segues.csv` to provide a unique flashcard learning experience.
+*   **Features**: Reads data from `Questions_And_Segues.csv` to provide a unique flashcard learning experience. State is tracked via an SQLite database.
 *   **Running**: `cd sliding_rows_flashcards && python3 sliding_rows_flashcards_app.py` (Runs on port 5003 by default).
 
 ### 6. Where In The World (`where_in_the_world/`)
@@ -61,7 +61,7 @@ A Doctor Who trivia game.
 Most applications in this repository share a similar underlying architecture, with one exception:
 *   **Backend**: Python 3.6+ with the Flask web framework (except the Next.js app).
 *   **Frontend**: Standard HTML, CSS, and Vanilla JavaScript (using Jinja2 templating). The Next.js app uses React and Tailwind CSS.
-*   **Data Storage**: Local CSV files or parsed PDF data (depending on the app). Caching is implemented for performance optimizations.
+*   **Data Storage**: Local CSV files or parsed PDF data (depending on the app). Mutable usage state for flashcard apps is tracked via an SQLite database (defaulting to `state.db` via the `DB_FILE` environment variable) to keep CSVs read-only. Caching is implemented for performance optimizations.
 
 ## Installation and Setup
 
