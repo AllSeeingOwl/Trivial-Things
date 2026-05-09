@@ -2,6 +2,19 @@ import os
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
+# Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
+app.config['DEBUG'] = False
+# Sentinel: Limit upload size/payload to 1MB to prevent DoS attacks
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # Allow Tailwind CDN and inline styles (used in index.html)
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'none';"
+    return response
 
 # Simplified Historical CPI Data for calculation (Index values relative to base years)
 # For demonstration purposes, approximated values are used here covering necessary years.
@@ -145,4 +158,4 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     host = os.environ.get('HOST', '0.0.0.0')
-    app.run(debug=True, port=port, host=host)
+    app.run(debug=False, port=port, host=host)
