@@ -139,15 +139,17 @@ def reset_all_questions():
         conn.execute('UPDATE question_state SET used = 0')
         conn.commit()
 
-        # Mark all questions as FALSE in DB
+        # ⚡ Bolt Optimization: Use executemany to avoid N+1 query pattern
+        # Mark all questions as FALSE in DB in a single batch operation.
         qs = load_questions()
-        for q_id, q_data in qs.items():
-            if q_data['used']:
-                conn.execute('''
-                    INSERT INTO question_state (id, used) VALUES (?, ?)
-                    ON CONFLICT(id) DO UPDATE SET used = excluded.used
-                ''', (q_id, False))
-        conn.commit()
+        all_data = [(q_id, False) for q_id, q_data in qs.items() if q_data['used']]
+
+        if all_data:
+            conn.executemany('''
+                INSERT INTO question_state (id, used) VALUES (?, ?)
+                ON CONFLICT(id) DO UPDATE SET used = excluded.used
+            ''', all_data)
+            conn.commit()
 
     # Synchronize cache
     global _questions_cache
