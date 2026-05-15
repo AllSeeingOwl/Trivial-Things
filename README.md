@@ -65,17 +65,37 @@ Most applications in this repository share a similar underlying architecture, wi
 
 ## Installation and Setup
 
-To get started, clone the repository and install the dependencies. It's recommended to use a virtual environment.
+To get started, clone the repository and install the dependencies.
+
+### Flask Applications
+It is recommended to use a virtual environment for the Python-based Flask applications. Each application has its own `requirements.txt` file.
 
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd <repository-directory>
 
-# Install the Python dependencies
+# Install dependencies for a specific app (e.g., pdf_grid_flashcards)
+pip install -r pdf_grid_flashcards/requirements.txt
+
+# Or install dependencies for all apps you intend to use
 pip install -r mcq_flashcards/requirements.txt
 pip install -r trivia_flashcards/requirements.txt
-# (Additional requirements like PyMuPDF for pdf_grid_flashcards may be required, install via `pip install PyMuPDF`)
+# ... and so on
 ```
 
-*Note: Ensure you are running each application from within its respective directory so that it can locate its associated CSV data files correctly.*
+### Next.js Application (`right-here-right-now`)
+The Next.js dashboard application requires Node.js and `pnpm`.
+
+```bash
+# Navigate to the Next.js app directory
+cd right-here-right-now
+
+# Install Node dependencies
+pnpm install
+
+# Run the development server
+pnpm dev
+```
+
+*Note: Ensure you are running each application from within its respective directory so that it can locate its associated data files and dependencies correctly.*
