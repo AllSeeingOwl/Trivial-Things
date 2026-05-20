@@ -6,7 +6,6 @@ import os
 # Ensure the app directory is in sys.path
 sys.path.append(os.path.dirname(__file__))
 
-
 import sliding_rows_flashcards_app as app
 
 class TestAppEndpoints(unittest.TestCase):
@@ -85,7 +84,13 @@ class TestAppEndpoints(unittest.TestCase):
         self.assertEqual(data['used'], 1)
         self.assertEqual(data['remaining'], 1)
 
-    def test_load_chains_logic(self):
+    @patch('sliding_rows_flashcards_app.get_db_connection')
+    def test_load_chains_logic(self, mock_db):
+        mock_conn = MagicMock()
+        mock_conn.__enter__.return_value = mock_conn
+        mock_conn.execute.return_value.fetchall.return_value = []
+        mock_db.return_value = mock_conn
+
         csv_content = "Chain_ID,Order,Question,Answer,USED\nC1,1,Q1,A1,FALSE\n"
         with patch('os.path.exists', return_value=True):
             with patch('builtins.open', mock_open(read_data=csv_content)):
@@ -94,7 +99,13 @@ class TestAppEndpoints(unittest.TestCase):
                 self.assertFalse(chains['C1']['used'])
                 self.assertEqual(chains['C1']['questions'][0]['question'], 'Q1')
 
-    def test_load_chains_sorting(self):
+    @patch('sliding_rows_flashcards_app.get_db_connection')
+    def test_load_chains_sorting(self, mock_db):
+        mock_conn = MagicMock()
+        mock_conn.__enter__.return_value = mock_conn
+        mock_conn.execute.return_value.fetchall.return_value = []
+        mock_db.return_value = mock_conn
+
         csv_content = "Chain_ID,Order,Question,Answer,USED\nC1,2,Q2,A2,FALSE\nC1,1,Q1,A1,FALSE\n"
         with patch('os.path.exists', return_value=True):
             with patch('builtins.open', mock_open(read_data=csv_content)):
