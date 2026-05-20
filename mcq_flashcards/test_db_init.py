@@ -10,7 +10,6 @@ mock_flask = MagicMock()
 app = mock_flask.Flask.return_value
 app.route = lambda *a, **k: lambda f: f
 app.after_request = lambda f: f
-sys.modules['flask'] = mock_flask
 
 # Pre-set environment variable
 db_fd, db_path = tempfile.mkstemp()

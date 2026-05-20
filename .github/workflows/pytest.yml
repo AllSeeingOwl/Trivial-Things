@@ -27,6 +27,4 @@ jobs:
           pip install pytest flask flask_sqlalchemy pymupdf
 
       - name: Run tests
-        env:
-          PYTHONPATH: interactive_scoreboard:mcq_flashcards:pdf_grid_flashcards:sliding_rows_flashcards:trivia_flashcards:what_the_spell:where_in_the_world:whovian_degrees:price_time_machine:.
         run: python -m pytest -v
