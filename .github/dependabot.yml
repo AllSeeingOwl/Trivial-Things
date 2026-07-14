@@ -1,0 +1,86 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/interactive_scoreboard"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/mcq_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/pdf_grid_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/price_time_machine"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/sliding_rows_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/trivia_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/what_the_spell"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/where_in_the_world"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/whovian_degrees"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/right-here-right-now"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/interactive_scoreboard"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/mcq_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/pdf_grid_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/price_time_machine"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/sliding_rows_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/trivia_flashcards"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/what_the_spell"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/where_in_the_world"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/whovian_degrees"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/right-here-right-now"
+    schedule:
+      interval: "weekly"
