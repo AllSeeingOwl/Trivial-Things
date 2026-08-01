@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic Name</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .element-card {
+            border: 2px solid #3b82f6;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .element-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Element groups colors */
+        .card-header {
+            background-color: #eff6ff; /* blue-50 */
+            border-bottom: 2px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800 font-sans">
+    <div class="max-w-5xl mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-blue-700 tracking-tight mb-4">
+                What's in Your Name?
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Enter your name below to discover which chemical elements from the periodic table are hiding in it!
+            </p>
+        </header>
+
+        <div class="bg-white rounded-xl shadow-md p-6 md:p-8 max-w-2xl mx-auto mb-12">
+            <form method="POST" action="/" class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-grow">
+                    <label for="name" class="sr-only">Your Name</label>
+                    <input type="text" id="name" name="name" value="{{ name }}"
+                           placeholder="e.g. Alice, Jules, Einstein"
+                           class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg transition-colors"
+                           required maxlength="100">
+                </div>
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Analyze
+                </button>
+            </form>
+        </div>
+
+        {% if matched_elements is not none %}
+            <div class="mb-12">
+                {% if matched_elements|length > 0 %}
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                            Found <span class="text-blue-600">{{ matched_elements|length }}</span> elements in "{{ name }}"!
+                        </h2>
+                        <p class="text-gray-600">Here are the elemental components of your name:</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                        {% for el in matched_elements %}
+                        <div class="element-card bg-white rounded-lg overflow-hidden flex flex-col h-full">
+                            <div class="card-header p-2 flex justify-between items-start">
+                                <span class="text-sm font-bold text-gray-700">{{ el.number }}</span>
+                                <span class="text-xs text-gray-500 truncate ml-2" title="{{ el.atomic_mass }}">{{ el.atomic_mass }}</span>
+                            </div>
+                            <div class="p-4 flex-grow flex flex-col items-center justify-center text-center">
+                                <span class="text-4xl font-bold text-gray-900 mb-1">{{ el.symbol }}</span>
+                                <span class="text-sm text-gray-600 font-medium">{{ el.name }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center p-8 bg-white rounded-xl shadow-sm max-w-2xl mx-auto border border-gray-200">
+                        <div class="text-4xl mb-4">🧪</div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">No elements found</h2>
+                        <p class="text-gray-600">
+                            It looks like none of the 118 element symbols appear in "{{ name }}".
+                            Try another name or word!
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <footer class="text-center text-gray-500 text-sm pb-8">
+        <p>A fun tool to explore the periodic table.</p>
+    </footer>
+</body>
+</html>
