@@ -1,0 +1,68 @@
+
+services:
+  portal:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./portal:/usr/share/nginx/html:ro
+
+  interactive_scoreboard:
+    build: ./interactive_scoreboard
+    ports:
+      - "8001:5000"
+
+  mcq_flashcards:
+    build: ./mcq_flashcards
+    ports:
+      - "8002:5000"
+
+  pdf_grid_flashcards:
+    build: ./pdf_grid_flashcards
+    ports:
+      - "8003:5000"
+
+  periodic_name:
+    build: ./periodic_name
+    ports:
+      - "8004:5000"
+
+  price_time_machine:
+    build: ./price_time_machine
+    ports:
+      - "8005:5000"
+
+  quarterly_calendar:
+    build: ./quarterly_calendar
+    ports:
+      - "8006:5000"
+
+  right_here_right_now:
+    build: ./right-here-right-now
+    ports:
+      - "8007:3000"
+
+  sliding_rows_flashcards:
+    build: ./sliding_rows_flashcards
+    ports:
+      - "8008:5000"
+
+  trivia_flashcards:
+    build: ./trivia_flashcards
+    ports:
+      - "8009:5000"
+
+  what_the_spell:
+    build: ./what_the_spell
+    ports:
+      - "8010:5000"
+
+  where_in_the_world:
+    build: ./where_in_the_world
+    ports:
+      - "8011:5000"
+
+  whovian_degrees:
+    build: ./whovian_degrees
+    ports:
+      - "8012:5000"
