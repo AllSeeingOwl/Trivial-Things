@@ -1,6 +1,6 @@
 services:
   - type: static
-    name: trivial-things-portal
+    name: trivial-things
     repo: https://github.com/AllSeeingOwl/Trivial-Things
     publishPath: portal
 
