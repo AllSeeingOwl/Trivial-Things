@@ -1,0 +1,89 @@
+services:
+  - type: static
+    name: trivial-things-portal
+    repo: https://github.com/AllSeeingOwl/Trivial-Things
+    publishPath: portal
+
+  - type: web
+    name: interactive-scoreboard
+    env: docker
+    dockerContext: interactive_scoreboard
+    dockerfilePath: interactive_scoreboard/Dockerfile
+    plan: free
+
+  - type: web
+    name: mcq-flashcards
+    env: docker
+    dockerContext: mcq_flashcards
+    dockerfilePath: mcq_flashcards/Dockerfile
+    plan: free
+
+  - type: web
+    name: pdf-grid-flashcards
+    env: docker
+    dockerContext: pdf_grid_flashcards
+    dockerfilePath: pdf_grid_flashcards/Dockerfile
+    plan: free
+
+  - type: web
+    name: periodic-name
+    env: docker
+    dockerContext: periodic_name
+    dockerfilePath: periodic_name/Dockerfile
+    plan: free
+
+  - type: web
+    name: price-time-machine
+    env: docker
+    dockerContext: price_time_machine
+    dockerfilePath: price_time_machine/Dockerfile
+    plan: free
+
+  - type: web
+    name: quarterly-calendar
+    env: docker
+    dockerContext: quarterly_calendar
+    dockerfilePath: quarterly_calendar/Dockerfile
+    plan: free
+
+  - type: web
+    name: right-here-right-now
+    env: docker
+    dockerContext: right-here-right-now
+    dockerfilePath: right-here-right-now/Dockerfile
+    plan: free
+
+  - type: web
+    name: sliding-rows-flashcards
+    env: docker
+    dockerContext: sliding_rows_flashcards
+    dockerfilePath: sliding_rows_flashcards/Dockerfile
+    plan: free
+
+  - type: web
+    name: trivia-flashcards
+    env: docker
+    dockerContext: trivia_flashcards
+    dockerfilePath: trivia_flashcards/Dockerfile
+    plan: free
+
+  - type: web
+    name: what-the-spell
+    env: docker
+    dockerContext: what_the_spell
+    dockerfilePath: what_the_spell/Dockerfile
+    plan: free
+
+  - type: web
+    name: where-in-the-world
+    env: docker
+    dockerContext: where_in_the_world
+    dockerfilePath: where_in_the_world/Dockerfile
+    plan: free
+
+  - type: web
+    name: whovian-degrees
+    env: docker
+    dockerContext: whovian_degrees
+    dockerfilePath: whovian_degrees/Dockerfile
+    plan: free

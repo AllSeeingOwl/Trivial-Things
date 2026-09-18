@@ -10,73 +10,109 @@
     <div class="container mx-auto px-4 py-8">
         <header class="text-center mb-12">
             <h1 class="text-4xl font-bold text-gray-800 mb-4">Application Portal</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto">
+            <p id="portal-description" class="text-gray-600 max-w-2xl mx-auto">
                 Welcome to the Application Portal! In local environments running via Docker Compose (<code class="bg-gray-200 px-1 py-0.5 rounded text-sm">docker compose up</code>), each application is accessible on its assigned local port.
             </p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- App Cards -->
-            <a href="http://localhost:8001" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8001" data-render-slug="interactive-scoreboard" href="http://localhost:8001" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Interactive Scoreboard</h5>
-                <p class="font-normal text-gray-700">Port 8001 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8001 (Local)</p>
             </a>
 
-            <a href="http://localhost:8002" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8002" data-render-slug="mcq-flashcards" href="http://localhost:8002" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">MCQ Flashcards</h5>
-                <p class="font-normal text-gray-700">Port 8002 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8002 (Local)</p>
             </a>
 
-            <a href="http://localhost:8003" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8003" data-render-slug="pdf-grid-flashcards" href="http://localhost:8003" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">PDF Grid Flashcards</h5>
-                <p class="font-normal text-gray-700">Port 8003 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8003 (Local)</p>
             </a>
 
-            <a href="http://localhost:8004" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8004" data-render-slug="periodic-name" href="http://localhost:8004" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Periodic Name</h5>
-                <p class="font-normal text-gray-700">Port 8004 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8004 (Local)</p>
             </a>
 
-            <a href="http://localhost:8005" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8005" data-render-slug="price-time-machine" href="http://localhost:8005" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Price Time Machine</h5>
-                <p class="font-normal text-gray-700">Port 8005 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8005 (Local)</p>
             </a>
 
-            <a href="http://localhost:8006" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8006" data-render-slug="quarterly-calendar" href="http://localhost:8006" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Quarterly Calendar</h5>
-                <p class="font-normal text-gray-700">Port 8006 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8006 (Local)</p>
             </a>
 
-            <a href="http://localhost:8007" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8007" data-render-slug="right-here-right-now" href="http://localhost:8007" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Right Here Right Now</h5>
-                <p class="font-normal text-gray-700">Port 8007 (Next.js Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8007 (Next.js Local)</p>
             </a>
 
-            <a href="http://localhost:8008" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8008" data-render-slug="sliding-rows-flashcards" href="http://localhost:8008" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Sliding Rows Flashcards</h5>
-                <p class="font-normal text-gray-700">Port 8008 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8008 (Local)</p>
             </a>
 
-            <a href="http://localhost:8009" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8009" data-render-slug="trivia-flashcards" href="http://localhost:8009" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Trivia Flashcards</h5>
-                <p class="font-normal text-gray-700">Port 8009 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8009 (Local)</p>
             </a>
 
-            <a href="http://localhost:8010" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8010" data-render-slug="what-the-spell" href="http://localhost:8010" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">What The Spell</h5>
-                <p class="font-normal text-gray-700">Port 8010 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8010 (Local)</p>
             </a>
 
-            <a href="http://localhost:8011" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8011" data-render-slug="where-in-the-world" href="http://localhost:8011" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Where In The World</h5>
-                <p class="font-normal text-gray-700">Port 8011 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8011 (Local)</p>
             </a>
 
-            <a href="http://localhost:8012" class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
+            <a data-local-port="8012" data-render-slug="whovian-degrees" href="http://localhost:8012" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Whovian Degrees</h5>
-                <p class="font-normal text-gray-700">Port 8012 (Local)</p>
+                <p class="app-subtext font-normal text-gray-700">Port 8012 (Local)</p>
             </a>
         </div>
     </div>
+
+    <script>
+        (function() {
+            var hostname = window.location.hostname;
+            var isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
+            var cards = document.querySelectorAll('.app-card');
+
+            cards.forEach(function(card) {
+                var localPort = card.getAttribute('data-local-port');
+                var renderSlug = card.getAttribute('data-render-slug');
+                var subtextEl = card.querySelector('.app-subtext');
+
+                if (isLocal) {
+                    card.href = 'http://' + hostname + ':' + localPort;
+                    if (subtextEl) {
+                        var isNext = localPort === '8007';
+                        subtextEl.textContent = 'Port ' + localPort + (isNext ? ' (Next.js Local)' : ' (Local)');
+                    }
+                } else {
+                    card.href = 'https://' + renderSlug + '.onrender.com';
+                    if (subtextEl) {
+                        subtextEl.textContent = renderSlug + '.onrender.com';
+                    }
+                }
+            });
+
+            var desc = document.getElementById('portal-description');
+            if (desc) {
+                if (isLocal) {
+                    desc.innerHTML = 'Welcome to the Application Portal! In local environments running via Docker Compose (<code class="bg-gray-200 px-1 py-0.5 rounded text-sm">docker compose up</code>), each application is accessible on its assigned local port.';
+                } else {
+                    desc.textContent = 'Welcome to the Application Portal! Click on any application below to open its hosted service.';
+                }
+            }
+        })();
+    </script>
 </body>
 </html>
