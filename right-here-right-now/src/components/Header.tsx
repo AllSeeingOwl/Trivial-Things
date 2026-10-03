@@ -1,9 +1,32 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import FilterButtons from './FilterButtons';
 
 export default function Header() {
+  const [portalUrl, setPortalUrl] = useState('https://trivial-things.onrender.com');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const h = window.location.hostname;
+      if (h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || h.startsWith('192.168.') || h.startsWith('10.')) {
+        setPortalUrl(`http://${h}:8080`);
+      }
+    }
+  }, []);
+
   return (
-    <header className="mb-6 border-b border-neutral-800 pb-2">
+    <header className="mb-6 border-b border-neutral-800 pb-4">
+      <nav className="mb-6 -mx-6 -mt-6 md:-mx-10 md:-mt-10 bg-neutral-900 text-white px-6 py-3 flex justify-between items-center text-sm border-b border-neutral-800" aria-label="Portal Navigation">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-gray-100">Right Here Right Now Portal</span>
+          <span className="bg-neutral-800 text-neutral-400 px-2 py-0.5 rounded-full text-xs border border-neutral-700">Standalone Service</span>
+        </div>
+        <a href={portalUrl} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-semibold transition">
+          ← Back to Central Portal
+        </a>
+      </nav>
+
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight mb-2">

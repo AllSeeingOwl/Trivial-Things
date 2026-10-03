@@ -11,71 +11,120 @@
         <header class="text-center mb-12">
             <h1 class="text-4xl font-bold text-gray-800 mb-4">Application Portal</h1>
             <p id="portal-description" class="text-gray-600 max-w-2xl mx-auto">
-                Welcome to the Application Portal! In local environments running via Docker Compose (<code class="bg-gray-200 px-1 py-0.5 rounded text-sm">docker compose up</code>), each application is accessible on its assigned local port.
+                Welcome to the Application Portal! Each application runs independently as its own standalone service.
             </p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- App Cards -->
-            <a data-local-port="8001" data-render-slug="trivial-things-interactive-scoreboard" href="http://localhost:8001" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Interactive Scoreboard</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8001 (Local)</p>
+            <a data-local-port="8001" data-render-slug="trivial-things-interactive-scoreboard" href="http://localhost:8001" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Interactive Scoreboard</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8001 (Local)</p>
             </a>
 
-            <a data-local-port="8002" data-render-slug="trivial-things-mcq-flashcards" href="http://localhost:8002" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">MCQ Flashcards</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8002 (Local)</p>
+            <a data-local-port="8002" data-render-slug="trivial-things-mcq-flashcards" href="http://localhost:8002" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">MCQ Flashcards</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8002 (Local)</p>
             </a>
 
-            <a data-local-port="8003" data-render-slug="trivial-things-pdf-grid-flashcards" href="http://localhost:8003" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">PDF Grid Flashcards</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8003 (Local)</p>
+            <a data-local-port="8003" data-render-slug="trivial-things-pdf-grid-flashcards" href="http://localhost:8003" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">PDF Grid Flashcards</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8003 (Local)</p>
             </a>
 
-            <a data-local-port="8004" data-render-slug="trivial-things-periodic-name" href="http://localhost:8004" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Periodic Name</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8004 (Local)</p>
+            <a data-local-port="8004" data-render-slug="trivial-things-periodic-name" href="http://localhost:8004" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Periodic Name</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8004 (Local)</p>
             </a>
 
-            <a data-local-port="8005" data-render-slug="trivial-things-price-time-machine" href="http://localhost:8005" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Price Time Machine</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8005 (Local)</p>
+            <a data-local-port="8005" data-render-slug="trivial-things-price-time-machine" href="http://localhost:8005" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Price Time Machine</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8005 (Local)</p>
             </a>
 
-            <a data-local-port="8006" data-render-slug="trivial-things-quarterly-calendar" href="http://localhost:8006" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Quarterly Calendar</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8006 (Local)</p>
+            <a data-local-port="8006" data-render-slug="trivial-things-quarterly-calendar" href="http://localhost:8006" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Quarterly Calendar</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8006 (Local)</p>
             </a>
 
-            <a data-local-port="8007" data-render-slug="trivial-things-right-here-right-now" href="http://localhost:8007" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Right Here Right Now</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8007 (Next.js Local)</p>
+            <a data-local-port="8007" data-render-slug="trivial-things-right-here-right-now" href="http://localhost:8007" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Right Here Right Now</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8007 (Next.js Local)</p>
             </a>
 
-            <a data-local-port="8008" data-render-slug="trivial-things-sliding-rows-flashcards" href="http://localhost:8008" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Sliding Rows Flashcards</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8008 (Local)</p>
+            <a data-local-port="8008" data-render-slug="trivial-things-sliding-rows-flashcards" href="http://localhost:8008" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Sliding Rows Flashcards</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8008 (Local)</p>
             </a>
 
-            <a data-local-port="8009" data-render-slug="trivial-things-trivia-flashcards" href="http://localhost:8009" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Trivia Flashcards</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8009 (Local)</p>
+            <a data-local-port="8009" data-render-slug="trivial-things-trivia-flashcards" href="http://localhost:8009" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Trivia Flashcards</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8009 (Local)</p>
             </a>
 
-            <a data-local-port="8010" data-render-slug="trivial-things-what-the-spell" href="http://localhost:8010" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">What The Spell</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8010 (Local)</p>
+            <a data-local-port="8010" data-render-slug="trivial-things-what-the-spell" href="http://localhost:8010" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">What The Spell</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8010 (Local)</p>
             </a>
 
-            <a data-local-port="8011" data-render-slug="trivial-things-where-in-the-world" href="http://localhost:8011" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Where In The World</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8011 (Local)</p>
+            <a data-local-port="8011" data-render-slug="trivial-things-where-in-the-world" href="http://localhost:8011" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Where In The World</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8011 (Local)</p>
             </a>
 
-            <a data-local-port="8012" data-render-slug="trivial-things-whovian-degrees" href="http://localhost:8012" class="app-card block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50 transition duration-150 ease-in-out">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Whovian Degrees</h5>
-                <p class="app-subtext font-normal text-gray-700">Port 8012 (Local)</p>
+            <a data-local-port="8012" data-render-slug="trivial-things-whovian-degrees" href="http://localhost:8012" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Whovian Degrees</h5>
+                    <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
+                </div>
+                <p class="app-subtext font-normal text-gray-700 text-sm">Port 8012 (Local)</p>
             </a>
+        </div>
+    </div>
+
+    <!-- Spin-up / Fallback Loading Overlay -->
+    <div id="activation-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center">
+            <div class="mx-auto w-12 h-12 mb-4 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <h3 id="modal-app-title" class="text-xl font-bold text-gray-900 mb-2">Launching Application...</h3>
+            <p id="modal-app-desc" class="text-sm text-gray-600 mb-6">Connecting to standalone service. On free instances, cold starts may take up to 50 seconds.</p>
+            <div class="flex justify-center gap-3">
+                <a id="modal-direct-link" href="#" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition">Open Direct Link</a>
+                <button id="modal-close-btn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium text-sm transition">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -84,24 +133,62 @@
             var hostname = window.location.hostname;
             var isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
             var cards = document.querySelectorAll('.app-card');
+            var modal = document.getElementById('activation-modal');
+            var modalTitle = document.getElementById('modal-app-title');
+            var modalLink = document.getElementById('modal-direct-link');
+            var modalClose = document.getElementById('modal-close-btn');
+
+            if (modalClose) {
+                modalClose.addEventListener('click', function() {
+                    modal.classList.add('hidden');
+                });
+            }
 
             cards.forEach(function(card) {
                 var localPort = card.getAttribute('data-local-port');
                 var renderSlug = card.getAttribute('data-render-slug');
                 var subtextEl = card.querySelector('.app-subtext');
+                var titleEl = card.querySelector('h5');
+                var badgeEl = card.querySelector('.status-badge');
 
-                if (isLocal) {
-                    card.href = 'http://' + hostname + ':' + localPort;
-                    if (subtextEl) {
+                var targetUrl = isLocal
+                    ? 'http://' + hostname + ':' + localPort
+                    : 'https://' + renderSlug + '.onrender.com';
+
+                card.href = targetUrl;
+
+                if (subtextEl) {
+                    if (isLocal) {
                         var isNext = localPort === '8007';
                         subtextEl.textContent = 'Port ' + localPort + (isNext ? ' (Next.js Local)' : ' (Local)');
-                    }
-                } else {
-                    card.href = 'https://' + renderSlug + '.onrender.com';
-                    if (subtextEl) {
+                    } else {
                         subtextEl.textContent = renderSlug + '.onrender.com';
                     }
                 }
+
+                // Health Ping check
+                if (!isLocal && badgeEl) {
+                    fetch(targetUrl, { mode: 'no-cors' }).then(function() {
+                        badgeEl.textContent = 'Active';
+                        badgeEl.className = 'status-badge text-xs px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 font-medium';
+                    }).catch(function() {
+                        badgeEl.textContent = 'Spinning Up';
+                        badgeEl.className = 'status-badge text-xs px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 font-medium';
+                    });
+                }
+
+                card.addEventListener('click', function(e) {
+                    if (!isLocal) {
+                        e.preventDefault();
+                        if (modalTitle) modalTitle.textContent = 'Connecting to ' + (titleEl ? titleEl.textContent : 'Application') + '...';
+                        if (modalLink) modalLink.href = targetUrl;
+                        if (modal) modal.classList.remove('hidden');
+
+                        setTimeout(function() {
+                            window.location.href = targetUrl;
+                        }, 800);
+                    }
+                });
             });
 
             var desc = document.getElementById('portal-description');
@@ -109,7 +196,7 @@
                 if (isLocal) {
                     desc.innerHTML = 'Welcome to the Application Portal! In local environments running via Docker Compose (<code class="bg-gray-200 px-1 py-0.5 rounded text-sm">docker compose up</code>), each application is accessible on its assigned local port.';
                 } else {
-                    desc.textContent = 'Welcome to the Application Portal! Click on any application below to open its hosted service.';
+                    desc.textContent = 'Welcome to the Application Portal! Click on any standalone application below to open its dedicated service.';
                 }
             }
         })();
