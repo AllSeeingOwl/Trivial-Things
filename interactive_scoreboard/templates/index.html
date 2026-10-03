@@ -9,13 +9,13 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: #f4f7f6;
             color: #333;
         }
         .container {
             max-width: 1000px;
-            margin: 0 auto;
+            margin: 20px auto;
             background: #fff;
             padding: 20px 40px;
             border-radius: 8px;
@@ -137,6 +137,25 @@
     </style>
 </head>
 <body>
+    <nav style="background-color: #1f2937; color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-family: sans-serif; font-size: 14px; border-bottom: 1px solid #374151;" aria-label="Portal Navigation">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-weight: 700; color: #f3f4f6;">Interactive Scoreboard Portal</span>
+            <span style="background-color: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 9999px; font-size: 12px;">Standalone Service</span>
+        </div>
+        <a id="portal-back-link" href="https://trivial-things.onrender.com" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">← Back to Central Portal</a>
+    </nav>
+    <script>
+        (function() {
+            var link = document.getElementById('portal-back-link');
+            if (link) {
+                var h = window.location.hostname;
+                if (h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || h.startsWith('192.168.') || h.startsWith('10.')) {
+                    link.href = 'http://' + h + ':8080';
+                }
+            }
+        })();
+    </script>
+
     <div class="container">
         <div class="header-actions">
             <h1>Interactive Scoreboard</h1>
