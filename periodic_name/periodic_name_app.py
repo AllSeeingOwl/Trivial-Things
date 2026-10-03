@@ -1,7 +1,10 @@
 import os
 from flask import Flask, request, render_template
 
-from periodic_name.elements_dict import ELEMENTS
+try:
+    from periodic_name.elements_dict import ELEMENTS
+except ModuleNotFoundError:
+    from elements_dict import ELEMENTS
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB limit
