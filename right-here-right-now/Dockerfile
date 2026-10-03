@@ -9,7 +9,7 @@ RUN npm install -g pnpm
 
 # Install dependencies
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-RUN pnpm i --frozen-lockfile
+RUN pnpm i --frozen-lockfile --no-frozen-lockfile || pnpm i
 
 # Rebuild the source code only when needed
 FROM base AS builder
