@@ -190,4 +190,4 @@ const App = () => {
     );
 };
 
-export default App;
+// export default App; // Commented out for browser-side Babel standalone compatibility
