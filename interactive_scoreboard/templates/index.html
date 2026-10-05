@@ -162,13 +162,13 @@
             <a href="/api/export" class="btn btn-success">Export to CSV</a>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('rankings')">Rankings</button>
-            <button class="tab-btn" onclick="showTab('statistics')">Player Statistics</button>
-            <button class="tab-btn" onclick="showTab('add-score')">Add Score</button>
+        <div class="tabs" role="tablist" aria-label="Scoreboard Sections">
+            <button id="tab-rankings" class="tab-btn active" role="tab" aria-selected="true" aria-controls="rankings" onclick="showTab('rankings')">Rankings</button>
+            <button id="tab-statistics" class="tab-btn" role="tab" aria-selected="false" aria-controls="statistics" onclick="showTab('statistics')">Player Statistics</button>
+            <button id="tab-add-score" class="tab-btn" role="tab" aria-selected="false" aria-controls="add-score" onclick="showTab('add-score')">Add Score</button>
         </div>
 
-        <div id="rankings" class="tab-content active">
+        <div id="rankings" class="tab-content active" role="tabpanel" aria-labelledby="tab-rankings">
             <h2>Global Rankings</h2>
             <table id="scores-table">
                 <thead>
@@ -186,7 +186,7 @@
             </table>
         </div>
 
-        <div id="statistics" class="tab-content">
+        <div id="statistics" class="tab-content" role="tabpanel" aria-labelledby="tab-statistics">
             <h2>Player Statistics</h2>
             <table id="stats-table">
                 <thead>
@@ -204,7 +204,7 @@
             </table>
         </div>
 
-        <div id="add-score" class="tab-content">
+        <div id="add-score" class="tab-content" role="tabpanel" aria-labelledby="tab-add-score">
             <h2>Submit New Score</h2>
             <form id="score-form">
                 <div class="form-group">
@@ -231,10 +231,17 @@
     <script>
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+                el.setAttribute('aria-selected', 'false');
+            });
 
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
+                targetTab.setAttribute('aria-selected', 'true');
+            }
 
             if (tabId === 'rankings') loadScores();
             if (tabId === 'statistics') loadStats();
@@ -354,11 +361,6 @@
                     alert('Score submitted successfully!');
                     document.getElementById('score-form').reset();
                     showTab('rankings');
-                    // Find the tab button for rankings and make it active manually since we're calling showTab programmatically
-                    document.querySelectorAll('.tab-btn').forEach(btn => {
-                        if(btn.textContent === 'Rankings') btn.classList.add('active');
-                        else btn.classList.remove('active');
-                    });
                 } else {
                     const err = await response.json();
                     alert('Error submitting score: ' + (err.error || 'Unknown error'));
