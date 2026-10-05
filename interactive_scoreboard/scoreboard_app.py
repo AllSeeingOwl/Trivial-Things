@@ -7,6 +7,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+# Security baseline
+app.config['DEBUG'] = False
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024 # 1MB limit
+
 # Configure from environment variables
 PORT = int(os.environ.get('PORT', 5000))
 HOST = os.environ.get('HOST', '0.0.0.0')
@@ -39,6 +43,14 @@ class ScoreEntry(db.Model):
 
 with app.app_context():
     db.create_all()
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;"
+    return response
 
 @app.route('/')
 def index():
