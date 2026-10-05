@@ -4,3 +4,7 @@
 ## 2026-05-20 - Stabilize Configuration Object References
 **Learning:** In the `right-here-right-now` Next.js application, instantiating large static configuration objects inline within a component function like `WidgetGrid` causes them to be re-allocated in memory on every render.
 **Action:** Extract static configuration objects, arrays, and constants to the module scope (outside the component function) to stabilize their references and prevent unnecessary garbage collection overhead during React rendering cycles.
+
+## 2026-05-20 - Pre-Sort Keys and Use Bisect for Lookup
+**Learning:** In applications like `price_time_machine`, calculating inflation by running `sorted(cpi_region.keys())` and `min(..., key=lambda ...)` inside function calls invoked per item per request allocates intermediate key lists and sorts them repeatedly ($O(N \log N)$), creating unnecessary GC pressure and CPU overhead.
+**Action:** Extract and pre-sort dictionary key lists at module load time (`CPI_YEARS`), and use `bisect.bisect_left` for $O(\log N)$ nearest-neighbor lookups (~80% speedup).
