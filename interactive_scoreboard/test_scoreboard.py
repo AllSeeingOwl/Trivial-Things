@@ -119,3 +119,15 @@ def test_add_score_database_error(client):
         assert rv.status_code == 500
         assert json.loads(rv.data) == {'error': 'Failed to add score'}
         mock_rollback.assert_called_once()
+
+def test_security_headers_and_config(client):
+    """Test security baseline headers and app config settings."""
+    assert app.config['MAX_CONTENT_LENGTH'] == 1 * 1024 * 1024
+    assert app.config['DEBUG'] is False
+
+    rv = client.get('/')
+    assert rv.status_code == 200
+    assert rv.headers.get('X-Content-Type-Options') == 'nosniff'
+    assert rv.headers.get('X-Frame-Options') == 'SAMEORIGIN'
+    assert 'max-age=31536000' in rv.headers.get('Strict-Transport-Security', '')
+    assert "default-src 'self'" in rv.headers.get('Content-Security-Policy', '')
