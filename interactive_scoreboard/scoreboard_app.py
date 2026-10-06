@@ -71,20 +71,47 @@ def get_scores():
 def add_score():
     data = request.json
 
-    if not data or 'player_name' not in data or 'score' not in data:
+    if not data or not isinstance(data, dict):
+        return jsonify({'error': 'Invalid or missing request body'}), 400
+
+    player_name = data.get('player_name')
+    score_val = data.get('score')
+    time_taken_val = data.get('time_taken')
+    avatar_url = data.get('avatar_url')
+
+    if player_name is None or score_val is None:
         return jsonify({'error': 'Missing player_name or score'}), 400
 
+    # Sentinel: Type, empty string, and length validation to prevent unhandled TypeErrors and DB/memory bloat DoS
+    if not isinstance(player_name, str) or not player_name.strip() or len(player_name) > 100:
+        return jsonify({'error': 'Invalid player_name format or length exceeded'}), 400
+
+    if avatar_url is not None and (not isinstance(avatar_url, str) or len(avatar_url) > 255):
+        return jsonify({'error': 'Invalid avatar_url format or length exceeded'}), 400
+
+    # Sentinel: Enforce string length limits before numeric parsing to prevent CPU exhaustion DoS in integer/float casting
+    score_str = str(score_val)
+    if len(score_str) > 10:
+        return jsonify({'error': 'Score value length exceeded'}), 400
+
+    if time_taken_val:
+        time_taken_str = str(time_taken_val)
+        if len(time_taken_str) > 10:
+            return jsonify({'error': 'time_taken value length exceeded'}), 400
+
     try:
+        score_int = int(score_val)
+        time_taken_float = float(time_taken_val) if time_taken_val else None
         new_entry = ScoreEntry(
-            player_name=data['player_name'],
-            score=int(data['score']),
-            time_taken=float(data['time_taken']) if 'time_taken' in data and data['time_taken'] else None,
-            avatar_url=data.get('avatar_url')
+            player_name=player_name.strip(),
+            score=score_int,
+            time_taken=time_taken_float,
+            avatar_url=avatar_url
         )
         db.session.add(new_entry)
         db.session.commit()
         return jsonify(new_entry.to_dict()), 201
-    except ValueError:
+    except (ValueError, TypeError):
         return jsonify({'error': 'Invalid data types for score or time_taken'}), 400
     except Exception as e:
         db.session.rollback()
