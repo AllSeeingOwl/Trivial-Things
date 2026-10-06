@@ -131,3 +131,44 @@ def test_security_headers_and_config(client):
     assert rv.headers.get('X-Frame-Options') == 'SAMEORIGIN'
     assert 'max-age=31536000' in rv.headers.get('Strict-Transport-Security', '')
     assert "default-src 'self'" in rv.headers.get('Content-Security-Policy', '')
+
+def test_add_score_security_validation(client):
+    """Test security input validation on /api/scores POST endpoint."""
+    # 1. Non-dict JSON payload (list)
+    rv = client.post('/api/scores', json=['player_name', 'score'])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid or missing request body'}
+
+    # 2. Non-string player_name
+    rv = client.post('/api/scores', json={'player_name': 12345, 'score': 100})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid player_name format or length exceeded'}
+
+    # 3. Empty or whitespace player_name
+    rv = client.post('/api/scores', json={'player_name': '   ', 'score': 100})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid player_name format or length exceeded'}
+
+    # 4. Oversized player_name (>100 chars)
+    rv = client.post('/api/scores', json={'player_name': 'A' * 101, 'score': 100})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid player_name format or length exceeded'}
+
+    # 5. Oversized score string (CPU DoS prevention)
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': '9' * 20})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Score value length exceeded'}
+
+    # 6. Oversized time_taken string
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'time_taken': '9' * 20})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'time_taken value length exceeded'}
+
+    # 7. Non-string or oversized avatar_url
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'avatar_url': 12345})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid avatar_url format or length exceeded'}
+
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'avatar_url': 'http://example.com/' + 'a' * 250})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid avatar_url format or length exceeded'}
