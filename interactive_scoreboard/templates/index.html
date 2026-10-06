@@ -81,9 +81,14 @@
             border: none;
             cursor: pointer;
             font-size: 14px;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
         .btn:hover {
             background: #2980b9;
+        }
+        .btn:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
         }
         .btn-success {
             background: #2ecc71;
@@ -159,7 +164,7 @@
     <div class="container">
         <div class="header-actions">
             <h1>Interactive Scoreboard</h1>
-            <a href="/api/export" class="btn btn-success">Export to CSV</a>
+            <a href="/api/export" class="btn btn-success" aria-label="Export scoreboard rankings to CSV file">Export to CSV</a>
         </div>
 
         <div class="tabs" role="tablist" aria-label="Scoreboard Sections">
