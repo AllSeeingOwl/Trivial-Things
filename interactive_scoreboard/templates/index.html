@@ -283,6 +283,11 @@
                 const tbody = document.querySelector('#scores-table tbody');
                 tbody.innerHTML = '';
 
+                // ⚡ Bolt Optimization: DocumentFragment for DOM insertions
+                // Using a DocumentFragment batches all tr insertions into memory before attaching
+                // to the DOM, eliminating repetitive reflows and repaints during rendering.
+                const fragment = document.createDocumentFragment();
+
                 scores.forEach((entry, index) => {
                     const date = entry.timestamp ? escapeHtml(new Date(entry.timestamp).toLocaleString()) : 'N/A';
                     const timeTaken = entry.time_taken !== null ? escapeHtml(entry.time_taken) : 'N/A';
@@ -300,8 +305,9 @@
                         <td>${timeTaken}</td>
                         <td>${date}</td>
                     `;
-                    tbody.appendChild(tr);
+                    fragment.appendChild(tr);
                 });
+                tbody.appendChild(fragment);
             } catch (error) {
                 console.error('Error loading scores:', error);
             }
@@ -317,6 +323,11 @@
 
                 const tbody = document.querySelector('#stats-table tbody');
                 tbody.innerHTML = '';
+
+                // ⚡ Bolt Optimization: DocumentFragment for DOM insertions
+                // Using a DocumentFragment batches all tr insertions into memory before attaching
+                // to the DOM, eliminating repetitive reflows and repaints during rendering.
+                const fragment = document.createDocumentFragment();
 
                 stats.forEach(player => {
                     const safeName = escapeHtml(player.player_name);
@@ -336,8 +347,9 @@
                         <td><strong>${safeHighScore}</strong></td>
                         <td>${safeLatestScore}</td>
                     `;
-                    tbody.appendChild(tr);
+                    fragment.appendChild(tr);
                 });
+                tbody.appendChild(fragment);
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
