@@ -42,6 +42,7 @@ def apply_caching(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'none';"
     return response
 
 @app.route('/')
@@ -55,25 +56,46 @@ def get_events():
 
 @app.route('/api/events', methods=['POST'])
 def create_event():
-    data = request.get_json()
-    if not data or 'title' not in data or 'start_date' not in data or 'end_date' not in data or 'category' not in data:
+    data = request.get_json(silent=True)
+    if not data or not isinstance(data, dict):
+        return jsonify({'error': 'Invalid or missing request body'}), 400
+
+    if 'title' not in data or 'start_date' not in data or 'end_date' not in data or 'category' not in data:
         return jsonify({'error': 'Missing required fields'}), 400
 
+    title = data.get('title')
+    category = data.get('category')
+    start_date_val = data.get('start_date')
+    end_date_val = data.get('end_date')
+
+    # Sentinel: Type, empty string, and length validation to prevent unhandled TypeErrors and DB/memory bloat DoS
+    if not isinstance(title, str) or not title.strip() or len(title) > 100:
+        return jsonify({'error': 'Invalid title format or length exceeded'}), 400
+
+    if not isinstance(category, str) or not category.strip() or len(category) > 50:
+        return jsonify({'error': 'Invalid category format or length exceeded'}), 400
+
+    if not isinstance(start_date_val, str) or len(start_date_val) > 20:
+        return jsonify({'error': 'Invalid start_date format or length exceeded'}), 400
+
+    if not isinstance(end_date_val, str) or len(end_date_val) > 20:
+        return jsonify({'error': 'Invalid end_date format or length exceeded'}), 400
+
     try:
-        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
-    except ValueError:
+        start_date = datetime.strptime(start_date_val, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date_val, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
         return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
 
     if end_date < start_date:
         return jsonify({'error': 'End date must be after or equal to start date'}), 400
 
     new_event = Event(
-        title=data['title'],
+        title=title.strip(),
         start_date=start_date,
         end_date=end_date,
-        category=data['category'],
-        is_tentative=data.get('is_tentative', False)
+        category=category.strip(),
+        is_tentative=bool(data.get('is_tentative', False))
     )
 
     db.session.add(new_event)
