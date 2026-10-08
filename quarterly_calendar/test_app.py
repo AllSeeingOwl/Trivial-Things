@@ -1,21 +1,34 @@
 import os
 import unittest
 import tempfile
+
+# Set DB_FILE environment variable before importing app to ensure
+# SQLAlchemy initializes using the temporary test database path.
+test_db_dir = tempfile.mkdtemp()
+db_path = os.path.join(test_db_dir, 'test.db')
+os.environ['DB_FILE'] = db_path
+
 from quarterly_calendar_app import app, db
 
 class QuarterlyCalendarTestCase(unittest.TestCase):
-    def setUp(self):
-        self.db_fd, self.db_path = tempfile.mkstemp()
-        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{self.db_path}'
+    @classmethod
+    def setUpClass(cls):
         app.config['TESTING'] = True
-        self.client = app.test_client()
-
         with app.app_context():
             db.create_all()
 
-    def tearDown(self):
-        os.close(self.db_fd)
-        os.unlink(self.db_path)
+    @classmethod
+    def tearDownClass(cls):
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()
+        if os.path.exists(db_path):
+            os.unlink(db_path)
+        if os.path.exists(test_db_dir):
+            os.rmdir(test_db_dir)
+
+    def setUp(self):
+        self.client = app.test_client()
 
     def test_security_headers(self):
         response = self.client.get('/')
