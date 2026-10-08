@@ -131,18 +131,18 @@ def reset_all_questions():
         conn.execute('UPDATE question_state SET used = 0')
         conn.commit()
 
-        # Also to clear out ones that aren't in SQLite yet but are TRUE in CSV,
-        # we could just insert FALSE for everything, or clear the cache and reload
-
-        # Actually a better reset is to mark ALL questions as FALSE in DB
+        # ⚡ Bolt Optimization: Use executemany to avoid N+1 query pattern
+        # Batch all question status updates into a single database operation
+        # instead of executing individual SQL statements in a loop.
         qs = load_questions()
-        for q_id, q_data in qs.items():
-            if q_data['used']:
-                conn.execute('''
-                    INSERT INTO question_state (id, used) VALUES (?, ?)
-                    ON CONFLICT(id) DO UPDATE SET used = excluded.used
-                ''', (q_id, False))
-        conn.commit()
+        all_data = [(q_id, False) for q_id, q_data in qs.items() if q_data['used']]
+
+        if all_data:
+            conn.executemany('''
+                INSERT INTO question_state (id, used) VALUES (?, ?)
+                ON CONFLICT(id) DO UPDATE SET used = excluded.used
+            ''', all_data)
+            conn.commit()
 
     # Synchronize the cache reset
     global _questions_cache
