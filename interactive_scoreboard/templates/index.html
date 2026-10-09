@@ -90,6 +90,11 @@
             outline: 2px solid #2563eb;
             outline-offset: 2px;
         }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #7f8c8d;
+        }
         .btn-success {
             background: #2ecc71;
         }
@@ -358,6 +363,9 @@
         document.getElementById('score-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+
             const data = {
                 player_name: document.getElementById('player_name').value,
                 score: document.getElementById('score').value,
@@ -366,6 +374,10 @@
             };
 
             try {
+                submitBtn.disabled = true;
+                submitBtn.setAttribute('aria-busy', 'true');
+                submitBtn.textContent = 'Submitting...';
+
                 const response = await fetch('/api/scores', {
                     method: 'POST',
                     headers: {
@@ -385,6 +397,10 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error submitting score');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.removeAttribute('aria-busy');
+                submitBtn.textContent = originalText;
             }
         });
 
