@@ -43,6 +43,14 @@ def test_invalid_region_fallback(client):
     html = response.data.decode('utf-8')
     assert 'United States ($)' in html
 
+def test_oversized_region_fallback(client):
+    """Test that an oversized region query parameter falls back safely to US."""
+    oversized_region = 'A' * 1000
+    response = client.get(f'/?region={oversized_region}')
+    assert response.status_code == 200
+    html = response.data.decode('utf-8')
+    assert 'United States ($)' in html
+
 def test_calculate_inflation_logic():
     """Test the dynamic inflation mathematical logic."""
     # Based on our mock data for US:

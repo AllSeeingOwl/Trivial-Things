@@ -128,7 +128,13 @@ def calculate_inflation(region_code, year, historical_price):
 
 @app.route('/')
 def index():
-    region_code = request.args.get('region', 'US').upper()
+    # Sentinel: Enforce string length limits on query parameters to prevent CPU/memory exhaustion DoS
+    raw_region = request.args.get('region', 'US')
+    if not isinstance(raw_region, str) or len(raw_region) > 10:
+        region_code = 'US'
+    else:
+        region_code = raw_region.upper()
+
     if region_code not in REGIONS:
         region_code = 'US'
 
