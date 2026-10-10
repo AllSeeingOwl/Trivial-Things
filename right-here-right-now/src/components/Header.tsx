@@ -22,8 +22,12 @@ export default function Header() {
           <span className="font-bold text-gray-100">Right Here Right Now Portal</span>
           <span className="bg-neutral-800 text-neutral-400 px-2 py-0.5 rounded-full text-xs border border-neutral-700">Standalone Service</span>
         </div>
-        <a href={portalUrl} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-semibold transition">
-          ← Back to Central Portal
+        <a
+          href={portalUrl}
+          aria-label="Back to Central Portal"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+        >
+          <span aria-hidden="true">← </span>Back to Central Portal
         </a>
       </nav>
 
