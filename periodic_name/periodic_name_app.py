@@ -7,6 +7,8 @@ except ModuleNotFoundError:
     from elements_dict import ELEMENTS
 
 app = Flask(__name__)
+# Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
+app.config['DEBUG'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB limit
 
 @app.after_request
@@ -67,4 +69,4 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     host = os.environ.get('HOST', '127.0.0.1')
-    app.run(host=host, port=port)
+    app.run(debug=False, host=host, port=port)
