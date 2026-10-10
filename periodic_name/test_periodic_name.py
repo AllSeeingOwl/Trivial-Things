@@ -60,5 +60,8 @@ class PeriodicNameTestCase(unittest.TestCase):
         self.assertEqual(response.headers.get('X-Content-Type-Options'), 'nosniff')
         self.assertEqual(response.headers.get('X-Frame-Options'), 'DENY')
 
+    def test_debug_mode_disabled(self):
+        self.assertFalse(app.config['DEBUG'])
+
 if __name__ == '__main__':
     unittest.main()
