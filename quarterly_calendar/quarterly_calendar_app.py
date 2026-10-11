@@ -104,9 +104,15 @@ def create_event():
 @app.route('/api/events/<int:event_id>', methods=['DELETE'])
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
-    db.session.delete(event)
-    db.session.commit()
-    return '', 204
+    try:
+        db.session.delete(event)
+        db.session.commit()
+        return '', 204
+    except Exception as e:
+        db.session.rollback()
+        # Sentinel: Log actual error internally but return safe generic message
+        print(f"Error deleting event {event_id}: {e}")
+        return jsonify({'error': 'Failed to delete event'}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5006))
