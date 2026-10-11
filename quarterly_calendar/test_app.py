@@ -1,6 +1,7 @@
 import os
 import unittest
 import tempfile
+from unittest.mock import patch
 
 # Set DB_FILE environment variable before importing app to ensure
 # SQLAlchemy initializes using the temporary test database path.
@@ -78,6 +79,46 @@ class QuarterlyCalendarTestCase(unittest.TestCase):
         }
         response = self.client.post('/api/events', json=payload)
         self.assertEqual(response.status_code, 400)
+
+    def test_delete_event_success(self):
+        payload = {
+            'title': 'Event To Delete',
+            'start_date': '2026-06-01',
+            'end_date': '2026-06-01',
+            'category': 'Other'
+        }
+        res = self.client.post('/api/events', json=payload)
+        event_id = res.get_json()['id']
+
+        del_res = self.client.delete(f'/api/events/{event_id}')
+        self.assertEqual(del_res.status_code, 204)
+
+        # Verify deletion
+        get_res = self.client.get('/api/events')
+        event_ids = [e['id'] for e in get_res.get_json()]
+        self.assertNotIn(event_id, event_ids)
+
+    def test_delete_event_not_found(self):
+        del_res = self.client.delete('/api/events/999999')
+        self.assertEqual(del_res.status_code, 404)
+
+    def test_delete_event_db_error(self):
+        payload = {
+            'title': 'Error Event',
+            'start_date': '2026-06-01',
+            'end_date': '2026-06-01',
+            'category': 'Other'
+        }
+        res = self.client.post('/api/events', json=payload)
+        event_id = res.get_json()['id']
+
+        with patch('quarterly_calendar_app.db.session.commit') as mock_commit, \
+             patch('quarterly_calendar_app.db.session.rollback') as mock_rollback:
+            mock_commit.side_effect = Exception("DB error during deletion")
+            del_res = self.client.delete(f'/api/events/{event_id}')
+            self.assertEqual(del_res.status_code, 500)
+            self.assertEqual(del_res.get_json(), {'error': 'Failed to delete event'})
+            mock_rollback.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()
