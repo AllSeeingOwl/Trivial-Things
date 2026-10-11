@@ -20,3 +20,7 @@
 ## 2026-10-10 - [Accessible Focus States and Screen Reader Labeling on Header Navigation Links]
 **Learning:** Decorative unicode arrow indicators in navigation links (e.g., `← Back to Central Portal`) are often read aloud literally by screen readers (e.g. "leftwards arrow Back to Central Portal"), and header navigation links can easily miss explicit `focus-visible` ring styles.
 **Action:** Wrap decorative directional arrows in `<span aria-hidden="true">`, provide an explicit `aria-label`, and ensure `focus-visible:ring-2` styles match the rest of the application's interactive controls.
+
+## 2026-10-11 - [Empty Data State Accessibility in Dashboard Widgets]
+**Learning:** When dashboard widgets fetch empty data arrays (0 items) without erroring, rendering an empty list container leaves screen reader users in the dark. Providing a explicit empty fallback with `role="status"`, a decorative icon marked `aria-hidden="true"`, and descriptive text ensures clear feedback across assistive technologies.
+**Action:** Always implement explicit empty state fallbacks in list/card components when item arrays are empty, assigning `role="status"` to notify screen readers dynamically.

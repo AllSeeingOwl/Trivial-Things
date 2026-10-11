@@ -65,7 +65,7 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
   // Check if we have any widgets to show for this category
   if (!showPremierLeague && !showEarthquakes && !showBooks && !showWrestling) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-center">
+      <div className="flex flex-col items-center justify-center h-64 text-center" role="status">
         <span className="text-4xl mb-4 text-gray-600" aria-hidden="true">🏗️</span>
         <h3 className="text-xl font-medium mb-2">No widgets yet</h3>
         <p className="text-[var(--text-muted)] mb-6">Check back later for updates to this category.</p>

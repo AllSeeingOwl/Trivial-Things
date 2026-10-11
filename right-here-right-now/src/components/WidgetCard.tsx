@@ -34,6 +34,11 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
             <p className="text-[var(--error)] font-medium mb-1">{data.error}</p>
             <p className="text-xs text-[var(--text-muted)]">Please try again later</p>
           </div>
+        ) : data.items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-48 text-center" role="status">
+            <span className="text-3xl mb-2 text-gray-500" aria-hidden="true">📭</span>
+            <p className="text-sm font-medium text-[var(--text-muted)]">No items currently available</p>
+          </div>
         ) : (
           <ul className="space-y-3">
             {data.items.map((item, idx) => (
