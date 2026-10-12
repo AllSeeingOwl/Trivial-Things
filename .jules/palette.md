@@ -24,3 +24,7 @@
 ## 2026-10-11 - [Empty Data State Accessibility in Dashboard Widgets]
 **Learning:** When dashboard widgets fetch empty data arrays (0 items) without erroring, rendering an empty list container leaves screen reader users in the dark. Providing a explicit empty fallback with `role="status"`, a decorative icon marked `aria-hidden="true"`, and descriptive text ensures clear feedback across assistive technologies.
 **Action:** Always implement explicit empty state fallbacks in list/card components when item arrays are empty, assigning `role="status"` to notify screen readers dynamically.
+
+## 2026-10-12 - [Central Portal Accessibility and Focus Visibility]
+**Learning:** Standalone HTML portals and landing pages often omit primary landmark elements (`<main>`), skip links, and ARIA modal attributes on loading overlays, impairing keyboard navigation flow and screen reader context.
+**Action:** Always verify that landing page portals include a `<main id="main-content" tabindex="-1">` wrapper, a top-level skip link, explicit `focus-visible` ring utilities on interactive cards, and `role="dialog"` attributes on overlay popups.
