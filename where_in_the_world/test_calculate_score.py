@@ -30,6 +30,25 @@ class TestCalculateScore(unittest.TestCase):
         response = self.client.post('/api/score', json=payload)
         self.assertEqual(response.status_code, 400)
 
+    def test_boolean_coordinates(self):
+        payload = {'lat': True, 'lng': -0.068164, 'id': "0"}
+        response = self.client.post('/api/score', json=payload)
+        self.assertEqual(response.status_code, 400)
+        data = response.get_json()
+        self.assertEqual(data['error'], 'Coordinates must be valid finite numbers within bounds')
+
+    def test_out_of_bounds_coordinates(self):
+        payload = {'lat': 100.0, 'lng': -0.068164, 'id': "0"}
+        response = self.client.post('/api/score', json=payload)
+        self.assertEqual(response.status_code, 400)
+        data = response.get_json()
+        self.assertEqual(data['error'], 'Coordinates must be valid finite numbers within bounds')
+
+    def test_nan_or_inf_coordinates(self):
+        payload = {'lat': float('nan'), 'lng': -0.068164, 'id': "0"}
+        response = self.client.post('/api/score', json=payload)
+        self.assertEqual(response.status_code, 400)
+
     def test_successful_calculation(self):
         original_questions = app.QUESTIONS
         original_questions_by_id = app.QUESTIONS_BY_ID

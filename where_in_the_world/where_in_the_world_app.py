@@ -134,10 +134,14 @@ def calculate_score():
     # Use the pre-computed QUESTIONS_BY_ID dictionary instead of an O(N) linear search
     # through the QUESTIONS list to find the target location.
     target = QUESTIONS_BY_ID.get(target_id)
-    # Security: Validate that coordinates are numeric to prevent crashes in haversine_distance
-    if not isinstance(guess_lat, (int, float)) or \
-       not isinstance(guess_lng, (int, float)):
-        return jsonify({'error': 'Coordinates must be numbers'}), 400
+    # Security: Validate that coordinates are valid finite numbers within geographical bounds
+    # Note: In Python, bool is a subclass of int, so we must explicitly check not isinstance(..., bool)
+    if isinstance(guess_lat, bool) or isinstance(guess_lng, bool) or \
+       not isinstance(guess_lat, (int, float)) or not isinstance(guess_lng, (int, float)) or \
+       math.isnan(guess_lat) or math.isnan(guess_lng) or \
+       math.isinf(guess_lat) or math.isinf(guess_lng) or \
+       not (-90 <= guess_lat <= 90) or not (-180 <= guess_lng <= 180):
+        return jsonify({'error': 'Coordinates must be valid finite numbers within bounds'}), 400
 
     if not target:
         return jsonify({'error': 'Target not found'}), 404
