@@ -217,6 +217,7 @@
         <div id="add-score" class="tab-content" role="tabpanel" aria-labelledby="tab-add-score">
             <h2>Submit New Score</h2>
             <form id="score-form">
+                <div id="form-feedback" role="status" aria-live="polite" style="display: none; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 14px; font-weight: 500;"></div>
                 <div class="form-group">
                     <label for="player_name">Player Name</label>
                     <input type="text" id="player_name" required>
@@ -360,6 +361,22 @@
             }
         }
 
+        function showFeedback(message, isSuccess) {
+            const feedback = document.getElementById('form-feedback');
+            if (!feedback) return;
+            feedback.textContent = message;
+            feedback.style.display = 'block';
+            if (isSuccess) {
+                feedback.style.backgroundColor = '#d1fae5';
+                feedback.style.color = '#065f46';
+                feedback.style.border = '1px solid #a7f3d0';
+            } else {
+                feedback.style.backgroundColor = '#fee2e2';
+                feedback.style.color = '#991b1b';
+                feedback.style.border = '1px solid #fca5a5';
+            }
+        }
+
         document.getElementById('score-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -387,16 +404,20 @@
                 });
 
                 if (response.ok) {
-                    alert('Score submitted successfully!');
+                    showFeedback('Score submitted successfully!', true);
                     document.getElementById('score-form').reset();
-                    showTab('rankings');
+                    setTimeout(() => {
+                        const feedback = document.getElementById('form-feedback');
+                        if (feedback) feedback.style.display = 'none';
+                        showTab('rankings');
+                    }, 1000);
                 } else {
                     const err = await response.json();
-                    alert('Error submitting score: ' + (err.error || 'Unknown error'));
+                    showFeedback('Error submitting score: ' + (err.error || 'Unknown error'), false);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error submitting score');
+                showFeedback('Error submitting score. Please check your connection.', false);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.removeAttribute('aria-busy');

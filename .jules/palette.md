@@ -28,3 +28,7 @@
 ## 2026-10-12 - [Central Portal Accessibility and Focus Visibility]
 **Learning:** Standalone HTML portals and landing pages often omit primary landmark elements (`<main>`), skip links, and ARIA modal attributes on loading overlays, impairing keyboard navigation flow and screen reader context.
 **Action:** Always verify that landing page portals include a `<main id="main-content" tabindex="-1">` wrapper, a top-level skip link, explicit `focus-visible` ring utilities on interactive cards, and `role="dialog"` attributes on overlay popups.
+
+## 2026-10-13 - [Inline Form Feedback over Blocking Alerts for Screen Reader Focus Context]
+**Learning:** Using native browser `alert()` popups for form submission status breaks user flow and steals window focus without allowing screen readers to easily re-focus or navigate back to invalid form inputs. Inline feedback containers with `role="status"` and `aria-live="polite"` dynamically announce success/error messages to assistive technologies while preserving keyboard focus within the form.
+**Action:** Always replace `alert()` calls on AJAX form submissions with inline status containers configured with `role="status"` and `aria-live="polite"`.
