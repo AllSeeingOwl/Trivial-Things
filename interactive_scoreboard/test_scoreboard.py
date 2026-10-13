@@ -102,6 +102,28 @@ def test_export_csv(client):
     assert 'Player Name,Score' in csv_data
     assert 'Alice,100' in csv_data
 
+def test_export_csv_formula_injection_prevention(client):
+    """Test that CSV Formula Injection triggers (=, +, -, @) are sanitized with a leading single quote."""
+    client.post('/api/scores', json={
+        'player_name': '=SUM(1,2)',
+        'score': 100,
+        'avatar_url': '+http://example.com/evil.png'
+    })
+    client.post('/api/scores', json={
+        'player_name': '@admin',
+        'score': 90,
+        'avatar_url': '-cmd|"/C calc"!A1'
+    })
+
+    rv = client.get('/api/export')
+    assert rv.status_code == 200
+
+    csv_data = rv.data.decode('utf-8')
+    assert "'=SUM(1,2)" in csv_data
+    assert "'+http://example.com/evil.png" in csv_data
+    assert "'@admin" in csv_data
+    assert "'-cmd|" in csv_data
+
 def test_add_score_database_error(client):
     """Test that a database error during commit returns 500 and rolls back."""
     post_data = {
