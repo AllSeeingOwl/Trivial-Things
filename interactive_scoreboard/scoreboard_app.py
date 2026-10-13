@@ -188,6 +188,15 @@ def get_stats():
 
     return jsonify(result)
 
+def sanitize_csv_field(val):
+    """
+    Sentinel: Prepend a single quote (') to string fields starting with CSV formula trigger characters
+    (=, +, -, @, \\t, \\r) to prevent CSV Formula Injection (RCE / Command Execution in spreadsheet applications).
+    """
+    if isinstance(val, str) and val.startswith(('=', '+', '-', '@', '\t', '\r')):
+        return "'" + val
+    return val
+
 @app.route('/api/export', methods=['GET'])
 def export_csv():
     # ⚡ Bolt Optimization: Query Lightweight Tuples Instead of Full ORM Model Objects
@@ -220,11 +229,11 @@ def export_csv():
         for score_id, player_name, score, time_taken, timestamp, avatar_url in scores:
             writer.writerow((
                 score_id,
-                player_name,
+                sanitize_csv_field(player_name),
                 score,
                 time_taken,
                 timestamp.isoformat() if timestamp else '',
-                avatar_url
+                sanitize_csv_field(avatar_url)
             ))
             yield data.getvalue()
             data.seek(0)
