@@ -18,6 +18,12 @@ DOCTOR_ACTORS = [
     "Jodie Whittaker", "Ncuti Gatwa"
 ]
 
+# ⚡ Bolt Optimization: Pre-compute formatted string at module load time
+# Pre-formatting the DOCTOR_ACTORS list into a comma-separated string at module load
+# avoids re-executing string joining and allocating intermediate string objects
+# on every API request in connect_actors().
+DOCTOR_ACTORS_STR = ', '.join(DOCTOR_ACTORS)
+
 # Sentinel: Simple in-memory rate limiter for the external AI API to prevent abuse and billing exhaustion
 IP_REQUESTS = {}
 RATE_LIMIT = 5  # Max requests per IP
@@ -110,7 +116,7 @@ def connect_actors():
         f"\"[Actor Name 1] was in \"[Project Title]\" with [Actor Name 2].\"\n"
         f"If no direct path within 6 steps is easily found, state that clearly (e.g., \"No direct path found within 6 steps.\").\n"
         f"The target actor, \"{target_doctor}\", is one of the actors who played Doctor Who. "
-        f"Here is a list of the main actors who played Doctor Who for your reference: {', '.join(DOCTOR_ACTORS)}.\n\n"
+        f"Here is a list of the main actors who played Doctor Who for your reference: {DOCTOR_ACTORS_STR}.\n\n"
         f"Please provide the shortest possible path you can find."
     )
 
