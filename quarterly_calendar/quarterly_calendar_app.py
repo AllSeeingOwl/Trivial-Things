@@ -87,12 +87,16 @@ def create_event():
     if not title or not start_date_val or not end_date_val or not category:
         return jsonify({'error': 'Missing required fields'}), 400
 
+    # Sentinel: Strict whitelist validation for event categories to prevent arbitrary data injection
+    # and untrusted string injection into dynamic frontend CSS class names (e.g. event-${event.category.toLowerCase()})
+    ALLOWED_CATEGORIES = {'Sporting', 'Cultural', 'Other'}
+
     # Sentinel: Type, empty string, and length validation to prevent unhandled TypeErrors and DB/memory bloat DoS
     if not isinstance(title, str) or not title.strip() or len(title) > 100:
         return jsonify({'error': 'Invalid title format or length exceeded'}), 400
 
-    if not isinstance(category, str) or not category.strip() or len(category) > 50:
-        return jsonify({'error': 'Invalid category format or length exceeded'}), 400
+    if not isinstance(category, str) or not category.strip() or len(category) > 50 or category.strip() not in ALLOWED_CATEGORIES:
+        return jsonify({'error': 'Invalid category. Must be one of: Sporting, Cultural, Other'}), 400
 
     # Sentinel: Enforce string type and length limits on dates before parsing to prevent CPU exhaustion DoS
     if not isinstance(start_date_val, str) or len(start_date_val) > 20 or not isinstance(end_date_val, str) or len(end_date_val) > 20:

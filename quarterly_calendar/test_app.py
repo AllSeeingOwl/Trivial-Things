@@ -44,13 +44,24 @@ class QuarterlyCalendarTestCase(unittest.TestCase):
             'title': 'Team Offsite',
             'start_date': '2026-05-01',
             'end_date': '2026-05-03',
-            'category': 'Corporate',
+            'category': 'Cultural',
             'is_tentative': False
         }
         response = self.client.post('/api/events', json=payload)
         self.assertEqual(response.status_code, 201)
         data = response.get_json()
         self.assertEqual(data['title'], 'Team Offsite')
+
+    def test_create_event_invalid_category(self):
+        payload = {
+            'title': 'Hackathon',
+            'start_date': '2026-05-01',
+            'end_date': '2026-05-03',
+            'category': 'Corporate'
+        }
+        response = self.client.post('/api/events', json=payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Invalid category', response.get_json().get('error', ''))
 
     def test_create_event_invalid_json(self):
         response = self.client.post('/api/events', data="not json", content_type='application/json')
