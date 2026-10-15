@@ -32,3 +32,7 @@
 ## 2026-10-13 - [Inline Form Feedback over Blocking Alerts for Screen Reader Focus Context]
 **Learning:** Using native browser `alert()` popups for form submission status breaks user flow and steals window focus without allowing screen readers to easily re-focus or navigate back to invalid form inputs. Inline feedback containers with `role="status"` and `aria-live="polite"` dynamically announce success/error messages to assistive technologies while preserving keyboard focus within the form.
 **Action:** Always replace `alert()` calls on AJAX form submissions with inline status containers configured with `role="status"` and `aria-live="polite"`.
+
+## 2026-10-14 - [Dynamic Coordinate Labeling for Interactive Grid Cells]
+**Learning:** Interactive grid cells with generic masked labels (e.g., "Word 1-1") leave screen reader users without spatial coordinate context. Providing initial `aria-label`s with explicit row and column positions ("Reveal word at row 1, column 1") and updating `aria-label` dynamically upon cell reveal ("CAT, row 1, column 1") provides clear assistive feedback during keyboard grid navigation.
+**Action:** Always assign explicit row/column coordinate information in `aria-label` attributes when creating or updating interactive grid cell elements in board/grid games.
