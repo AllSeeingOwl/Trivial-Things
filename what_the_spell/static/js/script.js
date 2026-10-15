@@ -43,6 +43,9 @@ function revealCell(element) {
     element.textContent = element.dataset.word;
     element.classList.add('revealed');
     element.setAttribute('aria-expanded', 'true');
+    if (element.dataset.row && element.dataset.col) {
+        element.setAttribute('aria-label', `${element.dataset.word}, row ${element.dataset.row}, column ${element.dataset.col}`);
+    }
     currentWord = element.dataset.word;
     updateChallenge();
 }
@@ -107,6 +110,9 @@ function renderGrid() {
             // Initially hide the word (could show coordinate like A1, B2 instead, or just mask)
             cell.textContent = `Word ${rowIndex + 1}-${colIndex + 1}`;
             cell.dataset.word = word;
+            cell.dataset.row = rowIndex + 1;
+            cell.dataset.col = colIndex + 1;
+            cell.setAttribute('aria-label', `Reveal word at row ${rowIndex + 1}, column ${colIndex + 1}`);
 
             fragment.appendChild(cell);
         });
