@@ -208,7 +208,10 @@ def mark_used():
     if not q_id:
         return jsonify({'error': 'Missing question ID'}), 400
 
-    if not isinstance(q_id, str) or '_' not in q_id or len(q_id) > 50:
+    # Sentinel: Strictly validate format ({row_index}_{set_type}) to prevent unhandled
+    # parsing errors and information disclosure via exception details leakage.
+    parts = q_id.split('_') if isinstance(q_id, str) else []
+    if len(parts) != 2 or not parts[0].isdigit() or parts[1] not in ('A', 'B') or len(q_id) > 50:
         return jsonify({'error': 'Invalid question ID format'}), 400
 
     try:

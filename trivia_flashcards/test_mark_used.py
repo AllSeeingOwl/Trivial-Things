@@ -9,9 +9,12 @@ class TestApp(unittest.TestCase):
         self.app = app.test_client()
 
     def test_mark_used_invalid_id(self):
-        response = self.app.post('/api/mark_used', json={"id": "invalid"})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json, {'error': 'Invalid question ID format'})
+        invalid_ids = ["invalid", "abc_A", "1_XYZ", "1_A_B", "1_a"]
+        for invalid_id in invalid_ids:
+            with self.subTest(invalid_id=invalid_id):
+                response = self.app.post('/api/mark_used', json={"id": invalid_id})
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.json, {'error': 'Invalid question ID format'})
 
     def test_mark_used_missing_id(self):
         response = self.app.post('/api/mark_used', json={})
@@ -21,7 +24,7 @@ class TestApp(unittest.TestCase):
     @patch('trivia_flashcards.trivia_flashcards_app.update_used_status')
     def test_mark_used_exception(self, mock_update_used_status):
         mock_update_used_status.side_effect = Exception("Mocked exception")
-        response = self.app.post('/api/mark_used', json={"id": "valid_id"})
+        response = self.app.post('/api/mark_used', json={"id": "2_A"})
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json, {'error': 'Failed to process request'})
 
