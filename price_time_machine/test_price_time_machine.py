@@ -70,3 +70,11 @@ def test_calculate_inflation_fallback_year():
     modern_1980, mult_1980 = calculate_inflation('US', 1980, 10.0)
 
     assert mult_1982 == mult_1980
+
+def test_portal_back_link_accessibility(client):
+    """Test that portal back link has appropriate ARIA labels and arrow hiding."""
+    response = client.get('/')
+    assert response.status_code == 200
+    html = response.data.decode('utf-8')
+    assert 'aria-label="Back to Central Portal"' in html
+    assert '<span aria-hidden="true">← </span>' in html
