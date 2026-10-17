@@ -80,5 +80,13 @@ class TestWhovianBackend(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', response.json)
 
+    def test_security_headers(self):
+        client = whovian_app.app.test_client()
+        response = client.get('/')
+        csp = response.headers.get('Content-Security-Policy', '')
+        self.assertTrue(csp)
+        self.assertNotIn("'unsafe-eval'", csp)
+        self.assertIn("script-src 'self'", csp)
+
 if __name__ == '__main__':
     unittest.main()
