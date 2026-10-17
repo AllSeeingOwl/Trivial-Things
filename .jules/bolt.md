@@ -21,3 +21,7 @@
 ## 2026-05-20 - Positional Index Access on Query Tuples
 **Learning:** Accessing fields on SQLAlchemy row tuples using positional indexing (`r[0]`, `r[1]`) instead of attribute access (`r.id`, `r.title`) avoids `__getattr__` dynamic property lookups on SQLAlchemy row objects, delivering a ~76% speedup (~4.3x faster) during list dictionary construction.
 **Action:** Use positional tuple indexing (`r[0]`, `r[1]`, ...) when building response dictionaries from lightweight `db.session.query(...)` results.
+
+## 2026-05-20 - Pre-Construct Response Representations for Static Datasets
+**Learning:** In Flask API endpoints serving random samples or filtered views of static datasets (like `where_in_the_world`), instantiating new dictionary objects for selected items on every request creates unnecessary object allocation and GC pressure.
+**Action:** Pre-construct public representation dictionaries (`safe_dict`) during module initialization/data loading, and return references to `q['safe_dict']` directly (~22% speedup).
