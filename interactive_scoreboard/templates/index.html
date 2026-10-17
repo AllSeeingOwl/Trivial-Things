@@ -45,6 +45,12 @@
             cursor: pointer;
             outline: none;
             color: #555;
+            border-radius: 4px 4px 0 0;
+            transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+        .tab-btn:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
         }
         .tab-btn.active {
             border-bottom: 3px solid #3498db;
@@ -173,9 +179,9 @@
         </div>
 
         <div class="tabs" role="tablist" aria-label="Scoreboard Sections">
-            <button id="tab-rankings" class="tab-btn active" role="tab" aria-selected="true" aria-controls="rankings" onclick="showTab('rankings')">Rankings</button>
-            <button id="tab-statistics" class="tab-btn" role="tab" aria-selected="false" aria-controls="statistics" onclick="showTab('statistics')">Player Statistics</button>
-            <button id="tab-add-score" class="tab-btn" role="tab" aria-selected="false" aria-controls="add-score" onclick="showTab('add-score')">Add Score</button>
+            <button id="tab-rankings" type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="rankings" onclick="showTab('rankings')">Rankings</button>
+            <button id="tab-statistics" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="statistics" onclick="showTab('statistics')">Player Statistics</button>
+            <button id="tab-add-score" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="add-score" onclick="showTab('add-score')">Add Score</button>
         </div>
 
         <div id="rankings" class="tab-content active" role="tabpanel" aria-labelledby="tab-rankings">
