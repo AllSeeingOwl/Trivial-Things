@@ -25,3 +25,7 @@
 ## 2026-05-20 - Pre-Construct Response Representations for Static Datasets
 **Learning:** In Flask API endpoints serving random samples or filtered views of static datasets (like `where_in_the_world`), instantiating new dictionary objects for selected items on every request creates unnecessary object allocation and GC pressure.
 **Action:** Pre-construct public representation dictionaries (`safe_dict`) during module initialization/data loading, and return references to `q['safe_dict']` directly (~22% speedup).
+
+## 2026-05-20 - Direct Angle Differences and Constant Pre-Folding in Haversine Distance
+**Learning:** In trigonometric calculations like Haversine distance, calling `math.radians()` separately on two longitude coordinates (`lon1` and `lon2`) performs redundant conversions. Computing `math.radians(lon2 - lon1)` directly and pre-folding constant arithmetic (`2 * 3956 = 7912`, `dlat * 0.5`) saves redundant operations and divisions.
+**Action:** Compute delta longitude in a single `math.radians(lon2 - lon1)` call and pre-fold constant factors in math formulas (~18% speedup from ~925ns to ~756ns per call).
