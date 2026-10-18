@@ -22,12 +22,13 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800 font-sans">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-blue-600 focus:text-white focus:rounded-md">Skip to main content</a>
     <nav style="background-color: #1f2937; color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-family: sans-serif; font-size: 14px; border-bottom: 1px solid #374151;" aria-label="Portal Navigation">
         <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-weight: 700; color: #f3f4f6;">Periodic Name Portal</span>
             <span style="background-color: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 9999px; font-size: 12px;">Standalone Service</span>
         </div>
-        <a id="portal-back-link" href="https://trivial-things.onrender.com" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">← Back to Central Portal</a>
+        <a id="portal-back-link" href="https://trivial-things.onrender.com" aria-label="Back to Central Portal" class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'"><span aria-hidden="true">← </span>Back to Central Portal</a>
     </nav>
     <script>
         (function() {
@@ -41,7 +42,7 @@
         })();
     </script>
 
-    <div class="max-w-5xl mx-auto px-4 py-12">
+    <main id="main-content" tabindex="-1" class="max-w-5xl mx-auto px-4 py-12 focus:outline-none">
         <header class="text-center mb-12">
             <h1 class="text-4xl md:text-5xl font-extrabold text-blue-700 tracking-tight mb-4">
                 What's in Your Name?
@@ -68,7 +69,7 @@
         </div>
 
         {% if matched_elements is not none %}
-            <div class="mb-12">
+            <div class="mb-12" role="region" aria-label="Elemental Analysis Results" aria-live="polite">
                 {% if matched_elements|length > 0 %}
                     <div class="text-center mb-8">
                         <h2 class="text-2xl font-bold text-gray-800 mb-2">
@@ -79,10 +80,10 @@
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
                         {% for el in matched_elements %}
-                        <div class="element-card bg-white rounded-lg overflow-hidden flex flex-col h-full">
+                        <div class="element-card bg-white rounded-lg overflow-hidden flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-blue-500" tabindex="0" aria-label="Element {{ el.number }}: {{ el.name }} ({{ el.symbol }}), atomic mass {{ el.atomic_mass }}">
                             <div class="card-header p-2 flex justify-between items-start">
                                 <span class="text-sm font-bold text-gray-700">{{ el.number }}</span>
-                                <span class="text-xs text-gray-500 truncate ml-2" title="{{ el.atomic_mass }}">{{ el.atomic_mass }}</span>
+                                <span class="text-xs text-gray-500 truncate ml-2" aria-label="Atomic mass {{ el.atomic_mass }}">{{ el.atomic_mass }}</span>
                             </div>
                             <div class="p-4 flex-grow flex flex-col items-center justify-center text-center">
                                 <span class="text-4xl font-bold text-gray-900 mb-1">{{ el.symbol }}</span>
@@ -92,8 +93,8 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="text-center p-8 bg-white rounded-xl shadow-sm max-w-2xl mx-auto border border-gray-200">
-                        <div class="text-4xl mb-4">🧪</div>
+                    <div class="text-center p-8 bg-white rounded-xl shadow-sm max-w-2xl mx-auto border border-gray-200" role="status" aria-live="polite">
+                        <div class="text-4xl mb-4" aria-hidden="true">🧪</div>
                         <h2 class="text-2xl font-bold text-gray-800 mb-2">No elements found</h2>
                         <p class="text-gray-600">
                             It looks like none of the 118 element symbols appear in "{{ name }}".
@@ -103,7 +104,7 @@
                 {% endif %}
             </div>
         {% endif %}
-    </div>
+    </main>
 
     <footer class="text-center text-gray-500 text-sm pb-8">
         <p>A fun tool to explore the periodic table.</p>

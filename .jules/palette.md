@@ -36,3 +36,7 @@
 ## 2026-10-14 - [Dynamic Coordinate Labeling for Interactive Grid Cells]
 **Learning:** Interactive grid cells with generic masked labels (e.g., "Word 1-1") leave screen reader users without spatial coordinate context. Providing initial `aria-label`s with explicit row and column positions ("Reveal word at row 1, column 1") and updating `aria-label` dynamically upon cell reveal ("CAT, row 1, column 1") provides clear assistive feedback during keyboard grid navigation.
 **Action:** Always assign explicit row/column coordinate information in `aria-label` attributes when creating or updating interactive grid cell elements in board/grid games.
+
+## 2026-10-15 - [Screen Reader Context and Keyboard Navigability in Reference Data Cards]
+**Learning:** Dynamically rendering list or grid cards (such as element reference cards) without explicit ARIA labels can force screen readers to read fragmented numbers and strings out of context. Providing structured `aria-label` descriptions alongside keyboard focusability (`tabindex="0"`, focus rings) ensures seamless screen reader and keyboard accessibility.
+**Action:** Always attach comprehensive `aria-label` attributes and keyboard focus management (`tabindex="0"`, `focus:ring-2`) to reference and data cards.
