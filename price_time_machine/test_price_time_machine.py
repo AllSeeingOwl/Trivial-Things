@@ -63,13 +63,25 @@ def test_calculate_inflation_logic():
     assert abs(modern - 38.10) < 0.1
 
 def test_calculate_inflation_fallback_year():
-    """Test that the nearest year is selected when exact year is missing."""
-    # US dataset has 1980 and 1989. For 1982, nearest is 1980 (difference 2 vs 7)
-    # Using 1980 CPI (82.4)
-    modern_1982, mult_1982 = calculate_inflation('US', 1982, 10.0)
+    """Test that the nearest year is selected when exact year is missing from CPI table."""
+    # Using 1981 (not in US dataset), nearest is 1980 (diff 1 vs diff 1 to 1982)
+    modern_1981, mult_1981 = calculate_inflation('US', 1981, 10.0)
     modern_1980, mult_1980 = calculate_inflation('US', 1980, 10.0)
 
-    assert mult_1982 == mult_1980
+    assert mult_1981 == mult_1980
+
+def test_csp_header_allows_inline_scripts(client):
+    """Test that Content-Security-Policy allows unsafe-inline in script-src for Tailwind and event handlers."""
+    response = client.get('/')
+    csp = response.headers.get('Content-Security-Policy', '')
+    assert "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com" in csp
+
+def test_region_selector_form_has_submit_button(client):
+    """Test that the region selector form contains action and submit button."""
+    response = client.get('/')
+    html = response.data.decode('utf-8')
+    assert '<form action="/"' in html or '<form action=""' in html or 'action=' in html
+    assert '<button type="submit"' in html
 
 def test_portal_back_link_accessibility(client):
     """Test that portal back link has appropriate ARIA labels and arrow hiding."""
