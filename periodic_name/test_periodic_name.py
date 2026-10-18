@@ -63,5 +63,30 @@ class PeriodicNameTestCase(unittest.TestCase):
     def test_debug_mode_disabled(self):
         self.assertFalse(app.config['DEBUG'])
 
+    def test_accessibility_landmarks_and_navigation(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'href="#main-content"', response.data)
+        self.assertIn(b'Skip to main content', response.data)
+        self.assertIn(b'<main id="main-content" tabindex="-1"', response.data)
+        self.assertIn(b'aria-label="Back to Central Portal"', response.data)
+        self.assertIn(b'aria-hidden="true">\xe2\x86\x90 ', response.data)
+
+    def test_accessibility_results_and_element_cards(self):
+        response = self.app.post('/', data=dict(name='Jules'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'role="region"', response.data)
+        self.assertIn(b'aria-label="Elemental Analysis Results"', response.data)
+        self.assertIn(b'aria-live="polite"', response.data)
+        self.assertIn(b'tabindex="0"', response.data)
+        self.assertIn(b'aria-label="Element 92: Uranium (U)', response.data)
+
+    def test_accessibility_empty_state(self):
+        response = self.app.post('/', data=dict(name='Jqq'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'role="status"', response.data)
+        self.assertIn(b'aria-live="polite"', response.data)
+        self.assertIn(b'aria-hidden="true">\xf0\x9f\xa7\xaa</div>', response.data)
+
 if __name__ == '__main__':
     unittest.main()
