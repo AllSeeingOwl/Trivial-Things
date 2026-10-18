@@ -37,7 +37,11 @@ class QuarterlyCalendarTestCase(unittest.TestCase):
         self.assertEqual(response.headers.get('X-Content-Type-Options'), 'nosniff')
         self.assertEqual(response.headers.get('X-Frame-Options'), 'SAMEORIGIN')
         self.assertIn('Content-Security-Policy', response.headers)
-        self.assertIn("default-src 'self'", response.headers['Content-Security-Policy'])
+        csp = response.headers['Content-Security-Policy']
+        self.assertIn("default-src 'self'", csp)
+        # Verify 'unsafe-inline' is absent from script-src
+        script_src = [part for part in csp.split(';') if 'script-src' in part][0]
+        self.assertNotIn("'unsafe-inline'", script_src)
 
     def test_create_event_valid(self):
         payload = {
