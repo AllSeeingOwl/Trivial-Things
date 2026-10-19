@@ -40,3 +40,7 @@
 ## 2026-10-15 - [Screen Reader Context and Keyboard Navigability in Reference Data Cards]
 **Learning:** Dynamically rendering list or grid cards (such as element reference cards) without explicit ARIA labels can force screen readers to read fragmented numbers and strings out of context. Providing structured `aria-label` descriptions alongside keyboard focusability (`tabindex="0"`, focus rings) ensures seamless screen reader and keyboard accessibility.
 **Action:** Always attach comprehensive `aria-label` attributes and keyboard focus management (`tabindex="0"`, `focus:ring-2`) to reference and data cards.
+
+## 2026-10-16 - [Keyboard Accessibility and Modal Focus Management for Dynamically Rendered Calendar Events]
+**Learning:** Dynamically injected interactive event elements (like calendar event bars) created as `<div>` tags are omitted from tab ordering and keyboard interaction unless explicitly given `role="button"`, `tabindex="0"`, descriptive `aria-label`s, and `keydown` event listeners for Enter/Space keys. Additionally, opening action modals (such as event deletion dialogs) requires shifting focus directly to a modal focus target to maintain keyboard context.
+**Action:** Always assign `role="button"`, `tabindex="0"`, `focus:ring-2` focus rings, and `keydown` listeners to interactive dynamic elements, and programmatically shift focus into dialogs when opened.
