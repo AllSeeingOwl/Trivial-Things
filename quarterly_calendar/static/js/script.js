@@ -147,11 +147,20 @@ function renderEvents() {
 
             if (container) {
                 const eventEl = document.createElement('div');
-                eventEl.className = `event-bar event-${event.category.toLowerCase()} ${event.is_tentative ? 'event-tentative' : ''}`;
+                eventEl.className = `event-bar event-${event.category.toLowerCase()} ${event.is_tentative ? 'event-tentative' : ''} focus:outline-none focus:ring-2 focus:ring-blue-500`;
                 eventEl.textContent = event.title;
                 eventEl.title = `${event.title} (${event.start_date} to ${event.end_date})`;
+                eventEl.setAttribute('role', 'button');
+                eventEl.setAttribute('tabindex', '0');
+                eventEl.setAttribute('aria-label', `${event.title}, ${event.category} event from ${event.start_date} to ${event.end_date}`);
 
                 eventEl.onclick = () => showDeleteModal(event);
+                eventEl.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        showDeleteModal(event);
+                    }
+                };
 
                 container.appendChild(eventEl);
             }
@@ -198,6 +207,9 @@ function showDeleteModal(event) {
     eventToDelete = event;
     modalEventTitle.textContent = `Delete: ${event.title}`;
     modal.classList.remove('hidden');
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.focus();
+    }
 }
 
 function hideDeleteModal() {
