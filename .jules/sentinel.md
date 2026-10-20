@@ -127,3 +127,8 @@
 **Vulnerability:** The `/api/export` endpoint in `interactive_scoreboard/scoreboard_app.py` exported user-controlled string fields (`player_name` and `avatar_url`) directly to CSV format without sanitization. If a user provided values starting with formula trigger characters (such as `=`, `+`, `-`, `@`, `\t`, `\r`), spreadsheet software opening the exported file would execute those formulas, leading to Remote Code Execution (RCE) or data exfiltration.
 **Learning:** CSV exporters must treat user-supplied string data as untrusted text rather than executable expressions. Standard `csv.writer` quotes strings but does not escape formula prefixes, leaving applications vulnerable to Formula Injection when spreadsheet software evaluates cells.
 **Prevention:** Always sanitize string fields written to CSV exports by prepending a single quote (`'`) to any string that begins with formula trigger characters (`=`, `+`, `-`, `@`, `\t`, `\r`).
+
+## 2026-06-15 - [MEDIUM] Reject Booleans and Non-Finite Floats in Numeric Flask Inputs
+**Vulnerability:** The `/api/scores` POST endpoint in `interactive_scoreboard` accepted boolean values for `score` and `time_taken` (which Python converts to `1` or `1.0`), and non-finite floats like `NaN` or `Infinity` for `time_taken`, leading to type-bypass and invalid JSON responses.
+**Learning:** In Python, `bool` is a subclass of `int` (`isinstance(True, int)` is `True`), and `float("nan")` or `float("inf")` parses without raising `ValueError`. Acceptable inputs must explicitly disallow booleans and verify value finiteness.
+**Prevention:** Always check `isinstance(val, bool)` and `math.isnan(val)` / `math.isinf(val)` on numeric parameters before using or persisting them in databases and returning in JSON payloads.
