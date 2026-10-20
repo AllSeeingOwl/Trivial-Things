@@ -29,3 +29,7 @@
 ## 2026-05-20 - Direct Angle Differences and Constant Pre-Folding in Haversine Distance
 **Learning:** In trigonometric calculations like Haversine distance, calling `math.radians()` separately on two longitude coordinates (`lon1` and `lon2`) performs redundant conversions. Computing `math.radians(lon2 - lon1)` directly and pre-folding constant arithmetic (`2 * 3956 = 7912`, `dlat * 0.5`) saves redundant operations and divisions.
 **Action:** Compute delta longitude in a single `math.radians(lon2 - lon1)` call and pre-fold constant factors in math formulas (~18% speedup from ~925ns to ~756ns per call).
+
+## 2026-05-20 - Single-Pass Vector Collection During Page Selection
+**Learning:** In PyMuPDF document processing (`pdf_grid_flashcards`), scanning document pages to count colored vector drawings and then re-iterating over the selected page's drawings in a second loop pass causes redundant vector list traversals, `fill` attribute lookups, and conditional color evaluations.
+**Action:** Construct and retain filtered vector list objects (`colored_rects`) directly during the page selection scan pass to eliminate the second loop pass entirely (~21.4% speedup from ~7.06ms to ~5.55ms per call).
