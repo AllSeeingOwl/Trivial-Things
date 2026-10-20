@@ -87,8 +87,12 @@ const App = () => {
                     <span className="font-bold text-gray-100">Whovian Degrees Portal</span>
                     <span className="bg-purple-950 text-purple-300 px-2 py-0.5 rounded-full text-xs border border-purple-700">Standalone Service</span>
                 </div>
-                <a href={portalUrl} className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-md font-semibold transition">
-                    ← Back to Central Portal
+                <a
+                    href={portalUrl}
+                    aria-label="Back to Central Portal"
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-md font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                >
+                    <span aria-hidden="true">← </span>Back to Central Portal
                 </a>
             </nav>
 
@@ -177,7 +181,7 @@ const App = () => {
                     )}
 
                     {connectionPath && (
-                        <div className="bg-gray-700 bg-opacity-50 p-5 rounded-lg border border-purple-600 shadow-inner mt-6">
+                        <div className="bg-gray-700 bg-opacity-50 p-5 rounded-lg border border-purple-600 shadow-inner mt-6" role="status" aria-live="polite">
                             <h2 className="text-xl font-semibold text-purple-300 mb-3">Connection Found!</h2>
                             <p className="whitespace-pre-wrap text-purple-100 leading-relaxed">
                                 {connectionPath}
