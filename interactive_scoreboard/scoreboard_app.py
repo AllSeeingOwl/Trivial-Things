@@ -1,5 +1,6 @@
 import os
 import csv
+import math
 from io import StringIO
 from datetime import datetime, timezone
 from flask import Flask, request, jsonify, render_template, Response
@@ -105,19 +106,27 @@ def add_score():
     if avatar_url is not None and (not isinstance(avatar_url, str) or len(avatar_url) > 255):
         return jsonify({'error': 'Invalid avatar_url format or length exceeded'}), 400
 
+    # Sentinel: Explicitly reject booleans for numeric fields (bool is a subclass of int in Python)
+    if isinstance(score_val, bool):
+        return jsonify({'error': 'Invalid score format'}), 400
+
     # Sentinel: Enforce string length limits before numeric parsing to prevent CPU exhaustion DoS in integer/float casting
     score_str = str(score_val)
     if len(score_str) > 10:
         return jsonify({'error': 'Score value length exceeded'}), 400
 
-    if time_taken_val:
+    if time_taken_val is not None:
+        if isinstance(time_taken_val, bool):
+            return jsonify({'error': 'Invalid time_taken format'}), 400
         time_taken_str = str(time_taken_val)
         if len(time_taken_str) > 10:
             return jsonify({'error': 'time_taken value length exceeded'}), 400
 
     try:
         score_int = int(score_val)
-        time_taken_float = float(time_taken_val) if time_taken_val else None
+        time_taken_float = float(time_taken_val) if time_taken_val is not None else None
+        if time_taken_float is not None and (math.isnan(time_taken_float) or math.isinf(time_taken_float)):
+            return jsonify({'error': 'Invalid time_taken value'}), 400
         new_entry = ScoreEntry(
             player_name=player_name.strip(),
             score=score_int,

@@ -194,3 +194,21 @@ def test_add_score_security_validation(client):
     rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'avatar_url': 'http://example.com/' + 'a' * 250})
     assert rv.status_code == 400
     assert json.loads(rv.data) == {'error': 'Invalid avatar_url format or length exceeded'}
+
+    # 8. Boolean score or time_taken
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': True})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid score format'}
+
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'time_taken': True})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid time_taken format'}
+
+    # 9. Non-finite float values for time_taken (NaN / Infinity)
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'time_taken': 'nan'})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid time_taken value'}
+
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'time_taken': 'inf'})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid time_taken value'}
