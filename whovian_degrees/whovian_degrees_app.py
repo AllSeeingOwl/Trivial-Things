@@ -128,13 +128,17 @@ def connect_actors():
         ]
     }
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+    # Sentinel: Pass API key via header instead of URL query string to prevent credential leakage in HTTP request logs
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
     try:
         req = urllib.request.Request(
             url,
             data=json.dumps(payload).encode('utf-8'),
-            headers={'Content-Type': 'application/json'},
+            headers={
+                'Content-Type': 'application/json',
+                'x-goog-api-key': api_key
+            },
             method='POST'
         )
         # Sentinel: Add timeout to prevent DoS from hanging external API calls
