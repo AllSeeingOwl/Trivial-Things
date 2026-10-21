@@ -72,6 +72,13 @@ def load_data():
     return _cache_grids, _cache_pool
 
 
+# ⚡ Bolt Optimization: Pre-Warm Cache at Module Startup
+# Eagerly trigger load_data() during application initialization to pre-populate
+# _cache_grids and _cache_pool, eliminating CSV file reading and parsing I/O
+# latency on the initial incoming HTTP request (~100% first-request I/O latency reduction).
+load_data()
+
+
 @app.route('/')
 def index():
     grids, _ = load_data()
