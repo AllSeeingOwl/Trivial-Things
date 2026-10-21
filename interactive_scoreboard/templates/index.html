@@ -158,7 +158,7 @@
             <span style="font-weight: 700; color: #f3f4f6;">Interactive Scoreboard Portal</span>
             <span style="background-color: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 9999px; font-size: 12px;">Standalone Service</span>
         </div>
-        <a id="portal-back-link" href="https://trivial-things.onrender.com" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">← Back to Central Portal</a>
+        <a id="portal-back-link" href="https://trivial-things.onrender.com" aria-label="Back to Central Portal" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'"><span aria-hidden="true">← </span>Back to Central Portal</a>
     </nav>
     <script>
         (function() {
@@ -225,16 +225,16 @@
             <form id="score-form">
                 <div id="form-feedback" role="status" aria-live="polite" style="display: none; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 14px; font-weight: 500;"></div>
                 <div class="form-group">
-                    <label for="player_name">Player Name</label>
-                    <input type="text" id="player_name" required>
+                    <label for="player_name">Player Name <span style="color: #e53e3e;" aria-hidden="true">*</span></label>
+                    <input type="text" id="player_name" placeholder="e.g. Alex Smith" required>
                 </div>
                 <div class="form-group">
-                    <label for="score">Score</label>
-                    <input type="number" id="score" required>
+                    <label for="score">Score <span style="color: #e53e3e;" aria-hidden="true">*</span></label>
+                    <input type="number" id="score" placeholder="e.g. 2500" required>
                 </div>
                 <div class="form-group">
                     <label for="time_taken">Time Taken (seconds) - Optional</label>
-                    <input type="number" step="0.1" id="time_taken">
+                    <input type="number" step="0.1" id="time_taken" placeholder="e.g. 45.2">
                 </div>
                 <div class="form-group">
                     <label for="avatar_url">Avatar URL - Optional</label>
