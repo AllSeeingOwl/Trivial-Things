@@ -70,6 +70,11 @@ class TestWhovianBackend(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['connectionPath'], 'Tom Hanks was in Cloud Atlas with Jim Broadbent.')
 
+        # Verify that API key is passed securely via x-goog-api-key header and not in query parameters
+        req = mock_urlopen.call_args[0][0]
+        self.assertEqual(req.get_header('X-goog-api-key'), 'fake_api_key')
+        self.assertNotIn('key=', req.full_url)
+
     def test_connect_actors_too_long(self):
         whovian_app.IP_REQUESTS.clear()
         client = whovian_app.app.test_client()

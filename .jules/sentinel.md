@@ -132,3 +132,8 @@
 **Vulnerability:** The `/api/scores` POST endpoint in `interactive_scoreboard` accepted boolean values for `score` and `time_taken` (which Python converts to `1` or `1.0`), and non-finite floats like `NaN` or `Infinity` for `time_taken`, leading to type-bypass and invalid JSON responses.
 **Learning:** In Python, `bool` is a subclass of `int` (`isinstance(True, int)` is `True`), and `float("nan")` or `float("inf")` parses without raising `ValueError`. Acceptable inputs must explicitly disallow booleans and verify value finiteness.
 **Prevention:** Always check `isinstance(val, bool)` and `math.isnan(val)` / `math.isinf(val)` on numeric parameters before using or persisting them in databases and returning in JSON payloads.
+
+## 2026-06-20 - [HIGH] Prevent API Key Exposure in Outgoing HTTP Request URL Query Strings
+**Vulnerability:** The `/api/connect` endpoint in `whovian_degrees/whovian_degrees_app.py` appended the sensitive Google Gemini API key as a URL query string (`?key={api_key}`) when making outgoing HTTP requests to `generativelanguage.googleapis.com`. Secrets passed in URL query strings are routinely recorded in HTTP access logs, proxy logs, and diagnostic traces.
+**Learning:** Query parameters are inherently insecure for credentials because full request URLs are routinely stored in plain text across web server access logs, reverse proxies, and error traces. Google REST APIs support passing credentials via the `x-goog-api-key` HTTP header.
+**Prevention:** Always transmit sensitive API keys and tokens in HTTP headers (`x-goog-api-key` or `Authorization`) rather than URL query parameters to avoid logging credentials across network infrastructure.
