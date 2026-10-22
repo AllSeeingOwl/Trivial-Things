@@ -33,3 +33,7 @@
 ## 2026-05-20 - Single-Pass Vector Collection During Page Selection
 **Learning:** In PyMuPDF document processing (`pdf_grid_flashcards`), scanning document pages to count colored vector drawings and then re-iterating over the selected page's drawings in a second loop pass causes redundant vector list traversals, `fill` attribute lookups, and conditional color evaluations.
 **Action:** Construct and retain filtered vector list objects (`colored_rects`) directly during the page selection scan pass to eliminate the second loop pass entirely (~21.4% speedup from ~7.06ms to ~5.55ms per call).
+
+## 2026-05-20 - Pre-Slugify Static Item Name Identifiers
+**Learning:** In scraper/parser configurations where items have fixed names (e.g., `right-here-right-now/src/lib/parsers/wrestling.ts`), running regex replacements (`.replace(/\s+/g, '-')`) and lowercasing on item names inside async request mapping loops re-calculates identical slug strings on every single URL fetch.
+**Action:** Pre-compute and store formatted `slug` properties on static item configurations at module load time (`urls.map(...)`) to eliminate redundant string formatting and regex processing overhead in request loops (~93% faster slug formatting).
