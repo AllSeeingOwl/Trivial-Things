@@ -277,7 +277,8 @@
             const escapedName = escapeHtml(name);
             if (url) {
                 const escapedUrl = escapeHtml(url);
-                return `<img src="${escapedUrl}" alt="${escapedName}'s avatar" class="avatar" onerror="this.outerHTML=getDefaultAvatar('${escapedName}')">`;
+                // Sentinel: Store name in data-name attribute instead of interpolating into onerror string to prevent DOM XSS
+                return `<img src="${escapedUrl}" alt="${escapedName}'s avatar" class="avatar" data-name="${escapedName}" onerror="this.outerHTML=getDefaultAvatar(this.getAttribute('data-name'))">`;
             }
             return getDefaultAvatar(escapedName);
         }
