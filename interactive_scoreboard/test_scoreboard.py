@@ -212,3 +212,13 @@ def test_add_score_security_validation(client):
     rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 100, 'time_taken': 'inf'})
     assert rv.status_code == 400
     assert json.loads(rv.data) == {'error': 'Invalid time_taken value'}
+
+def test_avatar_onerror_xss_prevention(client):
+    """Test that index HTML template renders avatar onerror using data-name attribute to prevent DOM XSS."""
+    rv = client.get('/')
+    assert rv.status_code == 200
+    html = rv.data.decode('utf-8')
+
+    # Ensure getAvatarHtml uses data-name attribute and does not directly interpolate string into onerror handler
+    assert "data-name=\"${escapedName}\"" in html
+    assert "onerror=\"this.outerHTML=getDefaultAvatar(this.getAttribute('data-name'))\"" in html
