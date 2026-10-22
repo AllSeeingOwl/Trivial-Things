@@ -46,7 +46,26 @@ const COMMON_HEADERS = {
   'Accept-Language': 'en-US,en;q=0.9',
 };
 
-async function fetchWrestlingItems(urls: { url: string; name: string }[]): Promise<WidgetItem[]> {
+// ⚡ Bolt Optimization: Pre-slugify item names at module load time
+// Pre-formatting category slugs outside the request loop avoids re-executing
+// regular expression replacements and lowercasing on every single URL fetch.
+interface WrestlingConfig {
+  url: string;
+  name: string;
+  slug: string;
+}
+
+const WRESTLING_ITEMS_1: WrestlingConfig[] = WRESTLING_URLS_1.map(item => ({
+  ...item,
+  slug: item.name.replace(/\s+/g, '-').toLowerCase()
+}));
+
+const WRESTLING_ITEMS_2: WrestlingConfig[] = WRESTLING_URLS_2.map(item => ({
+  ...item,
+  slug: item.name.replace(/\s+/g, '-').toLowerCase()
+}));
+
+async function fetchWrestlingItems(urls: WrestlingConfig[]): Promise<WidgetItem[]> {
   const fetchOptions: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {
     headers: COMMON_HEADERS,
     next: {
@@ -79,7 +98,7 @@ async function fetchWrestlingItems(urls: { url: string; name: string }[]): Promi
       }
 
       return {
-        id: `wrestling-${itemConfig.name.replace(/\s+/g, '-').toLowerCase()}-${idx}`,
+        id: `wrestling-${itemConfig.slug}-${idx}`,
         rank: idx + 1,
         title: itemConfig.name,
         subtitle: championName,
@@ -87,7 +106,7 @@ async function fetchWrestlingItems(urls: { url: string; name: string }[]): Promi
     } catch (e) {
       console.error(`Failed fetching ${itemConfig.url}:`, e);
       return {
-        id: `wrestling-${itemConfig.name.replace(/\s+/g, '-').toLowerCase()}-${idx}`,
+        id: `wrestling-${itemConfig.slug}-${idx}`,
         rank: idx + 1,
         title: itemConfig.name,
         subtitle: 'Update Unavailable',
@@ -99,11 +118,11 @@ async function fetchWrestlingItems(urls: { url: string; name: string }[]): Promi
 }
 
 export async function fetchWrestlingData1(): Promise<WidgetData> {
-  const items = await fetchWrestlingItems(WRESTLING_URLS_1);
+  const items = await fetchWrestlingItems(WRESTLING_ITEMS_1);
   return { items, source: 'primary' };
 }
 
 export async function fetchWrestlingData2(): Promise<WidgetData> {
-  const items = await fetchWrestlingItems(WRESTLING_URLS_2);
+  const items = await fetchWrestlingItems(WRESTLING_ITEMS_2);
   return { items, source: 'primary' };
 }
