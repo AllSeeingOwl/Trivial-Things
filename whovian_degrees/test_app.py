@@ -20,9 +20,20 @@ class TestWhovianBackend(unittest.TestCase):
         mock_env_get.return_value = None
         whovian_app.IP_REQUESTS.clear()
         client = whovian_app.app.test_client()
-        response = client.post('/api/connect', json={'startActor': 'A', 'targetDoctor': 'B'})
+        response = client.post('/api/connect', json={'startActor': 'Tom Hanks', 'targetDoctor': 'David Tennant'})
         self.assertEqual(response.status_code, 500)
         self.assertIn('error', response.json)
+
+    def test_connect_actors_invalid_target_doctor(self):
+        whovian_app.IP_REQUESTS.clear()
+        client = whovian_app.app.test_client()
+        response = client.post('/api/connect', json={
+            'startActor': 'Tom Hanks',
+            'targetDoctor': 'Not A Real Doctor'
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json)
+        self.assertEqual(response.json['error'], 'Invalid targetDoctor. Must be a valid Doctor Who actor')
 
     @patch('os.environ.get')
     def test_connect_actors_rate_limit(self, mock_env_get):
@@ -37,11 +48,11 @@ class TestWhovianBackend(unittest.TestCase):
             mock_urlopen.return_value = mock_response
 
             for _ in range(5):
-                response = client.post('/api/connect', json={'startActor': 'Actor A', 'targetDoctor': 'Actor B'})
+                response = client.post('/api/connect', json={'startActor': 'Tom Hanks', 'targetDoctor': 'David Tennant'})
                 self.assertEqual(response.status_code, 200)
                 self.assertNotIn('error', response.json)
 
-            response = client.post('/api/connect', json={'startActor': 'Actor A', 'targetDoctor': 'Actor B'})
+            response = client.post('/api/connect', json={'startActor': 'Tom Hanks', 'targetDoctor': 'David Tennant'})
             self.assertEqual(response.status_code, 429)
             self.assertEqual(response.json['error'], 'Rate limit exceeded. Please try again later.')
 
@@ -55,7 +66,7 @@ class TestWhovianBackend(unittest.TestCase):
         mock_response.read.return_value = json.dumps({
             'candidates': [{
                 'content': {
-                    'parts': [{'text': 'Tom Hanks was in Cloud Atlas with Jim Broadbent.'}]
+                    'parts': [{'text': 'Tom Hanks was in Cloud Atlas with David Tennant.'}]
                 }
             }]
         }).encode('utf-8')
@@ -65,10 +76,10 @@ class TestWhovianBackend(unittest.TestCase):
         client = whovian_app.app.test_client()
         response = client.post('/api/connect', json={
             'startActor': 'Tom Hanks',
-            'targetDoctor': 'Jim Broadbent'
+            'targetDoctor': 'David Tennant'
         })
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['connectionPath'], 'Tom Hanks was in Cloud Atlas with Jim Broadbent.')
+        self.assertEqual(response.json['connectionPath'], 'Tom Hanks was in Cloud Atlas with David Tennant.')
 
         # Verify that API key is passed securely via x-goog-api-key header and not in query parameters
         req = mock_urlopen.call_args[0][0]
