@@ -193,3 +193,27 @@ input[type="text"]:focus {
     white-space: nowrap;
     border: 0;
 }
+
+/* Feedback message banner */
+.feedback-msg {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    text-align: left;
+    display: none;
+}
+
+.feedback-msg.error {
+    display: block;
+    background-color: #fde8e8;
+    color: #9b1c1c;
+    border: 1px solid #f8b4b4;
+}
+
+.feedback-msg.info {
+    display: block;
+    background-color: #e1effe;
+    color: #1e429f;
+    border: 1px solid #a4cafe;
+}
