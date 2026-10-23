@@ -101,6 +101,11 @@ def connect_actors():
     if not start_actor or not target_doctor:
         return jsonify({'error': 'Missing startActor or targetDoctor'}), 400
 
+    # Sentinel: Strictly validate that target_doctor is one of the valid Doctor Who actors
+    # to prevent prompt injection and quota abuse/waste on invalid external API requests
+    if target_doctor not in DOCTOR_ACTORS:
+        return jsonify({'error': 'Invalid targetDoctor. Must be a valid Doctor Who actor'}), 400
+
     # API key should be provided by environment
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
