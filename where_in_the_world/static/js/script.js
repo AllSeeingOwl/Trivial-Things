@@ -57,6 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Inline Feedback Helper ---
+    function showFeedback(msg, type = 'error') {
+        const fb = document.getElementById('search-feedback');
+        if (!fb) return;
+        if (!msg) {
+            fb.textContent = '';
+            fb.className = 'feedback-msg';
+        } else {
+            fb.textContent = msg;
+            fb.className = `feedback-msg ${type}`;
+        }
+    }
+
     // --- Parsing and Input Handling ---
     function parseDMS(input) {
         // Simple regex for degrees, minutes, seconds (rudimentary)
@@ -92,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = ui.locationInput.value.trim();
         if (!query) return;
 
+        showFeedback(null);
         ui.searchBtn.disabled = true;
         ui.searchBtn.setAttribute('aria-busy', 'true');
         ui.searchBtn.textContent = 'Searching...';
@@ -129,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 5. Fallback to Nominatim API (Place name search)
             if (!navigator.onLine) {
-                alert('You appear to be offline. Place name search requires an internet connection. Please use coordinates, a Plus Code, or a Geohash, or click on the map.');
+                showFeedback('You appear to be offline. Place name search requires an internet connection.', 'error');
                 return;
             }
 
@@ -140,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (cachedData) {
                     placeGuessMarker(cachedData.lat, cachedData.lon, true);
                 } else {
-                    alert('Could not find location. Try a different format or name.');
+                    showFeedback('Could not find location. Try a different format or name.', 'error');
                 }
                 return;
             }
@@ -156,15 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     placeGuessMarker(lat, lon, true);
                 } else {
                     state.searchCache.set(query, null);
-                    alert('Could not find location. Try a different format or name.');
+                    showFeedback('Could not find location. Try a different format or name.', 'error');
                 }
             } catch (fetchError) {
                 console.error('Fetch error:', fetchError);
-                alert('Could not connect to the search service. Please check your internet connection or try a different format.');
+                showFeedback('Could not connect to the search service. Please try again.', 'error');
             }
         } catch (error) {
             console.error('Search error:', error);
-            alert('An error occurred while searching. Please try again.');
+            showFeedback('An error occurred while searching. Please try again.', 'error');
         } finally {
             ui.searchBtn.disabled = false;
             ui.searchBtn.setAttribute('aria-busy', 'false');
@@ -173,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function placeGuessMarker(lat, lng, panTo = false) {
+        showFeedback(null);
         state.currentGuessLat = lat;
         state.currentGuessLng = lng;
 
@@ -230,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.questions = await response.json();
 
             if (state.questions.length === 0) {
-                alert("Error: No questions loaded from server.");
+                showFeedback("Error: No questions loaded from server.", 'error');
                 ui.startBtn.disabled = false;
                 ui.startBtn.setAttribute('aria-busy', 'false');
                 ui.startBtn.textContent = 'Start Game';
@@ -241,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadQuestion();
         } catch (error) {
             console.error("Failed to load questions", error);
-            alert("Failed to connect to the server.");
+            showFeedback("Failed to connect to the server.", 'error');
             ui.startBtn.disabled = false;
             ui.startBtn.setAttribute('aria-busy', 'false');
             ui.startBtn.textContent = 'Start Game';
@@ -267,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.polyline = null;
         }
 
+        showFeedback(null);
         state.currentGuessLat = null;
         state.currentGuessLng = null;
         ui.submitGuessBtn.disabled = true;
@@ -300,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             if (data.error) {
-                alert(data.error);
+                showFeedback(data.error, 'error');
                 ui.submitGuessBtn.disabled = false;
                 ui.submitGuessBtn.setAttribute('aria-busy', 'false');
                 ui.submitGuessBtn.textContent = 'Submit Guess';
@@ -358,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("Submit error:", error);
-            alert("Error submitting guess.");
+            showFeedback("Error submitting guess.", 'error');
             ui.submitGuessBtn.disabled = false;
             ui.submitGuessBtn.setAttribute('aria-busy', 'false');
             ui.submitGuessBtn.textContent = 'Submit Guess';
