@@ -59,6 +59,15 @@ class PeriodicNameTestCase(unittest.TestCase):
         response = self.app.get('/')
         self.assertEqual(response.headers.get('X-Content-Type-Options'), 'nosniff')
         self.assertEqual(response.headers.get('X-Frame-Options'), 'DENY')
+        csp = response.headers.get('Content-Security-Policy', '')
+        self.assertIn("default-src 'self'", csp)
+        self.assertIn("object-src 'none'", csp)
+        self.assertIn("frame-src 'none'", csp)
+
+    def test_non_string_form_input(self):
+        # Test handling when form parameter is not a string
+        response = self.app.post('/', data=dict(name=None))
+        self.assertEqual(response.status_code, 200)
 
     def test_debug_mode_disabled(self):
         self.assertFalse(app.config['DEBUG'])

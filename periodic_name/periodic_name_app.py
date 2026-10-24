@@ -16,7 +16,7 @@ def add_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline';"
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'none';"
     return response
 
 # ⚡ Bolt Optimization: Module-level dictionary for O(1) symbol lookup.
@@ -69,10 +69,15 @@ def index():
     matched_elements = None
 
     if request.method == 'POST':
-        name = request.form.get('name', '').strip()
-        # Restrict name length to prevent abuse
-        if len(name) > 100:
-            name = name[:100]
+        raw_name = request.form.get('name', '')
+        # Sentinel: Ensure input is a string before calling string methods to prevent unhandled AttributeError (500)
+        if not isinstance(raw_name, str):
+            name = ''
+        else:
+            name = raw_name.strip()
+            # Restrict name length to prevent abuse / memory exhaustion DoS
+            if len(name) > 100:
+                name = name[:100]
 
         matched_elements = find_elements_in_name(name)
 
