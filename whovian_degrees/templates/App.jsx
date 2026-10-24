@@ -82,6 +82,12 @@ const App = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 text-white font-inter flex flex-col">
+            <a
+                href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-md focus:font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white shadow-lg"
+            >
+                Skip to main content
+            </a>
             <nav className="bg-gray-900 text-white px-6 py-3 flex justify-between items-center text-sm border-b border-purple-800" aria-label="Portal Navigation">
                 <div className="flex items-center gap-2">
                     <span className="font-bold text-gray-100">Whovian Degrees Portal</span>
@@ -96,7 +102,7 @@ const App = () => {
                 </a>
             </nav>
 
-            <div className="flex-1 p-4 sm:p-8 flex items-center justify-center">
+            <main id="main-content" tabIndex={-1} className="flex-1 p-4 sm:p-8 flex items-center justify-center focus:outline-none">
                 <div className="bg-gray-800 bg-opacity-70 backdrop-blur-md p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-3xl border border-purple-700">
                     <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-6 text-purple-300">
                         Whovian Degrees
@@ -189,7 +195,7 @@ const App = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </main>
         </div>
     );
 };
