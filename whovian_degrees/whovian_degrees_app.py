@@ -18,11 +18,11 @@ DOCTOR_ACTORS = [
     "Jodie Whittaker", "Ncuti Gatwa"
 ]
 
-# ⚡ Bolt Optimization: Pre-compute formatted string at module load time
-# Pre-formatting the DOCTOR_ACTORS list into a comma-separated string at module load
-# avoids re-executing string joining and allocating intermediate string objects
-# on every API request in connect_actors().
+# ⚡ Bolt Optimization: Pre-compute formatted string and set lookup at module load time.
+# Pre-formatting DOCTOR_ACTORS into a string and converting to a set at module load
+# avoids re-executing string joining and O(N) list search allocations on every API request.
 DOCTOR_ACTORS_STR = ', '.join(DOCTOR_ACTORS)
+DOCTOR_ACTORS_SET = set(DOCTOR_ACTORS)
 
 # Sentinel: Simple in-memory rate limiter for the external AI API to prevent abuse and billing exhaustion
 IP_REQUESTS = {}
@@ -102,8 +102,8 @@ def connect_actors():
         return jsonify({'error': 'Missing startActor or targetDoctor'}), 400
 
     # Sentinel: Strictly validate that target_doctor is one of the valid Doctor Who actors
-    # to prevent prompt injection and quota abuse/waste on invalid external API requests
-    if target_doctor not in DOCTOR_ACTORS:
+    # ⚡ Bolt Optimization: Use O(1) hash set lookup instead of O(N) list scanning
+    if target_doctor not in DOCTOR_ACTORS_SET:
         return jsonify({'error': 'Invalid targetDoctor. Must be a valid Doctor Who actor'}), 400
 
     # API key should be provided by environment
