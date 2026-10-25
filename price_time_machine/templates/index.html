@@ -13,6 +13,9 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md font-medium z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600">
+        Skip to main content
+    </a>
     <nav style="background-color: #1f2937; color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-family: sans-serif; font-size: 14px; border-bottom: 1px solid #374151;" aria-label="Portal Navigation">
         <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-weight: 700; color: #f3f4f6;">Price Time Machine Portal</span>
@@ -32,7 +35,7 @@
         })();
     </script>
 
-    <div class="container mx-auto px-4 py-12 max-w-6xl">
+    <main id="main-content" tabindex="-1" class="container mx-auto px-4 py-12 max-w-6xl focus:outline-none">
         <header class="text-center mb-8">
             <h1 class="text-5xl font-extrabold text-blue-900 mb-4 tracking-tight">Price Time Machine <span class="text-4xl">🕰️</span></h1>
             <p class="text-xl text-gray-600 mb-6">Explore how the cost of everyday items has changed over the decades.</p>
@@ -103,6 +106,6 @@
         <footer class="mt-16 text-center text-gray-500 text-sm">
             <p>*Modern prices are dynamically calculated using historical Consumer Price Index (CPI) inflation data for {{ regions[current_region].name }}.</p>
         </footer>
-    </div>
+    </main>
 </body>
 </html>
