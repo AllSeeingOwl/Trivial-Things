@@ -67,6 +67,18 @@ class QuarterlyCalendarTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('Invalid category', response.get_json().get('error', ''))
 
+    def test_create_event_invalid_is_tentative_type(self):
+        payload = {
+            'title': 'Tentative Event',
+            'start_date': '2026-05-01',
+            'end_date': '2026-05-03',
+            'category': 'Cultural',
+            'is_tentative': 'false'
+        }
+        response = self.client.post('/api/events', json=payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.get_json(), {'error': 'is_tentative must be a boolean'})
+
     def test_create_event_invalid_json(self):
         response = self.client.post('/api/events', data="not json", content_type='application/json')
         self.assertEqual(response.status_code, 400)

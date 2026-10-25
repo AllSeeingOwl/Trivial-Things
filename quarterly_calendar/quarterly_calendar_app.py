@@ -112,12 +112,17 @@ def create_event():
     if end_date < start_date:
         return jsonify({'error': 'End date must be after or equal to start date'}), 400
 
+    # Sentinel: Validate that is_tentative is strictly a boolean if provided to prevent boolean type confusion
+    is_tentative_val = data.get('is_tentative', False)
+    if not isinstance(is_tentative_val, bool):
+        return jsonify({'error': 'is_tentative must be a boolean'}), 400
+
     new_event = Event(
         title=title.strip(),
         start_date=start_date,
         end_date=end_date,
         category=category.strip(),
-        is_tentative=bool(data.get('is_tentative', False))
+        is_tentative=is_tentative_val
     )
 
     db.session.add(new_event)
