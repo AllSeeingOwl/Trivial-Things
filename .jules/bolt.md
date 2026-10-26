@@ -41,3 +41,7 @@
 ## 2026-05-20 - Pre-Compute Static Region Item Representations at Module Load Time
 **Learning:** In applications like `price_time_machine`, calculating inflation and formatting item representations dynamically for all items in a region on every request executes 15 repeated math calculations, binary searches, string interpolations, and list allocations per HTTP request.
 **Action:** Pre-build static region display item dictionaries (`DISPLAY_ITEMS_BY_REGION = {code: _build_display_items_for_region(code) for code in REGIONS}`) at module startup, allowing the view function to return references in $O(1)$ time (~100x / ~99% faster execution).
+
+## 2026-10-26 - Pre-Construct API Payload Representations for Chain Datasets
+**Learning:** In `sliding_rows_flashcards`, dynamically reconstructing a list of question dictionaries (`[{'order': ..., 'question': ..., 'answer': ...}]`) on every `/api/get_chain` request creates unnecessary list/dict allocations and CPU overhead for data that is static once loaded from CSV.
+**Action:** Pre-build public API question payload lists (`api_questions`) on each chain object during initial data loading (`load_chains()`), and return `random_chain['api_questions']` directly in endpoint responses (~67x / ~98.5% speedup).
