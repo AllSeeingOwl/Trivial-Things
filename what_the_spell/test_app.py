@@ -63,15 +63,14 @@ class TestWhatTheSpell(unittest.TestCase):
                 self.assertEqual(pool, ['pool1', 'pool2'])
 
     def test_index_route(self):
-        csv_content = "1,2,3,4,5,6,\n"
-        for i in range(1, 11):
-            csv_content += f"w{i}1,w{i}2,w{i}3,w{i}4,w{i}5,w{i}6,{i}\n"
-
-        with patch('os.path.exists', return_value=True):
-            with patch('builtins.open', mock_open(read_data=csv_content)):
-                response = self.client.get('/')
-                self.assertEqual(response.status_code, 200)
-                self.assertIn('w11', response.data.decode())
+        fake_grids = [[['w11', 'w12', 'w13', 'w14', 'w15', 'w16']]]
+        fake_pool = []
+        with patch('what_the_spell_app.load_data', return_value=(fake_grids, fake_pool)):
+            response = self.client.get('/')
+            self.assertEqual(response.status_code, 200)
+            html = response.data.decode()
+            self.assertIn('href="#main-content"', html)
+            self.assertIn('<main id="main-content" tabindex="-1">', html)
 
     def test_get_grid_api(self):
         csv_content = "1,2,3,4,5,6,\n"
