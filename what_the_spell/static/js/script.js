@@ -13,8 +13,14 @@ let currentWord = '';
 loadBtn.addEventListener('click', loadGrid);
 resetBtn.addEventListener('click', () => {
     if (confirm("Are you sure you want to reset the board?")) {
+        resetBtn.disabled = true;
+        resetBtn.setAttribute('aria-busy', 'true');
         renderGrid();
         resetChallenge();
+        setTimeout(() => {
+            resetBtn.disabled = false;
+            resetBtn.setAttribute('aria-busy', 'false');
+        }, 150);
     }
 });
 
