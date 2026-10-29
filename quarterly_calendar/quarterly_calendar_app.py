@@ -51,11 +51,10 @@ def index():
 
 @app.route('/api/events', methods=['GET'])
 def get_events():
-    # ⚡ Bolt Optimization: Query Lightweight Tuples & Positional Index Access
+    # ⚡ Bolt Optimization: Query Lightweight Tuples & Direct Tuple Unpacking
     # Querying specific required columns via db.session.query() returns lightweight tuples directly
-    # from the database cursor. Using C-level positional tuple indexing (r[0], r[1], ...) instead of
-    # attribute access (r.id, r.title, ...) bypasses SQLAlchemy's __getattr__ dynamic property lookups,
-    # delivering a ~76% speedup (~4.3x faster) during list dictionary construction.
+    # from the database cursor. Unpacking tuple elements directly into loop variables avoids repeated
+    # positional indexing lookups (r[0], r[1], ...) and attribute lookups, delivering faster list dictionary construction.
     rows = db.session.query(
         Event.id,
         Event.title,
@@ -66,13 +65,13 @@ def get_events():
     ).all()
 
     return jsonify([{
-        'id': r[0],
-        'title': r[1],
-        'start_date': r[2].isoformat() if r[2] else None,
-        'end_date': r[3].isoformat() if r[3] else None,
-        'category': r[4],
-        'is_tentative': r[5]
-    } for r in rows])
+        'id': event_id,
+        'title': title,
+        'start_date': start_date.isoformat() if start_date else None,
+        'end_date': end_date.isoformat() if end_date else None,
+        'category': category,
+        'is_tentative': is_tentative
+    } for event_id, title, start_date, end_date, category, is_tentative in rows])
 
 @app.route('/api/events', methods=['POST'])
 def create_event():
