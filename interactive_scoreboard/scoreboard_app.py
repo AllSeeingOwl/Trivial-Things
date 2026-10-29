@@ -136,7 +136,9 @@ def add_score():
         db.session.add(new_entry)
         db.session.commit()
         return jsonify(new_entry.to_dict()), 201
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, OverflowError):
+        # Sentinel: Catch OverflowError (e.g. converting float infinity or 1e308 to int)
+        # to prevent unhandled 500 exceptions and stack trace information leakage
         return jsonify({'error': 'Invalid data types for score or time_taken'}), 400
     except Exception as e:
         db.session.rollback()

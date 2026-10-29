@@ -133,6 +133,11 @@
 **Learning:** In Python, `bool` is a subclass of `int` (`isinstance(True, int)` is `True`), and `float("nan")` or `float("inf")` parses without raising `ValueError`. Acceptable inputs must explicitly disallow booleans and verify value finiteness.
 **Prevention:** Always check `isinstance(val, bool)` and `math.isnan(val)` / `math.isinf(val)` on numeric parameters before using or persisting them in databases and returning in JSON payloads.
 
+## 2026-10-29 - [MEDIUM] Catch OverflowError in Float-to-Int Conversions
+**Vulnerability:** Converting extreme float numbers (such as `1e308` or float infinity) to `int` in Python raises `OverflowError`, which does not inherit from `ValueError` or `TypeError`. In `interactive_scoreboard/scoreboard_app.py`, passing `score: 1e308` in a JSON request caused an unhandled `OverflowError`, resulting in a 500 Internal Server Error and potential stack trace leakage.
+**Learning:** Python's numeric exception hierarchy separates `OverflowError` (a subclass of `ArithmeticError`) from `ValueError` and `TypeError`. When validating user-provided numeric inputs that undergo type conversion (e.g. `int(float_val)`), catching only `(ValueError, TypeError)` allows `OverflowError` to bubble up uncaught.
+**Prevention:** Always catch `OverflowError` alongside `ValueError` and `TypeError` when performing `int()` casting on numeric user inputs in web application handlers.
+
 ## 2026-06-20 - [HIGH] Prevent API Key Exposure in Outgoing HTTP Request URL Query Strings
 **Vulnerability:** The `/api/connect` endpoint in `whovian_degrees/whovian_degrees_app.py` appended the sensitive Google Gemini API key as a URL query string (`?key={api_key}`) when making outgoing HTTP requests to `generativelanguage.googleapis.com`. Secrets passed in URL query strings are routinely recorded in HTTP access logs, proxy logs, and diagnostic traces.
 **Learning:** Query parameters are inherently insecure for credentials because full request URLs are routinely stored in plain text across web server access logs, reverse proxies, and error traces. Google REST APIs support passing credentials via the `x-goog-api-key` HTTP header.
