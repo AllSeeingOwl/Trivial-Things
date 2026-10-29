@@ -107,6 +107,21 @@ class QuarterlyCalendarTestCase(unittest.TestCase):
         response = self.client.post('/api/events', json=payload)
         self.assertEqual(response.status_code, 400)
 
+    def test_create_event_db_error(self):
+        payload = {
+            'title': 'Error Event Creation',
+            'start_date': '2026-05-01',
+            'end_date': '2026-05-03',
+            'category': 'Sporting'
+        }
+        with patch('quarterly_calendar_app.db.session.commit') as mock_commit, \
+             patch('quarterly_calendar_app.db.session.rollback') as mock_rollback:
+            mock_commit.side_effect = Exception("DB error during creation")
+            response = self.client.post('/api/events', json=payload)
+            self.assertEqual(response.status_code, 500)
+            self.assertEqual(response.get_json(), {'error': 'Failed to create event'})
+            mock_rollback.assert_called_once()
+
     def test_delete_event_success(self):
         payload = {
             'title': 'Event To Delete',

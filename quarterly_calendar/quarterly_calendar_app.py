@@ -125,10 +125,15 @@ def create_event():
         is_tentative=is_tentative_val
     )
 
-    db.session.add(new_event)
-    db.session.commit()
-
-    return jsonify(new_event.to_dict()), 201
+    try:
+        db.session.add(new_event)
+        db.session.commit()
+        return jsonify(new_event.to_dict()), 201
+    except Exception as e:
+        db.session.rollback()
+        # Sentinel: Log actual error internally but return safe generic message to avoid leaking internals
+        print(f"Error creating event: {e}")
+        return jsonify({'error': 'Failed to create event'}), 500
 
 @app.route('/api/events/<int:event_id>', methods=['DELETE'])
 def delete_event(event_id):
