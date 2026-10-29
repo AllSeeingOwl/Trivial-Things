@@ -17,10 +17,10 @@ export default function FilterButtons() {
             key={cat.id}
             href={cat.path}
             aria-current={isActive ? 'page' : undefined}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-in-out border active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
               isActive
-                ? 'bg-white text-black border-white'
-                : 'bg-[#171717] text-[#a3a3a3] border-[#262626] hover:text-white hover:border-gray-500'
+                ? 'bg-white text-black border-white shadow-sm'
+                : 'bg-[#171717] text-[#a3a3a3] border-[#262626] hover:text-white hover:border-gray-500 hover:bg-[#202020]'
             }`}
           >
             {cat.label}

@@ -10,7 +10,10 @@ export default function Header() {
     if (typeof window !== 'undefined') {
       const h = window.location.hostname;
       if (h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || h.startsWith('192.168.') || h.startsWith('10.')) {
-        setPortalUrl(`http://${h}:8080`);
+        const handle = requestAnimationFrame(() => {
+          setPortalUrl(`http://${h}:8080`);
+        });
+        return () => cancelAnimationFrame(handle);
       }
     }
   }, []);
