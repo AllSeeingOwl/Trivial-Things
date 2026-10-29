@@ -213,6 +213,11 @@ def test_add_score_security_validation(client):
     assert rv.status_code == 400
     assert json.loads(rv.data) == {'error': 'Invalid time_taken value'}
 
+    # 10. OverflowError in int() conversion (e.g., float value like 1e308)
+    rv = client.post('/api/scores', json={'player_name': 'Alice', 'score': 1e308})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {'error': 'Invalid data types for score or time_taken'}
+
 def test_avatar_onerror_xss_prevention(client):
     """Test that index HTML template renders avatar onerror using data-name attribute to prevent DOM XSS."""
     rv = client.get('/')
