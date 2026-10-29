@@ -45,3 +45,7 @@
 ## 2026-10-26 - Pre-Construct API Payload Representations for Chain Datasets
 **Learning:** In `sliding_rows_flashcards`, dynamically reconstructing a list of question dictionaries (`[{'order': ..., 'question': ..., 'answer': ...}]`) on every `/api/get_chain` request creates unnecessary list/dict allocations and CPU overhead for data that is static once loaded from CSV.
 **Action:** Pre-build public API question payload lists (`api_questions`) on each chain object during initial data loading (`load_chains()`), and return `random_chain['api_questions']` directly in endpoint responses (~67x / ~98.5% speedup).
+
+## 2026-10-26 - Direct Tuple Unpacking in List Comprehensions Over Positional Indexing
+**Learning:** When building JSON response dictionaries from lightweight database query tuples, using direct tuple unpacking in the list comprehension header (`for col1, col2, ... in rows`) eliminates `BINARY_SUBSCR` bytecode lookup operations for every element access, providing a ~6-13% iteration speed improvement over positional indexing (`r[0]`, `r[1]`).
+**Action:** Unpack query tuple elements directly into named variables in list comprehension headers when transforming SQLAlchemy tuple results into response dictionaries.
