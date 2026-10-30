@@ -18,7 +18,7 @@
             </p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" role="region" aria-label="Available Applications">
             <!-- App Cards -->
             <a data-local-port="8001" data-render-slug="trivial-things-interactive-scoreboard" href="http://localhost:8001" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
@@ -126,7 +126,7 @@
             <p id="modal-app-desc" class="text-sm text-gray-600 mb-6">Connecting to standalone service. On free instances, cold starts may take up to 50 seconds.</p>
             <div class="flex justify-center gap-3">
                 <a id="modal-direct-link" href="#" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">Open Direct Link</a>
-                <button id="modal-close-btn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2">Cancel</button>
+                <button id="modal-close-btn" aria-label="Close launch modal" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2">Cancel</button>
             </div>
         </div>
     </div>
