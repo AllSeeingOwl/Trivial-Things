@@ -195,6 +195,7 @@ def add_security_headers(response):
         "connect-src 'self' https://nominatim.openstreetmap.org"
     )
     response.headers['Content-Security-Policy'] = csp
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=(), browsing-topics=()'
     return response
 
 

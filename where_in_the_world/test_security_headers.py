@@ -15,3 +15,4 @@ def test_security_headers_present(client):
     assert headers.get('X-Frame-Options') == 'SAMEORIGIN'
     assert headers.get('Strict-Transport-Security') == 'max-age=31536000; includeSubDomains'
     assert 'default-src \'self\'' in headers.get('Content-Security-Policy', '')
+    assert headers.get('Permissions-Policy') == 'camera=(), microphone=(), geolocation=(), browsing-topics=()'
