@@ -6,7 +6,7 @@ import { fetchWidgetData } from '@/lib/scraper';
 import { WIDGET_CATEGORIES } from '@/lib/categories';
 
 // Parsers
-import { parsePremierLeaguePrimary, parsePremierLeagueBackup } from '@/lib/parsers/premier-league';
+import { parsePremierLeaguePrimary, parsePremierLeagueBackup, parseRelegationPrimary, parseRelegationBackup } from '@/lib/parsers/premier-league';
 import { parseEarthquakesPrimary, parseEarthquakesBackup } from '@/lib/parsers/earthquakes';
 import { parseBooksPrimary, parseBooksBackup } from '@/lib/parsers/books';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
@@ -31,6 +31,13 @@ const PREMIER_LEAGUE_CONFIG = {
   }
 };
 
+// Same feed as the standings widget (Next.js dedupes the cached fetch), bottom 3 rows only
+const RELEGATION_CONFIG = {
+  ...PREMIER_LEAGUE_CONFIG,
+  primaryParser: parseRelegationPrimary,
+  backupParser: parseRelegationBackup
+};
+
 const EARTHQUAKES_CONFIG = {
   primaryUrl: 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson',
   backupUrl: 'https://www.emsc-csem.org/Earthquake/',
@@ -51,6 +58,7 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
 
   const showPremierLeague = categoryFilter === 'all' || categoryFilter === WIDGET_CATEGORIES.premierLeague;
   const premierLeagueData = showPremierLeague ? fetchWidgetData(PREMIER_LEAGUE_CONFIG) : null;
+  const relegationData = showPremierLeague ? fetchWidgetData(RELEGATION_CONFIG) : null;
 
   const showEarthquakes = categoryFilter === 'all' || categoryFilter === WIDGET_CATEGORIES.earthquakes;
   const earthquakesData = showEarthquakes ? fetchWidgetData(EARTHQUAKES_CONFIG) : null;
@@ -84,6 +92,12 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
       {showPremierLeague && premierLeagueData && (
         <Suspense fallback={<WidgetCardSkeleton title="Premier League Standings" />}>
           <WidgetCard title="Premier League Standings" dataPromise={premierLeagueData} />
+        </Suspense>
+      )}
+
+      {showPremierLeague && relegationData && (
+        <Suspense fallback={<WidgetCardSkeleton title="Premier League Relegation Zone" />}>
+          <WidgetCard title="Premier League Relegation Zone" dataPromise={relegationData} />
         </Suspense>
       )}
 

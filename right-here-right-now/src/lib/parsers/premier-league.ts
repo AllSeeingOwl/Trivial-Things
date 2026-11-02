@@ -54,3 +54,45 @@ export function parsePremierLeagueBackup(html: string): WidgetItem[] {
 
   return items;
 }
+
+// Relegation zone: the bottom 3 teams of the same standings feed.
+const RELEGATION_SPOTS = 3;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseRelegationPrimary(json: any): WidgetItem[] {
+  const entries = json?.tables?.[0]?.entries;
+  if (!Array.isArray(entries) || entries.length === 0) return [];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return entries.slice(-RELEGATION_SPOTS).map((entry: any, i: number) => ({
+    id: `pl-relegation-primary-${i}`,
+    rank: entry.position.toString(),
+    title: entry.team.name,
+    subtitle: `Points: ${entry.overall.points}`
+  }));
+}
+
+export function parseRelegationBackup(html: string): WidgetItem[] {
+  const $ = cheerio.load(html);
+  const rows: WidgetItem[] = [];
+
+  // Sky Sports table: collect every team row, then keep the last 3
+  $('.sdc-site-table__row').each((_, el) => {
+    const $el = $(el);
+    if ($el.find('th').length > 0) return;
+
+    const teamName = $el.find('.sdc-site-table__name-target').text().replace(/\n/g, '').trim();
+    if (!teamName) return;
+
+    const rank = $el.find('.sdc-site-table__cell').first().text().trim();
+    const points = $el.find('.sdc-site-table__cell').eq(9).text().trim();
+    rows.push({
+      id: `pl-relegation-backup-${rows.length}`,
+      rank: rank || (rows.length + 1).toString(),
+      title: teamName,
+      subtitle: `Points: ${points}`
+    });
+  });
+
+  return rows.slice(-RELEGATION_SPOTS);
+}
