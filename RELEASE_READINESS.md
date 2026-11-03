@@ -38,8 +38,8 @@ Many applications have progressed significantly and are much closer to the 80% r
 *   **Documentation:** Has a generic Next.js `README.md`.
 *   **Dependencies:** Has `package.json` and lockfiles.
 *   **Testing:** Missing a test suite.
-*   **Issues:** It is a Next.js application, making it the closest to being "deployable" (e.g., to Vercel), but it lacks specific documentation explaining what the app does, and it lacks unit/integration tests.
-*   **Recommendation:** Vercel deployment or Docker container (via Next.js standalone build). Needs tests and a proper README.
+*   **Issues:** It is a Next.js application, making it the closest to being "deployable" (e.g., to Render), but it lacks specific documentation explaining what the app does, and it lacks unit/integration tests.
+*   **Recommendation:** Render deployment as a Docker container (via Next.js standalone build). Needs tests and a proper README.
 
 ### 4. `sliding_rows_flashcards`
 *   **Readiness:** ~80%

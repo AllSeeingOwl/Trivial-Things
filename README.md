@@ -48,7 +48,7 @@ An application to see historical prices adjusted for inflation.
 
 ### 9. Right Here Right Now (`right-here-right-now/`)
 A Next.js dashboard application.
-*   **Features**: Uses Tailwind CSS, native CSS columns for a Pinterest-like masonry layout, and Vercel Cron to trigger daily API routes.
+*   **Features**: Uses Tailwind CSS, native CSS columns for a Pinterest-like masonry layout, and a 24-hour data cache so widgets refresh daily. Deployed on Render (see `render.yaml`).
 *   **Running**: `cd right-here-right-now && pnpm dev` (Runs on port 3000 by default).
 
 ### 10. Whovian Degrees (`whovian_degrees/`)
