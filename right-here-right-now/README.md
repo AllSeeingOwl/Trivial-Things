@@ -33,21 +33,41 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Elections (News page)
 
-The News page shows each listed country's head of government and ten highest-ranking posts, read from official government websites. When a country holds a general or snap election, close its card: it's blurred with your written reason on top until the new government is published.
+The News page shows each listed country's head of government and ten highest-ranking posts, read from official government websites. When a country holds a general or snap election, blur its card: it shows your written reason on top until the new government is published.
+
+A blurred card unblurs by itself once polling day has arrived **and** the official website lists a different government from the one recorded when it was blurred. If a leader is re-elected and keeps exactly the same cabinet, unblur it by hand.
+
+Closures are stored in `src/data/elections.json` and go live when Render deploys that file.
+
+### From the admin page
+
+Go to `/admin/elections` on the live site and sign in. Each country has a switch:
+
+- **Switch on** to blur it: enter the reason shown on the card, the polling day and (optionally) a later date to blur from.
+- **Switch off** to unblur it straight away.
+
+Each change is committed to `src/data/elections.json` on GitHub, and Render's auto-deploy publishes it (usually within a few minutes; the admin page says when a change is still waiting to go live).
+
+One-off setup on the Render service (**Environment** tab):
+
+| Variable | Value |
+|---|---|
+| `ADMIN_PASSWORD` | The password for the admin page. Without it the page is switched off. Changing it signs everyone out. |
+| `GITHUB_TOKEN` | A [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) with access to only this repository and the **Contents: Read and write** permission. |
+| `GITHUB_BRANCH` | Optional; the branch Render deploys from (default `main`). |
+| `GITHUB_REPO` | Optional; default `AllSeeingOwl/Trivial-Things`. |
+
+Render's **Auto-Deploy** must be on for that branch (Settings → Build & Deploy), otherwise changes are saved but don't go live until the next manual deploy.
+
+### From the command line
 
 ```bash
 pnpm election close uk-government --date 2027-05-06 --reason "Parliament has been dissolved and a general election called for 6 May 2027."
-```
-
-This records the outgoing government in `src/data/elections.json`. Commit and deploy that file for the change to go live. Add `--from YYYY-MM-DD` to close the card from a later date (e.g. the day Parliament dissolves).
-
-The card reopens by itself once polling day has arrived **and** the official website lists a different government from the recorded one. If a leader is re-elected and keeps exactly the same cabinet, reopen it by hand:
-
-```bash
 pnpm election reopen uk-government
+pnpm election list
 ```
 
-`pnpm election list` shows each closed country and whether its new government has been published. Country keys: `uk-government`, `us-government`, `canada-government`, `germany-government`, `japan-government`, `italy-government`, `spain-government`.
+Add `--from YYYY-MM-DD` to `close` to blur from a later date. Commit and push `src/data/elections.json` afterwards. Country keys: `uk-government`, `us-government`, `canada-government`, `germany-government`, `japan-government`, `italy-government`, `spain-government`.
 
 ## Deployment
 

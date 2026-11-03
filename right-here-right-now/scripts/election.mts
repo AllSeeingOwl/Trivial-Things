@@ -16,17 +16,18 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { GOVERNMENT_WIDGETS } from '../src/lib/governments';
-import { Election, electionStatus, formatElectionDate, governmentFingerprint, today } from '../src/lib/elections';
+import {
+  Election, buildElection, electionStatus, formatElectionDate, serializeElections, today, withElection, withoutElection
+} from '../src/lib/elections';
 
 const ELECTIONS_FILE = fileURLToPath(new URL('../src/data/elections.json', import.meta.url));
-const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function load(): Election[] {
   return JSON.parse(readFileSync(ELECTIONS_FILE, 'utf8')) as Election[];
 }
 
 function save(elections: Election[]) {
-  writeFileSync(ELECTIONS_FILE, `${JSON.stringify(elections, null, 2)}\n`);
+  writeFileSync(ELECTIONS_FILE, serializeElections(elections));
 }
 
 function fail(message: string): never {
@@ -67,31 +68,21 @@ async function list() {
 
 async function close(args: string[]) {
   const widget = widgetFor(args[0]);
-  const electionDate = option(args, 'date');
-  const reason = option(args, 'reason')?.trim();
-  const closedFrom = option(args, 'from') ?? today();
-
-  if (!electionDate || !DATE.test(electionDate)) fail('Give polling day as --date YYYY-MM-DD.');
-  if (!DATE.test(closedFrom)) fail('Give --from as YYYY-MM-DD.');
-  if (electionDate < closedFrom) fail('Polling day can\'t be before the closing date.');
-  if (!reason) fail('Give the written reason shown on the card as --reason "...".');
-
-  const data = await widget.fetchList();
-  if (data.source === 'error' || data.items.length === 0) {
-    fail(`Couldn't read ${widget.country}'s current government from its website, so the outgoing list can't be recorded. Try again later.`);
-  }
-
-  const election: Election = {
-    key: widget.key,
-    country: widget.country,
-    reason,
-    closedFrom,
-    electionDate,
-    outgoing: governmentFingerprint(data.items)
+  const input = {
+    reason: option(args, 'reason') ?? '',
+    electionDate: option(args, 'date') ?? '',
+    closedFrom: option(args, 'from') ?? today()
   };
-  save([...load().filter(e => e.key !== widget.key), election]);
 
-  console.log(`${widget.country} is closed from ${closedFrom} for the election on ${formatElectionDate(electionDate)}.`);
+  let election: Election;
+  try {
+    election = buildElection(widget, input, await widget.fetchList());
+  } catch (error) {
+    fail((error as Error).message);
+  }
+  save(withElection(load(), election));
+
+  console.log(`${widget.country} is closed from ${election.closedFrom} for the election on ${formatElectionDate(election.electionDate)}.`);
   console.log('Outgoing government recorded:');
   election.outgoing.forEach(line => console.log(`  ${line}`));
   console.log('\nCommit and deploy src/data/elections.json for this to go live.');
@@ -101,7 +92,7 @@ function reopen(args: string[]) {
   const widget = widgetFor(args[0]);
   const elections = load();
   if (!elections.some(e => e.key === widget.key)) fail(`${widget.country} isn't closed.`);
-  save(elections.filter(e => e.key !== widget.key));
+  save(withoutElection(elections, widget.key));
   console.log(`${widget.country} reopened. Commit and deploy src/data/elections.json for this to go live.`);
 }
 

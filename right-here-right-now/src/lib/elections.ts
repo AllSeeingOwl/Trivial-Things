@@ -86,3 +86,62 @@ export function applyElectionClosure(key: string, data: WidgetData, on = today()
   };
   return { ...data, closed };
 }
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+export const MAX_REASON_LENGTH = 300;
+
+export interface ClosureInput {
+  reason: string;
+  electionDate: string;
+  closedFrom: string;
+}
+
+/** Checks a close request; returns the problem in plain words, or null if it's fine. */
+export function validateClosure({ reason, electionDate, closedFrom }: ClosureInput): string | null {
+  const isRealDate = (d: string) => ISO_DATE.test(d) && !Number.isNaN(Date.parse(`${d}T00:00:00Z`));
+  if (!reason.trim()) return 'Write the reason shown on the card.';
+  if (reason.length > MAX_REASON_LENGTH) return `Keep the reason to ${MAX_REASON_LENGTH} characters or fewer.`;
+  if (!isRealDate(electionDate)) return 'Give polling day as a date (YYYY-MM-DD).';
+  if (!isRealDate(closedFrom)) return 'Give the closing date as a date (YYYY-MM-DD).';
+  if (electionDate < closedFrom) return 'Polling day can\'t be before the closing date.';
+  return null;
+}
+
+/**
+ * A new entry for elections.json, recording the government currently on the
+ * official website as the outgoing one. Throws (with a plain message) if the
+ * input is invalid or the current government can't be read.
+ */
+export function buildElection(
+  widget: { key: string; country: string },
+  input: ClosureInput,
+  current: WidgetData
+): Election {
+  const problem = validateClosure(input);
+  if (problem) throw new Error(problem);
+  if (current.source === 'error' || current.items.length === 0) {
+    throw new Error(`Couldn't read ${widget.country}'s current government from its website, so the outgoing list can't be recorded. Try again later.`);
+  }
+  return {
+    key: widget.key,
+    country: widget.country,
+    reason: input.reason.trim(),
+    closedFrom: input.closedFrom,
+    electionDate: input.electionDate,
+    outgoing: governmentFingerprint(current.items)
+  };
+}
+
+/** Replaces any existing entry for the same country. */
+export function withElection(elections: Election[], election: Election): Election[] {
+  return [...elections.filter(e => e.key !== election.key), election];
+}
+
+export function withoutElection(elections: Election[], key: string): Election[] {
+  return elections.filter(e => e.key !== key);
+}
+
+/** The exact file contents written to elections.json (by the admin page and `pnpm election`). */
+export function serializeElections(elections: Election[]): string {
+  return `${JSON.stringify(elections, null, 2)}\n`;
+}
