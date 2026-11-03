@@ -22,16 +22,7 @@ import { parseFideTop, parseChessComLeaderboard } from '@/lib/parsers/chess';
 import { parseEnglandMensSquad, parseEnglandWomensSquad } from '@/lib/parsers/england-squad';
 import { parseSuperBowlWinners, parseWimbledonGentlemen, parseWimbledonLadies } from '@/lib/parsers/sports-history';
 import { WIKIPEDIA_HEADERS, wikipediaHtmlUrl } from '@/lib/parsers/wikipedia';
-import {
-  GOVERNMENT_LIST_LENGTH,
-  parseUkGovernment, UK_MINISTERS_URL,
-  fetchUsGovernment,
-  parseCanadaGovernment, CANADA_CABINET_URL,
-  parseGermanyGovernment, GERMANY_CABINET_URL,
-  parseJapanGovernment, resolveJapanMinistersUrl, JAPAN_MINISTERS_FALLBACK_URL,
-  parseItalyGovernment, ITALY_GOVERNMENT_URL,
-  parseSpainGovernment, SPAIN_GOVERNMENT_URL
-} from '@/lib/parsers/government';
+import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
 
 interface WidgetGridProps {
@@ -69,7 +60,6 @@ const RELEGATION_CONFIG: ScraperConfig = {
 };
 
 const sports = WIDGET_CATEGORIES.sports;
-const news = WIDGET_CATEGORIES.news;
 
 // Widgets shown on the "All" page and their own category page, in display order.
 const WIDGETS: WidgetDefinition[] = [
@@ -203,79 +193,13 @@ const WIDGETS: WidgetDefinition[] = [
       backupParser: parseBooksBackup
     }
   },
-  // News: each country's head of government and the ten highest-ranking posts,
-  // read from official government sites in the order they publish.
-  {
-    key: 'uk-government',
-    title: 'UK Prime Minister & Top 10 Cabinet Posts',
-    category: news,
-    config: {
-      // GOV.UK lists the Cabinet in official order of precedence
-      primaryUrl: UK_MINISTERS_URL,
-      primaryParser: parseUkGovernment,
-      isPrimaryJson: true,
-      maxItems: GOVERNMENT_LIST_LENGTH
-    }
-  },
-  {
-    key: 'us-government',
-    title: 'US President & Top 10 Posts',
-    category: news,
-    // Vice President, Speaker, then cabinet secretaries in line-of-succession order
-    // (whitehouse.gov and house.gov)
-    fetchData: fetchUsGovernment
-  },
-  {
-    key: 'canada-government',
-    title: 'Canadian Prime Minister & Top 10 Cabinet Posts',
-    category: news,
-    config: {
-      primaryUrl: CANADA_CABINET_URL,
-      primaryParser: parseCanadaGovernment,
-      maxItems: GOVERNMENT_LIST_LENGTH
-    }
-  },
-  {
-    key: 'germany-government',
-    title: 'German Chancellor & Top 10 Cabinet Posts',
-    category: news,
-    config: {
-      primaryUrl: GERMANY_CABINET_URL,
-      primaryParser: parseGermanyGovernment,
-      maxItems: GOVERNMENT_LIST_LENGTH
-    }
-  },
-  {
-    key: 'japan-government',
-    title: 'Japanese Prime Minister & Top 10 Cabinet Posts',
-    category: news,
-    config: {
-      primaryUrl: JAPAN_MINISTERS_FALLBACK_URL,
-      resolvePrimaryUrl: resolveJapanMinistersUrl,
-      primaryParser: parseJapanGovernment,
-      maxItems: GOVERNMENT_LIST_LENGTH
-    }
-  },
-  {
-    key: 'italy-government',
-    title: 'Italian Prime Minister & Top 10 Government Posts',
-    category: news,
-    config: {
-      primaryUrl: ITALY_GOVERNMENT_URL,
-      primaryParser: parseItalyGovernment,
-      maxItems: GOVERNMENT_LIST_LENGTH
-    }
-  },
-  {
-    key: 'spain-government',
-    title: 'Spanish Prime Minister & Top 10 Government Posts',
-    category: news,
-    config: {
-      primaryUrl: SPAIN_GOVERNMENT_URL,
-      primaryParser: parseSpainGovernment,
-      maxItems: GOVERNMENT_LIST_LENGTH
-    }
-  },
+  // News: each country's head of government and ten highest-ranking posts
+  ...GOVERNMENT_WIDGETS.map(g => ({
+    key: g.key,
+    title: g.title,
+    category: WIDGET_CATEGORIES.news,
+    fetchData: () => fetchGovernment(g)
+  })),
 ];
 
 export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) {

@@ -6,10 +6,19 @@ export interface WidgetItem {
   metadata?: string;
 }
 
+/** A notice that hides a widget's list, e.g. while a country holds an election. */
+export interface WidgetClosure {
+  heading: string;
+  reason: string;
+  detail?: string;
+}
+
 export interface WidgetData {
   items: WidgetItem[];
   source: 'primary' | 'backup' | 'error';
   error?: string;
+  /** When set, the card is blurred and shows this notice instead of its list. */
+  closed?: WidgetClosure;
 }
 
 export type ScrapeFunction = (html: string) => WidgetItem[];

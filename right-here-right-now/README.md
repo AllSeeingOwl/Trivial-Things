@@ -31,6 +31,24 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Elections (News page)
+
+The News page shows each listed country's head of government and ten highest-ranking posts, read from official government websites. When a country holds a general or snap election, close its card: it's blurred with your written reason on top until the new government is published.
+
+```bash
+pnpm election close uk-government --date 2027-05-06 --reason "Parliament has been dissolved and a general election called for 6 May 2027."
+```
+
+This records the outgoing government in `src/data/elections.json`. Commit and deploy that file for the change to go live. Add `--from YYYY-MM-DD` to close the card from a later date (e.g. the day Parliament dissolves).
+
+The card reopens by itself once polling day has arrived **and** the official website lists a different government from the recorded one. If a leader is re-elected and keeps exactly the same cabinet, reopen it by hand:
+
+```bash
+pnpm election reopen uk-government
+```
+
+`pnpm election list` shows each closed country and whether its new government has been published. Country keys: `uk-government`, `us-government`, `canada-government`, `germany-government`, `japan-government`, `italy-government`, `spain-government`.
+
 ## Deployment
 
 The app is deployed on [Render](https://render.com) as a Docker web service, defined in the repository's root `render.yaml` and built from this folder's `Dockerfile`.
