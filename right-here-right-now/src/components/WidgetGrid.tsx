@@ -180,11 +180,12 @@ const WIDGETS: WidgetDefinition[] = [
   },
   {
     key: 'books',
-    title: 'Best Selling Books',
+    title: 'Best Selling Fiction (US)',
     category: WIDGET_CATEGORIES.books,
     config: {
-      primaryUrl: 'https://www.amazon.co.uk/charts/mostsold/fiction',
-      backupUrl: 'https://www.nytimes.com/books/best-sellers/',
+      // Circana BookScan weekly chart via Publishers Weekly; Goodreads most-read as backup
+      primaryUrl: 'https://www.publishersweekly.com/pw/nielsen/hardcoverfiction.html',
+      backupUrl: 'https://www.goodreads.com/book/most_read',
       primaryParser: parseBooksPrimary,
       backupParser: parseBooksBackup
     }
