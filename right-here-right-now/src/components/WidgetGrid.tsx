@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import Link from 'next/link';
 import DashboardMasonry from '@/components/DashboardMasonry';
 import { WidgetCard, WidgetCardSkeleton } from '@/components/WidgetCard';
-import { fetchWidgetData, ScraperConfig } from '@/lib/scraper';
+import { fetchWidgetData, ScraperConfig, WidgetData } from '@/lib/scraper';
 import { WIDGET_CATEGORIES } from '@/lib/categories';
 
 // Parsers
@@ -22,6 +22,7 @@ import { parseFideTop, parseChessComLeaderboard } from '@/lib/parsers/chess';
 import { parseEnglandMensSquad, parseEnglandWomensSquad } from '@/lib/parsers/england-squad';
 import { parseSuperBowlWinners, parseWimbledonGentlemen, parseWimbledonLadies } from '@/lib/parsers/sports-history';
 import { WIKIPEDIA_HEADERS, wikipediaHtmlUrl } from '@/lib/parsers/wikipedia';
+import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
 
 interface WidgetGridProps {
@@ -32,7 +33,9 @@ interface WidgetDefinition {
   key: string;
   title: string;
   category: string;
-  config: ScraperConfig;
+  config?: ScraperConfig;
+  /** For widgets that combine several sources instead of one scraper config. */
+  fetchData?: () => Promise<WidgetData>;
 }
 
 // ⚡ Bolt Optimization: Stabilize Configuration Objects
@@ -190,13 +193,20 @@ const WIDGETS: WidgetDefinition[] = [
       backupParser: parseBooksBackup
     }
   },
+  // News: each country's head of government and ten highest-ranking posts
+  ...GOVERNMENT_WIDGETS.map(g => ({
+    key: g.key,
+    title: g.title,
+    category: WIDGET_CATEGORIES.news,
+    fetchData: () => fetchGovernment(g)
+  })),
 ];
 
 export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) {
   // We only fetch and display widgets that match the category filter
   const visibleWidgets = WIDGETS
     .filter(w => categoryFilter === 'all' || categoryFilter === w.category)
-    .map(w => ({ ...w, dataPromise: fetchWidgetData(w.config) }));
+    .map(w => ({ ...w, dataPromise: w.fetchData ? w.fetchData() : fetchWidgetData(w.config as ScraperConfig) }));
 
   // Wrestling is only shown on its own category page
   const showWrestling = categoryFilter === WIDGET_CATEGORIES.wrestling;

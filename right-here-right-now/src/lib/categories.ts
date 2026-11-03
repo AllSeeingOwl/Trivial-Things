@@ -13,5 +13,6 @@ export const WIDGET_CATEGORIES = {
   sports: 'sports',
   science: 'science',
   books: 'books',
+  news: 'news',
   wrestling: 'wrestling',
 } as const;

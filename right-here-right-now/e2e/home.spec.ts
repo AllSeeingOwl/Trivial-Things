@@ -55,8 +55,8 @@ test.describe('Right Here, Right Now E2E', () => {
   });
 
   test('shows empty state for a category with no widgets', async ({ page }) => {
-    // /news currently has no widgets assigned
-    await page.goto('/news');
+    // /video-games currently has no widgets assigned
+    await page.goto('/video-games');
 
     // The grid container should not be visible if no widgets
     const gridContainer = page.locator('.columns-1');

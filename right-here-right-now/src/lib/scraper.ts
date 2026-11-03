@@ -6,10 +6,19 @@ export interface WidgetItem {
   metadata?: string;
 }
 
+/** A notice that hides a widget's list, e.g. while a country holds an election. */
+export interface WidgetClosure {
+  heading: string;
+  reason: string;
+  detail?: string;
+}
+
 export interface WidgetData {
   items: WidgetItem[];
   source: 'primary' | 'backup' | 'error';
   error?: string;
+  /** When set, the card is blurred and shows this notice instead of its list. */
+  closed?: WidgetClosure;
 }
 
 export type ScrapeFunction = (html: string) => WidgetItem[];
@@ -27,6 +36,8 @@ export interface ScraperConfig {
   isPrimaryJson?: boolean;
   isBackupJson?: boolean;
   extraHeaders?: Record<string, string>;
+  /** Rows to keep; defaults to 10. */
+  maxItems?: number;
 }
 
 async function fetchWithTimeout(resource: RequestInfo | URL, options: RequestInit & { timeout?: number } = {}) {
@@ -61,6 +72,8 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
     }
   };
 
+  const maxItems = config.maxItems ?? 10;
+
   try {
     // 1. Try Primary URL
     let primaryUrl = config.primaryUrl;
@@ -87,7 +100,7 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
       // ⚡ Bolt Optimization: O(1) In-place Array Truncation
       // By mutating the length property directly, we truncate the array in-place,
       // avoiding the memory allocation and garbage collection overhead of `items.slice()`.
-      if (items.length > 10) items.length = 10;
+      if (items.length > maxItems) items.length = maxItems;
       return { items, source: 'primary' };
     }
     throw new Error('Primary parser returned 0 items');
@@ -113,7 +126,7 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
       if (items.length > 0) {
         // ⚡ Bolt Optimization: O(1) In-place Array Truncation
         // Truncating the array by modifying length avoids intermediate array allocation.
-        if (items.length > 10) items.length = 10;
+        if (items.length > maxItems) items.length = maxItems;
         return { items, source: 'backup' };
       }
       throw new Error('Backup parser returned 0 items');
