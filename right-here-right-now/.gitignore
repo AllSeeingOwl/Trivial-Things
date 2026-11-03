@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+# This project uses pnpm (see pnpm-lock.yaml and the Dockerfile)
+package-lock.json
+yarn.lock
 /.pnp
 .pnp.*
 .yarn/*
