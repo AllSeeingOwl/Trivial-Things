@@ -44,7 +44,8 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
             {data.items.map((item, idx) => (
               <li key={item.id} className="flex items-start">
                 <span className="text-[var(--text-muted)] font-mono font-bold w-6 text-right mr-3 mt-0.5">
-                  {item.rank ?? idx + 1}.
+                  {/* Symbol ranks (e.g. ★ for a head of government) take no trailing dot */}
+                  {typeof item.rank === 'string' && !/\d/.test(item.rank) ? item.rank : `${item.rank ?? idx + 1}.`}
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate" title={item.title}>
