@@ -31,8 +31,12 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The app is deployed on [Render](https://render.com) as a Docker web service, defined in the repository's root `render.yaml` and built from this folder's `Dockerfile`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Widget data is cached and refreshes on its own every 24 hours. To force an immediate refresh, set a `CRON_SECRET` environment variable on the service and call:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://<your-service>.onrender.com/api/cron
+```

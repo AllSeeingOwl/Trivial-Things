@@ -7,7 +7,8 @@ export async function GET(request: Request) {
     const authHeader = request.headers.get('authorization');
 
     // Simple protection: Check if CRON_SECRET is defined and matches the auth header.
-    // In Vercel, cron jobs automatically send the CRON_SECRET as a Bearer token.
+    // Callers (e.g. a scheduled job on Render) send it as "Authorization: Bearer <CRON_SECRET>".
+    // Not required for normal operation: widget data already expires and refreshes every 24h.
     // Sentinel: Fail securely if the CRON_SECRET is missing from the environment.
     const cronSecret = process.env.CRON_SECRET;
     if (!cronSecret) {
