@@ -10,8 +10,8 @@ export const CATEGORIES = [
 ];
 
 export const WIDGET_CATEGORIES = {
-  premierLeague: 'sports',
-  earthquakes: 'science',
+  sports: 'sports',
+  science: 'science',
   books: 'books',
   wrestling: 'wrestling',
-};
+} as const;

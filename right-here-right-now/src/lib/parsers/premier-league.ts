@@ -1,6 +1,28 @@
 import * as cheerio from 'cheerio';
 import { WidgetItem } from '../scraper';
 
+const PULSELIVE_BASE = 'https://footballapi.pulselive.com/football';
+
+export function premierLeagueStandingsUrl(compSeasonId: number | string): string {
+  return `${PULSELIVE_BASE}/standings?compSeasons=${compSeasonId}&altIds=true&detail=2&FOOTBALL_COMPETITION=1`;
+}
+
+/**
+ * Looks up the newest Premier League season ID (newest is listed first) so the
+ * standings never get stuck on an old season. Cached for 24h like the widgets.
+ */
+export async function resolveCurrentPremierLeagueUrl(): Promise<string> {
+  const res = await fetch(`${PULSELIVE_BASE}/competitions/1/compseasons?page=0&pageSize=1`, {
+    signal: AbortSignal.timeout(10000),
+    next: { revalidate: 86400, tags: ['widgets'] }
+  });
+  if (!res.ok) throw new Error(`compseasons status: ${res.status}`);
+  const json = await res.json();
+  const id = json?.content?.[0]?.id;
+  if (id === undefined || id === null) throw new Error('No current season found');
+  return premierLeagueStandingsUrl(Math.trunc(Number(id)));
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parsePremierLeaguePrimary(json: any): WidgetItem[] {
   const items: WidgetItem[] = [];

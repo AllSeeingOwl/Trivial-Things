@@ -17,9 +17,13 @@ export type JsonFunction = (json: Record<string, unknown>) => WidgetItem[];
 
 export interface ScraperConfig {
   primaryUrl: string;
-  backupUrl: string;
+  /** Optional: compute the primary URL at request time (e.g. look up the current season). Falls back to primaryUrl if it throws. */
+  resolvePrimaryUrl?: () => Promise<string>;
+  /** Optional: some sources have no usable second source. */
+  backupUrl?: string;
   primaryParser: ScrapeFunction | JsonFunction;
-  backupParser: ScrapeFunction | JsonFunction;
+  /** Defaults to primaryParser (for a backup URL serving the same format). */
+  backupParser?: ScrapeFunction | JsonFunction;
   isPrimaryJson?: boolean;
   isBackupJson?: boolean;
   extraHeaders?: Record<string, string>;
@@ -59,7 +63,15 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
 
   try {
     // 1. Try Primary URL
-    const primaryRes = await fetchWithTimeout(config.primaryUrl, fetchOptions);
+    let primaryUrl = config.primaryUrl;
+    if (config.resolvePrimaryUrl) {
+      try {
+        primaryUrl = await config.resolvePrimaryUrl();
+      } catch (resolveError) {
+        console.warn(`Could not resolve primary URL, using ${config.primaryUrl}:`, resolveError);
+      }
+    }
+    const primaryRes = await fetchWithTimeout(primaryUrl, fetchOptions);
     if (!primaryRes.ok) throw new Error(`Primary status: ${primaryRes.status}`);
 
     let items: WidgetItem[] = [];
@@ -84,16 +96,18 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
 
     // 2. Try Backup URL
     try {
+      if (!config.backupUrl) throw new Error('No backup source configured');
+      const backupParser = config.backupParser ?? config.primaryParser;
       const backupRes = await fetchWithTimeout(config.backupUrl, fetchOptions);
       if (!backupRes.ok) throw new Error(`Backup status: ${backupRes.status}`);
 
       let items: WidgetItem[] = [];
       if (config.isBackupJson) {
         const data = await backupRes.json();
-        items = (config.backupParser as JsonFunction)(data);
+        items = (backupParser as JsonFunction)(data);
       } else {
         const html = await backupRes.text();
-        items = (config.backupParser as ScrapeFunction)(html);
+        items = (backupParser as ScrapeFunction)(html);
       }
 
       if (items.length > 0) {
