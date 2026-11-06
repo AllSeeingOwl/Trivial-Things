@@ -7,6 +7,13 @@ services:
     volumes:
       - ./portal:/usr/share/nginx/html:ro
 
+  crossover_size_converter:
+    image: nginx:alpine
+    ports:
+      - "8013:80"
+    volumes:
+      - ./crossover_size_converter:/usr/share/nginx/html:ro
+
   interactive_scoreboard:
     build: ./interactive_scoreboard
     ports:
