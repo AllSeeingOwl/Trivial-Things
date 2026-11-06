@@ -5,6 +5,21 @@ services:
     staticPublishPath: portal
 
   - type: web
+    name: trivial-things-crossover-size-converter
+    env: static
+    staticPublishPath: crossover_size_converter
+    buildFilter:
+      paths:
+        - crossover_size_converter/**
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+
+  - type: web
     name: trivial-things-interactive-scoreboard
     env: docker
     dockerContext: interactive_scoreboard

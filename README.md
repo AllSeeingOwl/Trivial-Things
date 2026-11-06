@@ -1,10 +1,10 @@
 # Trivia and Flashcards Apps
 
-Welcome to the Trivia and Flashcards repository! This collection features ten interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
+Welcome to the Trivia and Flashcards repository! This collection features eleven interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
 
 ## The Applications
 
-The repository is organized into ten distinct applications (nine Flask, one Next.js):
+The repository is organized into eleven distinct applications (nine Flask, one Next.js, one static HTML page):
 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
@@ -55,6 +55,11 @@ A Next.js dashboard application.
 A Doctor Who trivia game.
 *   **Features**: Challenges users to connect various actors to the Doctor, using the Gemini API to verify and provide context for the connections.
 *   **Running**: `cd whovian_degrees && python3 whovian_degrees_app.py` (Runs on port 5005 by default).
+
+### 11. Crossover Size Converter (`crossover_size_converter/`)
+A single-page clothing and shoe size converter.
+*   **Features**: Converts sizes between men's and women's ranges and across UK, US, EU, French, Italian, Japanese and letter sizing, from a shared set of body measurements. Includes an at-a-glance summary of your sizes, a mystery-label decoder, a checker for "pit to pit" style listing measurements, and a whole-body fit check for swimwear and bodysuits. Everything runs in the browser and settings are remembered with `localStorage`; there is no backend.
+*   **Running**: Open `crossover_size_converter/index.html` directly in a browser, or serve it with `python3 -m http.server 8013 --directory crossover_size_converter`. It is deployed on Render as a static site (see `render.yaml`) and served on port 8013 by `docker compose up`.
 
 ## Tech Stack
 
