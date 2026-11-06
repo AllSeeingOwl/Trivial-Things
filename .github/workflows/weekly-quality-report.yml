@@ -1,0 +1,158 @@
+name: Weekly Quality Report
+
+# Read-only weekly assessment: runs audits, writes a Markdown report, uploads raw
+# output as an artifact and opens an issue. It never modifies code or applies fixes.
+# Only schedule/manual triggers are used, so no pull-request code runs with write access.
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Mondays at 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: weekly-quality-report
+  cancel-in-progress: false
+
+env:
+  AUDIT_DIR: quality-report-output
+  # The `trivial-things` Render static site (render.yaml), which serves portal/index.html.
+  LIGHTHOUSE_URL: https://trivial-things.onrender.com/
+  NEXT_APP_DIR: right-here-right-now
+  PNPM_VERSION: '10.34.9' # pnpm 10 reads the app's lockfileVersion 9.0 lockfile
+  LIGHTHOUSE_VERSION: '12.8.2'
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Install audit tools
+        continue-on-error: true
+        run: |
+          mkdir -p "$AUDIT_DIR/pip-audit"
+          python -m pip install --upgrade pip bandit pip-audit
+
+      - name: Run Bandit
+        continue-on-error: true
+        run: |
+          bandit -r . -ll \
+            -x "./.git,./$NEXT_APP_DIR/node_modules,./$AUDIT_DIR" \
+            -f json -o "$AUDIT_DIR/bandit.json" > "$AUDIT_DIR/bandit.log" 2>&1 \
+            || echo "Bandit exited with $? (1 means findings were reported)" >> "$AUDIT_DIR/bandit.log"
+
+      - name: Audit Python requirements manifests
+        continue-on-error: true
+        run: |
+          : > "$AUDIT_DIR/pip-audit/manifests.tsv"
+          find . -type f -name 'requirements*.txt' \
+            -not -path './.git/*' -not -path '*/node_modules/*' -not -path "./$AUDIT_DIR/*" \
+            | sort | while read -r file; do
+              manifest="${file#./}"
+              slug="$(echo "$manifest" | tr '/.' '__')"
+              echo "::group::pip-audit $manifest"
+              code=0
+              python -m pip_audit -r "$manifest" --progress-spinner off \
+                -f json -o "$AUDIT_DIR/pip-audit/$slug.json" \
+                > "$AUDIT_DIR/pip-audit/$slug.log" 2>&1 || code=$?
+              cat "$AUDIT_DIR/pip-audit/$slug.log"
+              echo "::endgroup::"
+              printf '%s\t%s\t%s\n' "$manifest" "$slug" "$code" >> "$AUDIT_DIR/pip-audit/manifests.tsv"
+            done
+
+      - name: Audit Next.js dependencies (pnpm, lockfile only)
+        continue-on-error: true
+        run: |
+          if [ ! -f "$NEXT_APP_DIR/package.json" ] || [ ! -f "$NEXT_APP_DIR/pnpm-lock.yaml" ]; then
+            echo "skipped: $NEXT_APP_DIR/package.json or pnpm-lock.yaml not found" > "$AUDIT_DIR/pnpm-audit.status"
+            exit 0
+          fi
+          # `pnpm audit` reads the lockfile only: nothing is installed and no fixes are applied.
+          cd "$NEXT_APP_DIR"
+          code=0
+          npx --yes "pnpm@$PNPM_VERSION" audit --json \
+            > "../$AUDIT_DIR/pnpm-audit.json" 2> "../$AUDIT_DIR/pnpm-audit.log" || code=$?
+          echo "ran: exit $code (non-zero usually means advisories were found)" > "../$AUDIT_DIR/pnpm-audit.status"
+
+      - name: Run Lighthouse against the deployed portal
+        continue-on-error: true
+        run: |
+          # Record what the URL actually serves so the report can describe it.
+          curl -sSL --max-time 90 --retry 2 -o "$AUDIT_DIR/lighthouse-probe.html" \
+            -w '{"http_code": "%{http_code}", "url_effective": "%{url_effective}", "content_type": "%{content_type}"}' \
+            "$LIGHTHOUSE_URL" > "$AUDIT_DIR/lighthouse-probe.json" 2> "$AUDIT_DIR/lighthouse-probe.log" || true
+          grep -o -i -m1 '<title>[^<]*' "$AUDIT_DIR/lighthouse-probe.html" 2>/dev/null \
+            | sed 's/<[Tt][Ii][Tt][Ll][Ee]>//' > "$AUDIT_DIR/lighthouse-probe.title" || true
+
+          for attempt in 1 2; do
+            npx --yes "lighthouse@$LIGHTHOUSE_VERSION" "$LIGHTHOUSE_URL" \
+              --quiet \
+              --chrome-flags='--headless=new --no-sandbox' \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --output=json --output=html \
+              --output-path="$AUDIT_DIR/lighthouse" \
+              >> "$AUDIT_DIR/lighthouse.log" 2>&1 \
+              || echo "Lighthouse attempt $attempt exited with $?" >> "$AUDIT_DIR/lighthouse.log"
+            [ -s "$AUDIT_DIR/lighthouse.report.json" ] && break
+            sleep 20
+          done
+
+      - name: Build Markdown report
+        if: always()
+        env:
+          REPORT_DATE: ${{ github.run_started_at }}
+        run: |
+          mkdir -p "$AUDIT_DIR"
+          if ! python .github/scripts/build_quality_report.py "$AUDIT_DIR" "$AUDIT_DIR/report.md"; then
+            printf '# Weekly quality report — Trivial-Things\n\nThe report builder failed; see the workflow log and raw artifacts: %s\n' \
+              "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > "$AUDIT_DIR/report.md"
+          fi
+          cat "$AUDIT_DIR/report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload raw results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: weekly-quality-report-${{ github.run_id }}
+          path: ${{ env.AUDIT_DIR }}/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Create issue with the report
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # GitHub caps issue bodies at 65,536 characters; trim and point to the artifact if needed.
+          python - <<'PY'
+          import os
+          path = os.path.join(os.environ["AUDIT_DIR"], "report.md")
+          body = open(path, encoding="utf-8").read()
+          limit = 60000
+          if len(body) > limit:
+              body = body[:limit] + "\n\n_Report truncated; the full version is `report.md` in the workflow artifact._\n"
+          open("issue-body.md", "w", encoding="utf-8").write(body)
+          PY
+          gh issue create \
+            --title "Weekly quality report — $(date -u +%Y-%m-%d)" \
+            --body-file issue-body.md
