@@ -24,6 +24,9 @@ env:
   NEXT_APP_DIR: right-here-right-now
   PNPM_VERSION: '10.34.9' # pnpm 10 reads the app's lockfileVersion 9.0 lockfile
   LIGHTHOUSE_VERSION: '12.8.2'
+  # Python audit tools are pinned for reproducible weekly runs; bump deliberately.
+  BANDIT_VERSION: '1.9.4'
+  PIP_AUDIT_VERSION: '2.10.1'
 
 jobs:
   report:
@@ -50,7 +53,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p "$AUDIT_DIR/pip-audit"
-          python -m pip install --upgrade pip bandit pip-audit
+          python -m pip install "bandit==$BANDIT_VERSION" "pip-audit==$PIP_AUDIT_VERSION"
 
       - name: Run Bandit
         continue-on-error: true
