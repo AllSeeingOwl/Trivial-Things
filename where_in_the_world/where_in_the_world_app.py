@@ -205,5 +205,5 @@ def add_security_headers(response):
 if __name__ == '__main__':
     # Sentinel: Disabled debug=True to prevent RCE and info disclosure
     port = int(os.environ.get('PORT', 5004))
-    host = os.environ.get('HOST', '0.0.0.0')
+    host = os.environ.get('HOST', '127.0.0.1')
     app.run(debug=False, port=port, host=host)
