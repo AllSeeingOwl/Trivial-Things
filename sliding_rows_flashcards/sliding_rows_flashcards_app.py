@@ -282,5 +282,5 @@ if __name__ == '__main__':
     # Use port 5003 for this application so it doesn't conflict
     # with trivia_flashcards (5000), what_the_spell (5001), etc.
     port = int(os.environ.get('PORT', 5003))
-    host = os.environ.get('HOST', '0.0.0.0')
+    host = os.environ.get('HOST', '127.0.0.1')
     app.run(debug=False, port=port, host=host)

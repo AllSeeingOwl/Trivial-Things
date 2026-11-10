@@ -1,6 +1,6 @@
 import os
 import bisect
-import fitz
+import pymupdf as fitz
 import uuid
 from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
@@ -247,5 +247,5 @@ def upload_file():
 if __name__ == '__main__':
     # Sentinel: Disable debug mode to prevent Werkzeug debugger RCE in production
     port = int(os.environ.get('PORT', 5002))
-    host = os.environ.get('HOST', '0.0.0.0')
+    host = os.environ.get('HOST', '127.0.0.1')
     app.run(debug=False, port=port, host=host)

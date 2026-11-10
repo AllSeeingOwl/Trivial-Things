@@ -53,7 +53,7 @@ A standalone interactive scoreboard application that allows users to track score
 The application can be configured using environment variables:
 
 - `PORT`: The port the Flask app binds to (default: `5000`).
-- `HOST`: The host address the Flask app binds to (default: `0.0.0.0`).
+- `HOST`: The host address the Flask app binds to (default: `127.0.0.1`; the Docker image sets `0.0.0.0`).
 - `DATABASE_URI`: The SQLAlchemy database URI (default: `sqlite:///scoreboard.db` stored in the app directory).
 
 ## API Documentation

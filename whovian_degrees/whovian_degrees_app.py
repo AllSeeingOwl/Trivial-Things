@@ -147,7 +147,8 @@ def connect_actors():
             method='POST'
         )
         # Sentinel: Add timeout to prevent DoS from hanging external API calls
-        with urllib.request.urlopen(req, timeout=10) as response:
+        # URL is a hard-coded https:// constant above, so B310 (file:/custom schemes) does not apply.
+        with urllib.request.urlopen(req, timeout=10) as response:  # nosec B310
             result = json.loads(response.read().decode('utf-8'))
 
             if 'candidates' in result and len(result['candidates']) > 0:
@@ -174,5 +175,5 @@ def connect_actors():
 if __name__ == '__main__':
     # Sentinel: Disabled debug=True to prevent RCE and info disclosure
     port = int(os.environ.get('PORT', 5005))
-    host = os.environ.get('HOST', '0.0.0.0')
+    host = os.environ.get('HOST', '127.0.0.1')
     app.run(debug=False, port=port, host=host)

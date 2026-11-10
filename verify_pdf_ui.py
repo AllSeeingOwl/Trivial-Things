@@ -17,7 +17,7 @@ def test_upload_invalid_pdf():
     time.sleep(3)
 
     try:
-        requests.get("http://localhost:5002/")
+        requests.get("http://localhost:5002/", timeout=10)
         print("Server is up!")
     except:
         print("Failed to connect to server!")

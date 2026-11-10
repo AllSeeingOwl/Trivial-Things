@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="A portal to the Trivial Things collection of standalone trivia, flashcard and quiz apps, including MCQ Flashcards, Where In The World, What The Spell and more.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%232563eb%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-family=%27sans-serif%27 font-size=%2720%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27%3ET%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100 min-h-screen font-sans">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md font-medium z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600">
@@ -22,7 +24,7 @@
             <!-- App Cards -->
             <a data-local-port="8013" data-render-slug="trivial-things-crossover-size-converter" href="http://localhost:8013" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Crossover Size Converter</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Crossover Size Converter</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8013 (Local)</p>
@@ -30,7 +32,7 @@
 
             <a data-local-port="8001" data-render-slug="trivial-things-interactive-scoreboard" href="http://localhost:8001" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Interactive Scoreboard</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Interactive Scoreboard</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8001 (Local)</p>
@@ -38,7 +40,7 @@
 
             <a data-local-port="8002" data-render-slug="trivial-things-mcq-flashcards" href="http://localhost:8002" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">MCQ Flashcards</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">MCQ Flashcards</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8002 (Local)</p>
@@ -46,7 +48,7 @@
 
             <a data-local-port="8003" data-render-slug="trivial-things-pdf-grid-flashcards" href="http://localhost:8003" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">PDF Grid Flashcards</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">PDF Grid Flashcards</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8003 (Local)</p>
@@ -54,7 +56,7 @@
 
             <a data-local-port="8004" data-render-slug="trivial-things-periodic-name" href="http://localhost:8004" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Periodic Name</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Periodic Name</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8004 (Local)</p>
@@ -62,7 +64,7 @@
 
             <a data-local-port="8005" data-render-slug="trivial-things-price-time-machine" href="http://localhost:8005" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Price Time Machine</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Price Time Machine</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8005 (Local)</p>
@@ -70,7 +72,7 @@
 
             <a data-local-port="8006" data-render-slug="trivial-things-quarterly-calendar" href="http://localhost:8006" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Quarterly Calendar</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Quarterly Calendar</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8006 (Local)</p>
@@ -78,7 +80,7 @@
 
             <a data-local-port="8007" data-render-slug="trivial-things-right-here-right-now" href="http://localhost:8007" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Right Here Right Now</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Right Here Right Now</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8007 (Next.js Local)</p>
@@ -86,7 +88,7 @@
 
             <a data-local-port="8008" data-render-slug="trivial-things-sliding-rows-flashcards" href="http://localhost:8008" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Sliding Rows Flashcards</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Sliding Rows Flashcards</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8008 (Local)</p>
@@ -94,7 +96,7 @@
 
             <a data-local-port="8009" data-render-slug="trivial-things-trivia-flashcards" href="http://localhost:8009" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Trivia Flashcards</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Trivia Flashcards</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8009 (Local)</p>
@@ -102,7 +104,7 @@
 
             <a data-local-port="8010" data-render-slug="trivial-things-what-the-spell" href="http://localhost:8010" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">What The Spell</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">What The Spell</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8010 (Local)</p>
@@ -110,7 +112,7 @@
 
             <a data-local-port="8011" data-render-slug="trivial-things-where-in-the-world" href="http://localhost:8011" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Where In The World</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Where In The World</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8011 (Local)</p>
@@ -118,7 +120,7 @@
 
             <a data-local-port="8012" data-render-slug="trivial-things-whovian-degrees" href="http://localhost:8012" class="app-card relative block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                 <div class="flex justify-between items-start mb-2">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900">Whovian Degrees</h5>
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Whovian Degrees</h2>
                     <span class="status-badge text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">Standalone</span>
                 </div>
                 <p class="app-subtext font-normal text-gray-700 text-sm">Port 8012 (Local)</p>
@@ -159,7 +161,7 @@
                 var localPort = card.getAttribute('data-local-port');
                 var renderSlug = card.getAttribute('data-render-slug');
                 var subtextEl = card.querySelector('.app-subtext');
-                var titleEl = card.querySelector('h5');
+                var titleEl = card.querySelector('h2');
                 var badgeEl = card.querySelector('.status-badge');
 
                 var targetUrl = isLocal

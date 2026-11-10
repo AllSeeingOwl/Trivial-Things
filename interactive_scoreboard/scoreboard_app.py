@@ -14,7 +14,7 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024 # 1MB limit
 
 # Configure from environment variables
 PORT = int(os.environ.get('PORT', 5000))
-HOST = os.environ.get('HOST', '0.0.0.0')
+HOST = os.environ.get('HOST', '127.0.0.1')
 
 # Default to a local SQLite database if not specified
 basedir = os.path.abspath(os.path.dirname(__file__))
