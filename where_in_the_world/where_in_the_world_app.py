@@ -5,6 +5,14 @@ import math
 import random
 from flask import Flask, jsonify, request, render_template
 
+try:
+    from sentry_setup import init_sentry
+except ModuleNotFoundError:
+    from where_in_the_world.sentry_setup import init_sentry
+
+# Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
+init_sentry("where_in_the_world")
+
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
 app.config['DEBUG'] = False

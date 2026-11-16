@@ -3,6 +3,14 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+try:
+    from sentry_setup import init_sentry
+except ModuleNotFoundError:
+    from quarterly_calendar.sentry_setup import init_sentry
+
+# Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
+init_sentry("quarterly_calendar")
+
 app = Flask(__name__)
 
 # Security baseline
