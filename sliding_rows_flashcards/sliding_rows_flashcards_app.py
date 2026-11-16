@@ -4,6 +4,14 @@ import random
 import os
 import sqlite3
 
+try:
+    from sentry_setup import init_sentry
+except ModuleNotFoundError:
+    from sliding_rows_flashcards.sentry_setup import init_sentry
+
+# Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
+init_sentry("sliding_rows_flashcards")
+
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
 app.config['DEBUG'] = False

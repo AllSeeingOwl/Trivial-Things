@@ -6,6 +6,14 @@ try:
 except ModuleNotFoundError:
     from elements_dict import ELEMENTS
 
+try:
+    from sentry_setup import init_sentry
+except ModuleNotFoundError:
+    from periodic_name.sentry_setup import init_sentry
+
+# Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
+init_sentry("periodic_name")
+
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
 app.config['DEBUG'] = False

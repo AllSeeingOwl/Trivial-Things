@@ -5,6 +5,14 @@ import urllib.error
 import time
 from flask import Flask, jsonify, request, render_template
 
+try:
+    from sentry_setup import init_sentry
+except ModuleNotFoundError:
+    from whovian_degrees.sentry_setup import init_sentry
+
+# Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
+init_sentry("whovian_degrees")
+
 app = Flask(__name__)
 # Sentinel: Explicitly disable debug mode to prevent RCE vulnerabilities
 app.config['DEBUG'] = False

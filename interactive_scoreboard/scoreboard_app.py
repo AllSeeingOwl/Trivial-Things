@@ -6,6 +6,14 @@ from datetime import datetime, timezone
 from flask import Flask, request, jsonify, render_template, Response
 from flask_sqlalchemy import SQLAlchemy
 
+try:
+    from sentry_setup import init_sentry
+except ModuleNotFoundError:
+    from interactive_scoreboard.sentry_setup import init_sentry
+
+# Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
+init_sentry("interactive_scoreboard")
+
 app = Flask(__name__)
 
 # Security baseline

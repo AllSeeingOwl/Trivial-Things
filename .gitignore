@@ -5,3 +5,4 @@ venv/
 backups/
 server.log
 interactive_scoreboard/scoreboard.db
+node_modules/
