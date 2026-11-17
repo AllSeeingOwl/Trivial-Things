@@ -121,10 +121,9 @@ jobs:
 
       - name: Build Markdown report
         if: always()
-        env:
-          REPORT_DATE: ${{ github.run_started_at }}
         run: |
           mkdir -p "$AUDIT_DIR"
+          export REPORT_DATE="$(date -u '+%Y-%m-%d %H:%M')"
           if ! python .github/scripts/build_quality_report.py "$AUDIT_DIR" "$AUDIT_DIR/report.md"; then
             printf '# Weekly quality report — Trivial-Things\n\nThe report builder failed; see the workflow log and raw artifacts: %s\n' \
               "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > "$AUDIT_DIR/report.md"
