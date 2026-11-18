@@ -1,3 +1,5 @@
+import { unstable_cache } from 'next/cache';
+
 export interface WidgetItem {
   id: string;
   rank?: string | number;
@@ -38,6 +40,11 @@ export interface ScraperConfig {
   extraHeaders?: Record<string, string>;
   /** Rows to keep; defaults to 10. */
   maxItems?: number;
+  /**
+   * Skip Next.js's fetch cache, which refuses responses over 2MB. Wrap the
+   * widget in cachedWidgetData() instead so the parsed rows are cached.
+   */
+  skipFetchCache?: boolean;
 }
 
 async function fetchWithTimeout(resource: RequestInfo | URL, options: RequestInit & { timeout?: number } = {}) {
@@ -62,15 +69,20 @@ const COMMON_HEADERS = {
   'Accept-Language': 'en-US,en;q=0.9',
 };
 
+const WIDGET_REVALIDATE_SECONDS = 86400;
+
 export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData> {
   // Use Next.js 15+ fetch options: caching with revalidate tag
-  const fetchOptions: RequestInit = {
-    headers: { ...COMMON_HEADERS, ...config.extraHeaders },
-    next: {
-      revalidate: 86400, // Cache for 24 hours
-      tags: ['widgets']  // Allow manual revalidation via cron
-    }
-  };
+  const headers = { ...COMMON_HEADERS, ...config.extraHeaders };
+  const fetchOptions: RequestInit = config.skipFetchCache
+    ? { headers, cache: 'no-store' }
+    : {
+        headers,
+        next: {
+          revalidate: WIDGET_REVALIDATE_SECONDS, // Cache for 24 hours
+          tags: ['widgets']  // Allow manual revalidation via cron
+        }
+      };
 
   const maxItems = config.maxItems ?? 10;
 
@@ -141,4 +153,29 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
       };
     }
   }
+}
+
+/**
+ * Caches a widget's parsed rows for 24 hours (tag 'widgets', like the fetch
+ * cache), for sources whose pages are too large for the fetch cache. Failed
+ * scrapes are not cached, so the next request tries again.
+ */
+export function cachedWidgetData(key: string, config: ScraperConfig): () => Promise<WidgetData> {
+  const cached = unstable_cache(
+    async () => {
+      const data = await fetchWidgetData({ ...config, skipFetchCache: true });
+      if (data.source === 'error') throw new Error(data.error);
+      return data;
+    },
+    ['widget', key],
+    { revalidate: WIDGET_REVALIDATE_SECONDS, tags: ['widgets'] }
+  );
+
+  return async () => {
+    try {
+      return await cached();
+    } catch {
+      return { items: [], source: 'error', error: 'Update Unavailable' };
+    }
+  };
 }

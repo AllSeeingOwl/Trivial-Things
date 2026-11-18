@@ -54,20 +54,16 @@ test.describe('Right Here, Right Now E2E', () => {
     await expect(widgetCard.first()).toBeVisible();
   });
 
-  test('shows empty state for a category with no widgets', async ({ page }) => {
-    // /video-games currently has no widgets assigned
-    await page.goto('/video-games');
+  for (const [path, title] of [
+    ['/entertainment', 'US Billboard Hot 100'],
+    ['/video-games', 'Most Played Steam Games (Live)'],
+  ]) {
+    test(`${path} shows its widgets`, async ({ page }) => {
+      await page.goto(path);
 
-    // The grid container should not be visible if no widgets
-    const gridContainer = page.locator('.columns-1');
-    await expect(gridContainer).not.toBeVisible();
-
-    // The empty state message should be visible
-    await expect(page.locator('text=No widgets yet')).toBeVisible();
-    await expect(page.locator('text=Check back later for updates to this category.')).toBeVisible();
-
-    // 'View all widgets' link should exist
-    const viewAllLink = page.getByRole('link', { name: 'View all widgets' });
-    await expect(viewAllLink).toBeVisible();
-  });
+      await expect(page.locator('.columns-1')).toBeVisible();
+      await expect(page.getByRole('heading', { name: title })).toBeVisible();
+      await expect(page.locator('text=No widgets yet')).not.toBeVisible();
+    });
+  }
 });

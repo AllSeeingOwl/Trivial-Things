@@ -11,6 +11,8 @@ export const CATEGORIES = [
 
 export const WIDGET_CATEGORIES = {
   sports: 'sports',
+  entertainment: 'entertainment',
+  videoGames: 'video-games',
   science: 'science',
   books: 'books',
   news: 'news',
