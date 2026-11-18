@@ -37,11 +37,15 @@ export function findWikiTable(
 
   for (const table of tables) {
     const $table = $(table);
-    const headers = $table.find('tr').first().find('th').toArray().map(th => cellText($, th).toLowerCase());
+    // Some tables open with an empty or caption-like row; use the first row that has headings
+    const $rows = $table.find('tr');
+    const headerIndex = $rows.toArray().findIndex(tr => $(tr).children('th').length > 1);
+    if (headerIndex < 0) continue;
+    const headers = $rows.eq(headerIndex).find('th').toArray().map(th => cellText($, th).toLowerCase());
     if (!wanted.every(w => headers.some(h => h.includes(w)))) continue;
 
     const rows: string[][] = [];
-    $table.find('tr').slice(1).each((_, tr) => {
+    $rows.slice(headerIndex + 1).each((_, tr) => {
       const cells = $(tr).children('th, td').toArray().map(c => cellText($, c));
       if (cells.length > 0) rows.push(cells);
     });

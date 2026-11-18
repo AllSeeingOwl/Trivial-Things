@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import Link from 'next/link';
 import DashboardMasonry from '@/components/DashboardMasonry';
 import { WidgetCard, WidgetCardSkeleton } from '@/components/WidgetCard';
-import { fetchWidgetData, ScraperConfig, WidgetData } from '@/lib/scraper';
+import { cachedWidgetData, fetchWidgetData, ScraperConfig, WidgetData } from '@/lib/scraper';
 import { WIDGET_CATEGORIES } from '@/lib/categories';
 
 // Parsers
@@ -22,6 +22,9 @@ import { parseFideTop, parseChessComLeaderboard } from '@/lib/parsers/chess';
 import { parseEnglandMensSquad, parseEnglandWomensSquad } from '@/lib/parsers/england-squad';
 import { parseSuperBowlWinners, parseWimbledonGentlemen, parseWimbledonLadies } from '@/lib/parsers/sports-history';
 import { WIKIPEDIA_HEADERS, wikipediaHtmlUrl } from '@/lib/parsers/wikipedia';
+import { parseBillboardHot100, parseSpotifyGlobalWeekly, parseUkNumberOnes } from '@/lib/parsers/music';
+import { parseTopAnime, parseEurovisionWinners, parseOscarBestActor, parseOscarBestActress } from '@/lib/parsers/entertainment';
+import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom } from '@/lib/parsers/steam';
 import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
 
@@ -60,6 +63,8 @@ const RELEGATION_CONFIG: ScraperConfig = {
 };
 
 const sports = WIDGET_CATEGORIES.sports;
+const entertainment = WIDGET_CATEGORIES.entertainment;
+const videoGames = WIDGET_CATEGORIES.videoGames;
 
 // Widgets shown on the "All" page and their own category page, in display order.
 const WIDGETS: WidgetDefinition[] = [
@@ -191,6 +196,109 @@ const WIDGETS: WidgetDefinition[] = [
       backupUrl: 'https://www.goodreads.com/book/most_read',
       primaryParser: parseBooksPrimary,
       backupParser: parseBooksBackup
+    }
+  },
+  // Entertainment: music charts, anime and award winners
+  {
+    key: 'billboard-hot-100',
+    title: 'US Billboard Hot 100',
+    category: entertainment,
+    // The chart page is ~4MB, over the fetch cache's 2MB limit, so cache the parsed rows
+    fetchData: cachedWidgetData('billboard-hot-100', {
+      primaryUrl: 'https://www.billboard.com/charts/hot-100/',
+      primaryParser: parseBillboardHot100
+    })
+  },
+  {
+    key: 'uk-number-ones',
+    title: 'UK Number One Singles (Latest)',
+    category: entertainment,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('List of UK singles chart number ones of the 2020s'),
+      backupUrl: 'https://en.wikipedia.org/wiki/List_of_UK_singles_chart_number_ones_of_the_2020s',
+      primaryParser: parseUkNumberOnes,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'spotify-global',
+    title: 'Most Streamed Songs (Spotify Global, Weekly)',
+    category: entertainment,
+    config: {
+      primaryUrl: 'https://kworb.net/spotify/country/global_weekly.html',
+      primaryParser: parseSpotifyGlobalWeekly
+    }
+  },
+  {
+    key: 'top-anime',
+    title: 'Top Anime Series (MyAnimeList)',
+    category: entertainment,
+    config: {
+      primaryUrl: 'https://myanimelist.net/topanime.php',
+      primaryParser: parseTopAnime
+    }
+  },
+  {
+    key: 'eurovision',
+    title: 'Eurovision Song Contest Winners',
+    category: entertainment,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('List of Eurovision Song Contest winners'),
+      backupUrl: 'https://en.wikipedia.org/wiki/List_of_Eurovision_Song_Contest_winners',
+      primaryParser: parseEurovisionWinners,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'oscar-best-actor',
+    title: 'Best Actor Oscar Winners',
+    category: entertainment,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('Academy Award for Best Actor'),
+      backupUrl: 'https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actor',
+      primaryParser: parseOscarBestActor,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'oscar-best-actress',
+    title: 'Best Actress Oscar Winners',
+    category: entertainment,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('Academy Award for Best Actress'),
+      backupUrl: 'https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actress',
+      primaryParser: parseOscarBestActress,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  // Video Games: Steam charts via Steam250, with Steam's own chart as a backup
+  {
+    key: 'steam-most-played',
+    title: 'Most Played Steam Games (Live)',
+    category: videoGames,
+    config: {
+      primaryUrl: 'https://steam250.com/most_played',
+      backupUrl: 'https://store.steampowered.com/charts/mostplayed',
+      primaryParser: parseSteamMostPlayed,
+      backupParser: parseSteamStoreMostPlayed
+    }
+  },
+  {
+    key: 'steam-week',
+    title: 'Video Games Of The Week (Steam, Last 7 Days)',
+    category: videoGames,
+    config: {
+      primaryUrl: 'https://steam250.com/7day',
+      primaryParser: parseSteamWeek
+    }
+  },
+  {
+    key: 'steam-bottom',
+    title: 'Worst Rated Steam Games',
+    category: videoGames,
+    config: {
+      primaryUrl: 'https://steam250.com/bottom100',
+      primaryParser: parseSteamBottom
     }
   },
   // News: each country's head of government and ten highest-ranking posts
