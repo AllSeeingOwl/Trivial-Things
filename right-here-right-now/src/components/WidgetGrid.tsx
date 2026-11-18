@@ -32,6 +32,13 @@ import {
   wikipediaMostReadUrl,
   parseTrendingCrypto
 } from '@/lib/parsers/live';
+import {
+  parsePopes,
+  parseNobelPeace,
+  parseUkPrimeMinisters,
+  parseUsVicePresidents,
+  parseRazzieWorstPicture
+} from '@/lib/parsers/history';
 import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom } from '@/lib/parsers/steam';
 import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
@@ -291,6 +298,17 @@ const WIDGETS: WidgetDefinition[] = [
       extraHeaders: WIKIPEDIA_HEADERS
     }
   },
+  {
+    key: 'razzie-worst-picture',
+    title: 'Razzie Winners: Worst Picture',
+    category: entertainment,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('Golden Raspberry Award for Worst Picture'),
+      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('Golden_Raspberry_Award_for_Worst_Picture')}`,
+      primaryParser: parseRazzieWorstPicture,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
   // Video Games: Steam charts via Steam250, with Steam's own chart as a backup
   {
     key: 'steam-most-played',
@@ -346,6 +364,51 @@ const WIDGETS: WidgetDefinition[] = [
       primaryParser: parseTrendingCrypto,
       isPrimaryJson: true,
       extraHeaders: { Accept: 'application/json' }
+    }
+  },
+  // History: office-holders and prize winners, newest first
+  {
+    key: 'popes',
+    title: 'Roman Catholic Popes',
+    category: WIDGET_CATEGORIES.history,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('List of popes'),
+      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_popes')}`,
+      primaryParser: parsePopes,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'nobel-peace',
+    title: 'Nobel Peace Prize Winners',
+    category: WIDGET_CATEGORIES.history,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('List of Nobel Peace Prize laureates'),
+      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_Nobel_Peace_Prize_laureates')}`,
+      primaryParser: parseNobelPeace,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'uk-prime-ministers',
+    title: 'UK Prime Ministers',
+    category: WIDGET_CATEGORIES.history,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('List of prime ministers of the United Kingdom'),
+      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_prime_ministers_of_the_United_Kingdom')}`,
+      primaryParser: parseUkPrimeMinisters,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'us-vice-presidents',
+    title: 'US Vice Presidents',
+    category: WIDGET_CATEGORIES.history,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('List of vice presidents of the United States'),
+      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_vice_presidents_of_the_United_States')}`,
+      primaryParser: parseUsVicePresidents,
+      extraHeaders: WIKIPEDIA_HEADERS
     }
   },
   // News: each country's head of government and ten highest-ranking posts
