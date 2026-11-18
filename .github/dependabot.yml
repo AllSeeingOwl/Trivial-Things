@@ -56,6 +56,11 @@ updates:
     directory: "/pdf_grid_flashcards"
     schedule:
       interval: "weekly"
+    ignore:
+      # PyMuPDF needs onnxruntime, which has no Python 3.15 wheels yet. Remove
+      # once pip resolves requirements.txt on 3.15 (onnxruntime ships cp315).
+      - dependency-name: "python"
+        versions: [">= 3.15"]
   - package-ecosystem: "docker"
     directory: "/price_time_machine"
     schedule:
