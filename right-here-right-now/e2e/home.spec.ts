@@ -57,6 +57,7 @@ test.describe('Right Here, Right Now E2E', () => {
   for (const [path, title] of [
     ['/entertainment', 'US Billboard Hot 100'],
     ['/video-games', 'Most Played Steam Games (Live)'],
+    ['/business-tech', 'Trending Cryptocurrencies'],
   ]) {
     test(`${path} shows its widgets`, async ({ page }) => {
       await page.goto(path);

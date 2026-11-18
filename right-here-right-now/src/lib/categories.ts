@@ -5,6 +5,7 @@ export const CATEGORIES = [
   { id: 'books', label: 'Books', path: '/books' },
   { id: 'video-games', label: 'Video Games', path: '/video-games' },
   { id: 'news', label: 'News', path: '/news' },
+  { id: 'business-tech', label: 'Business & Tech', path: '/business-tech' },
   { id: 'science', label: 'Science', path: '/science' },
   { id: 'wrestling', label: 'Wrestling', path: '/wrestling' },
 ];
@@ -16,5 +17,6 @@ export const WIDGET_CATEGORIES = {
   science: 'science',
   books: 'books',
   news: 'news',
+  businessTech: 'business-tech',
   wrestling: 'wrestling',
 } as const;

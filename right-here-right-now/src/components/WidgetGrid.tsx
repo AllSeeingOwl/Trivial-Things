@@ -24,6 +24,14 @@ import { parseSuperBowlWinners, parseWimbledonGentlemen, parseWimbledonLadies } 
 import { WIKIPEDIA_HEADERS, wikipediaHtmlUrl } from '@/lib/parsers/wikipedia';
 import { parseBillboardHot100, parseSpotifyGlobalWeekly, parseUkNumberOnes } from '@/lib/parsers/music';
 import { parseTopAnime, parseEurovisionWinners, parseOscarBestActor, parseOscarBestActress } from '@/lib/parsers/entertainment';
+import {
+  parsePeopleInSpace,
+  parseWikipediaMostRead,
+  parseWikipediaTop25,
+  resolveWikipediaMostReadUrl,
+  wikipediaMostReadUrl,
+  parseTrendingCrypto
+} from '@/lib/parsers/live';
 import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom } from '@/lib/parsers/steam';
 import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
@@ -187,6 +195,18 @@ const WIDGETS: WidgetDefinition[] = [
     }
   },
   {
+    key: 'people-in-space',
+    title: 'Humans In Space Right Now',
+    category: WIDGET_CATEGORIES.science,
+    config: {
+      primaryUrl: 'https://www.howmanypeopleareinspacerightnow.com/peopleinspace.json',
+      primaryParser: parsePeopleInSpace,
+      isPrimaryJson: true,
+      // Show everyone aboard, not just the first ten
+      maxItems: 30
+    }
+  },
+  {
     key: 'books',
     title: 'Best Selling Fiction (US)',
     category: WIDGET_CATEGORIES.books,
@@ -299,6 +319,33 @@ const WIDGETS: WidgetDefinition[] = [
     config: {
       primaryUrl: 'https://steam250.com/bottom100',
       primaryParser: parseSteamBottom
+    }
+  },
+  {
+    key: 'wikipedia-most-read',
+    title: 'Most Read Wikipedia Pages (Yesterday)',
+    category: WIDGET_CATEGORIES.news,
+    config: {
+      // Fallback (yesterday at build time) if the date lookup fails
+      primaryUrl: wikipediaMostReadUrl(),
+      resolvePrimaryUrl: resolveWikipediaMostReadUrl,
+      backupUrl: wikipediaHtmlUrl('Wikipedia:Top 25 Report'),
+      primaryParser: parseWikipediaMostRead,
+      backupParser: parseWikipediaTop25,
+      isPrimaryJson: true,
+      extraHeaders: { ...WIKIPEDIA_HEADERS, Accept: 'application/json, text/html;q=0.9' }
+    }
+  },
+  // Business & Tech
+  {
+    key: 'trending-crypto',
+    title: 'Trending Cryptocurrencies',
+    category: WIDGET_CATEGORIES.businessTech,
+    config: {
+      primaryUrl: 'https://api.coingecko.com/api/v3/search/trending',
+      primaryParser: parseTrendingCrypto,
+      isPrimaryJson: true,
+      extraHeaders: { Accept: 'application/json' }
     }
   },
   // News: each country's head of government and ten highest-ranking posts
