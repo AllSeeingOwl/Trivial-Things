@@ -27,7 +27,7 @@ test.describe('Right Here, Right Now E2E', () => {
   test('renders widgets on homepage', async ({ page }) => {
     await page.goto('/');
     // The grid should render widgets
-    const gridContainer = page.locator('.columns-1');
+    const gridContainer = page.getByTestId('widget-grid').first();
     await expect(gridContainer).toBeVisible();
 
     // Check that we have at least one widget card
@@ -46,12 +46,24 @@ test.describe('Right Here, Right Now E2E', () => {
     await expect(page).toHaveURL(/.*\/sports/);
 
     // Should still have grid container
-    const gridContainer = page.locator('.columns-1');
+    const gridContainer = page.getByTestId('widget-grid').first();
     await expect(gridContainer).toBeVisible();
 
     // Check that we have widget cards
     const widgetCard = page.locator('.rounded-xl.border');
     await expect(widgetCard.first()).toBeVisible();
+  });
+
+  test('home page groups widgets into category sections', async ({ page }) => {
+    await page.goto('/');
+
+    for (const name of ['Sports', 'Entertainment', 'History']) {
+      const heading = page.getByRole('heading', { level: 2, name: new RegExp(`^${name}`) });
+      await expect(heading).toBeVisible();
+    }
+    // Each section links to its own tab
+    await page.getByRole('link', { name: 'Open tab Sports' }).click();
+    await expect(page).toHaveURL(/.*\/sports/);
   });
 
   for (const [path, title] of [
@@ -63,7 +75,7 @@ test.describe('Right Here, Right Now E2E', () => {
     test(`${path} shows its widgets`, async ({ page }) => {
       await page.goto(path);
 
-      await expect(page.locator('.columns-1')).toBeVisible();
+      await expect(page.getByTestId('widget-grid').first()).toBeVisible();
       await expect(page.getByRole('heading', { name: title })).toBeVisible();
       await expect(page.locator('text=No widgets yet')).not.toBeVisible();
     });

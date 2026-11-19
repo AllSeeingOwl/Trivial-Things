@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { WidgetItem } from '../scraper';
+import { findWikiTable } from './wikipedia';
 
 const POSITION_LABELS: Record<string, string> = {
   Goalkeepers: 'Goalkeeper',
@@ -56,4 +57,43 @@ export function parseEnglandMensSquad(html: string): WidgetItem[] {
 
 export function parseEnglandWomensSquad(html: string): WidgetItem[] {
   return parseEnglandSquad(html, 'england-women');
+}
+
+const WIKI_POSITIONS: Record<string, string> = { GK: 'Goalkeeper', DF: 'Defender', MF: 'Midfielder', FW: 'Forward' };
+
+/**
+ * Backup: the "Current squad" table on the team's Wikipedia article
+ * (No. | Pos. | Player | Date of birth (age) | Caps | Goals | Club), ordered by caps.
+ */
+function parseEnglandSquadWiki(html: string, idPrefix: string): WidgetItem[] {
+  const table = findWikiTable(html, ['pos', 'player', 'caps', 'club']);
+  if (!table) return [];
+
+  const col = (start: string) => table.headers.findIndex(h => h.startsWith(start));
+  const [posCol, playerCol, capsCol] = ['pos', 'player', 'caps'].map(col);
+
+  return table.rows
+    .filter(cells => cells.length === table.headers.length && cells[playerCol] && /^\d+$/.test(cells[capsCol]))
+    .map(cells => ({
+      name: cells[playerCol].replace(/\s*\((captain|vice-captain)\)$/i, ''),
+      // "4FW" -> "FW" (the digit is a sort key)
+      position: WIKI_POSITIONS[cells[posCol].replace(/^\d+/, '')] ?? cells[posCol].replace(/^\d+/, ''),
+      caps: Number(cells[capsCol]),
+    }))
+    .sort((a, b) => b.caps - a.caps)
+    .slice(0, 10)
+    .map((p, i) => ({
+      id: `${idPrefix}-wiki-${i}`,
+      rank: i + 1,
+      title: p.name,
+      subtitle: `${p.position} · ${p.caps} cap${p.caps === 1 ? '' : 's'}`
+    }));
+}
+
+export function parseEnglandMensSquadWiki(html: string): WidgetItem[] {
+  return parseEnglandSquadWiki(html, 'england-men');
+}
+
+export function parseEnglandWomensSquadWiki(html: string): WidgetItem[] {
+  return parseEnglandSquadWiki(html, 'england-women');
 }

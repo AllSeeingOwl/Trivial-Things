@@ -184,3 +184,45 @@ export function parseWhatsOnNetflixFilms(html: string): WidgetItem[] {
 export function parseWhatsOnNetflixTv(html: string): WidgetItem[] {
   return parseWhatsOnNetflix(html, 'TV');
 }
+
+/**
+ * Backup for box office: Box Office Mojo's latest weekend chart
+ * (boxofficemojo.com/weekend/chart/ redirects to the current weekend).
+ * Columns: Rank | LW | Release | Gross | %± LW | Theaters | Change | Average | Total Gross | Weeks | ...
+ */
+export function parseBoxOfficeMojoWeekend(html: string): WidgetItem[] {
+  const $ = cheerio.load(html);
+  const table = $('table').toArray().find(t => {
+    const head = $(t).find('tr').first().children().toArray().map(c => tidy($(c).text()).toLowerCase());
+    return head.includes('rank') && head.includes('release') && head.includes('gross');
+  });
+  if (!table) return [];
+
+  const head = $(table).find('tr').first().children().toArray().map(c => tidy($(c).text()).toLowerCase());
+  const [rankCol, lwCol, titleCol, grossCol, totalCol, weeksCol] =
+    ['rank', 'lw', 'release', 'gross', 'total gross', 'weeks'].map(h => head.indexOf(h));
+
+  const items: WidgetItem[] = [];
+  $(table).find('tr').slice(1).each((_, tr) => {
+    const cells = $(tr).children('td').toArray().map(td => tidy($(td).text()));
+    const rank = parseInt(cells[rankCol], 10);
+    const title = cells[titleCol];
+    if (!Number.isFinite(rank) || !title) return;
+
+    const isNew = lwCol >= 0 && !/\d/.test(cells[lwCol] ?? '');
+    const weeks = weeksCol >= 0 ? parseInt(cells[weeksCol], 10) : NaN;
+    items.push({
+      id: `box-office-mojo-${rank}`,
+      rank,
+      title,
+      subtitle: cells[grossCol] ? `${cells[grossCol]} this weekend` : undefined,
+      metadata: [
+        isNew ? 'New' : undefined,
+        totalCol >= 0 && cells[totalCol] && cells[totalCol] !== cells[grossCol] ? `${cells[totalCol]} total` : undefined,
+        Number.isFinite(weeks) && !isNew ? `Week ${weeks}` : undefined,
+      ].filter(Boolean).join(' · ') || undefined,
+    });
+  });
+
+  return items;
+}

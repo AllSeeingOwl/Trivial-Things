@@ -12,16 +12,17 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
 
   return (
     <div className="bg-[var(--card-background)] border border-[var(--card-border)] rounded-xl shadow-lg overflow-hidden flex flex-col h-full">
-      <div className="bg-[#202020] p-4 border-b border-[var(--card-border)] flex justify-between items-center">
-        <h3 className="font-bold text-lg">{title}</h3>
+      {/* Fixed height (two lines of title) so lists in the same grid row start level */}
+      <div className="bg-[#202020] px-4 py-3 border-b border-[var(--card-border)] flex justify-between items-center gap-2 min-h-[4.75rem]">
+        <h3 className="font-bold text-lg leading-snug line-clamp-2" title={title}>{title}</h3>
         {data.closed && (
-          <span className="text-xs bg-sky-600/20 text-sky-400 px-2 py-1 rounded-full border border-sky-600/30 whitespace-nowrap ml-2">
+          <span className="shrink-0 text-xs bg-sky-600/20 text-sky-400 px-2 py-1 rounded-full border border-sky-600/30 whitespace-nowrap">
             Election
           </span>
         )}
         {!data.closed && data.source === 'backup' && (
           <span
-            className="text-xs bg-yellow-600/20 text-yellow-500 px-2 py-1 rounded-full border border-yellow-600/30 cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#202020]"
+            className="shrink-0 whitespace-nowrap text-xs bg-yellow-600/20 text-yellow-500 px-2 py-1 rounded-full border border-yellow-600/30 cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#202020]"
             title="Data loaded from secondary source. Primary source is currently unavailable."
             tabIndex={0}
             role="status"
@@ -36,13 +37,13 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
         {data.closed ? (
           <ClosedNotice closure={data.closed} items={data.items} />
         ) : data.source === 'error' ? (
-          <div className="flex flex-col items-center justify-center h-48 text-center" role="alert" aria-live="assertive">
+          <div className="flex flex-col items-center justify-center h-full min-h-48 text-center" role="alert" aria-live="assertive">
             <span className="text-3xl mb-2" aria-hidden="true">⚠️</span>
             <p className="text-[var(--error)] font-medium mb-1">{data.error}</p>
             <p className="text-xs text-[var(--text-muted)]">Please try again later</p>
           </div>
         ) : data.items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-center" role="status">
+          <div className="flex flex-col items-center justify-center h-full min-h-48 text-center" role="status">
             <span className="text-3xl mb-2 text-gray-500" aria-hidden="true">📭</span>
             <p className="text-sm font-medium text-[var(--text-muted)]">No items currently available</p>
           </div>
@@ -54,33 +55,57 @@ export async function WidgetCard({ title, dataPromise }: WidgetCardProps) {
   );
 }
 
+/** Rows shown before the rest fold behind "Show more", so cards stay a similar size. */
+const VISIBLE_ROWS = 10;
+
 function ItemList({ items }: { items: WidgetItem[] }) {
+  const shown = items.slice(0, VISIBLE_ROWS);
+  const extra = items.slice(VISIBLE_ROWS);
+
   return (
-    <ul className="space-y-3">
-      {items.map((item, idx) => (
-        <li key={item.id} className="flex items-start">
-          <span className="text-[var(--text-muted)] font-mono font-bold w-6 text-right mr-3 mt-0.5">
-            {/* Symbol ranks (e.g. ★ for a head of government) take no trailing dot */}
-            {typeof item.rank === 'string' && !/\d/.test(item.rank) ? item.rank : `${item.rank ?? idx + 1}.`}
-          </span>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate" title={item.title}>
-              {item.title}
-            </p>
-            {item.subtitle && (
-              <p className="text-xs text-[var(--text-muted)] truncate" title={item.subtitle}>
-                {item.subtitle}
-              </p>
-            )}
-            {item.metadata && (
-              <p className="text-[10px] text-gray-500 mt-0.5">
-                {item.metadata}
-              </p>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className="space-y-2">
+        {shown.map((item, idx) => <ItemRow key={item.id} item={item} index={idx} />)}
+      </ul>
+      {extra.length > 0 && (
+        <details className="mt-2 group">
+          <summary className="cursor-pointer select-none text-xs text-[var(--text-muted)] hover:text-white rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+            <span className="group-open:hidden">Show {extra.length} more</span>
+            <span className="hidden group-open:inline">Show fewer</span>
+          </summary>
+          <ul className="space-y-2 mt-2">
+            {extra.map((item, idx) => <ItemRow key={item.id} item={item} index={VISIBLE_ROWS + idx} />)}
+          </ul>
+        </details>
+      )}
+    </>
+  );
+}
+
+function ItemRow({ item, index }: { item: WidgetItem; index: number }) {
+  return (
+    // A common minimum row height keeps one-line and three-line lists from differing wildly
+    <li className="flex items-start min-h-[2.75rem]">
+      <span className="text-[var(--text-muted)] font-mono font-bold w-6 shrink-0 text-right mr-3 mt-0.5">
+        {/* Symbol ranks (e.g. ★ for a head of government) take no trailing dot */}
+        {typeof item.rank === 'string' && !/\d/.test(item.rank) ? item.rank : `${item.rank ?? index + 1}.`}
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm truncate" title={item.title}>
+          {item.title}
+        </p>
+        {item.subtitle && (
+          <p className="text-xs text-[var(--text-muted)] truncate" title={item.subtitle}>
+            {item.subtitle}
+          </p>
+        )}
+        {item.metadata && (
+          <p className="text-[10px] text-gray-500 mt-0.5 truncate" title={item.metadata}>
+            {item.metadata}
+          </p>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -131,17 +156,17 @@ function ClosedNotice({ closure, items }: { closure: WidgetClosure; items: Widge
 // ⚡ Bolt Optimization: Stabilize Array Reference
 // Pre-defining the array outside the component prevents it from being allocated and
 // garbage collected on every single render cycle of the skeleton, reducing overhead.
-const SKELETON_ROWS = Array.from({ length: 5 }, (_, i) => i);
+const SKELETON_ROWS = Array.from({ length: 10 }, (_, i) => i);
 
 export function WidgetCardSkeleton({ title }: { title: string }) {
   return (
     <div className="bg-[var(--card-background)] border border-[var(--card-border)] rounded-xl shadow-lg overflow-hidden flex flex-col h-full animate-pulse" role="status" aria-busy="true" aria-label={`Loading ${title}`}>
-      <div className="bg-[#202020] p-4 border-b border-[var(--card-border)]">
-        <h3 className="font-bold text-lg text-transparent bg-gray-700 rounded w-1/2">{title}</h3>
+      <div className="bg-[#202020] px-4 py-3 border-b border-[var(--card-border)] flex items-center min-h-[4.75rem]">
+        <h3 className="font-bold text-lg leading-snug text-transparent bg-gray-700 rounded w-1/2 line-clamp-2">{title}</h3>
       </div>
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-2">
         {SKELETON_ROWS.map((i) => (
-          <div key={i} className="flex items-start">
+          <div key={i} className="flex items-start min-h-[2.75rem]">
             <div className="w-4 h-4 bg-gray-700 rounded mr-3 mt-0.5"></div>
             <div className="flex-1 space-y-2">
               <div className="h-4 bg-gray-700 rounded w-3/4"></div>
