@@ -58,6 +58,7 @@ test.describe('Right Here, Right Now E2E', () => {
     ['/entertainment', 'US Billboard Hot 100'],
     ['/video-games', 'Most Played Steam Games (Live)'],
     ['/business-tech', 'Trending Cryptocurrencies'],
+    ['/history', 'Roman Catholic Popes'],
   ]) {
     test(`${path} shows its widgets`, async ({ page }) => {
       await page.goto(path);
