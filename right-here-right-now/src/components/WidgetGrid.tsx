@@ -39,6 +39,14 @@ import {
   parseUsVicePresidents,
   parseRazzieWorstPicture
 } from '@/lib/parsers/history';
+import {
+  parseImdbTop250Mirror,
+  parseWeeklyBoxOffice,
+  parseNetflixFilms,
+  parseNetflixTv,
+  parseWhatsOnNetflixFilms,
+  parseWhatsOnNetflixTv
+} from '@/lib/parsers/film-tv';
 import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom } from '@/lib/parsers/steam';
 import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
@@ -254,6 +262,49 @@ const WIDGETS: WidgetDefinition[] = [
     config: {
       primaryUrl: 'https://kworb.net/spotify/country/global_weekly.html',
       primaryParser: parseSpotifyGlobalWeekly
+    }
+  },
+  // Films & TV
+  {
+    key: 'box-office',
+    title: 'Films Of The Week (US Box Office)',
+    category: entertainment,
+    config: {
+      primaryUrl: 'https://www.the-numbers.com/weekly-box-office-chart',
+      primaryParser: parseWeeklyBoxOffice
+    }
+  },
+  {
+    key: 'netflix-films',
+    title: 'Top On Netflix: Films',
+    category: entertainment,
+    config: {
+      // Netflix's official global weekly Top 10 (tab-separated)
+      primaryUrl: 'https://www.netflix.com/tudum/top10/data/all-weeks-global.tsv',
+      backupUrl: 'https://www.whats-on-netflix.com/most-popular/',
+      primaryParser: parseNetflixFilms,
+      backupParser: parseWhatsOnNetflixFilms
+    }
+  },
+  {
+    key: 'netflix-tv',
+    title: 'Top On Netflix: TV',
+    category: entertainment,
+    config: {
+      primaryUrl: 'https://www.netflix.com/tudum/top10/data/all-weeks-global.tsv',
+      backupUrl: 'https://www.whats-on-netflix.com/most-popular/',
+      primaryParser: parseNetflixTv,
+      backupParser: parseWhatsOnNetflixTv
+    }
+  },
+  {
+    key: 'imdb-top-250',
+    title: 'IMDb Top 250 Movies',
+    category: entertainment,
+    config: {
+      // IMDb blocks scripted requests; this Letterboxd list mirrors the chart in order
+      primaryUrl: 'https://letterboxd.com/dave/list/imdb-top-250/',
+      primaryParser: parseImdbTop250Mirror
     }
   },
   {
