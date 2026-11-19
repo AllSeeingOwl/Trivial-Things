@@ -1,9 +1,11 @@
 import * as cheerio from 'cheerio';
 import { WidgetData, WidgetItem } from '../scraper';
 
-// Current champions (Cagematch title pages) and latest tournament winners
-// (The SmackDown Hotel), one page per row. The list mirrors
-// "Current Wrestling Champs.txt"; add or remove a row here to change the cards.
+// The two "More Championships" cards: current champions (Cagematch title
+// pages) and latest tournament winners (The SmackDown Hotel), one page per
+// row. Titles from promotions with their own card (WWE, AEW, TNA, NJPW,
+// Stardom, CMLL, AAA; see PROMOTIONS) are left out so nothing appears twice.
+// The list mirrors "Current Wrestling Champs.txt"; edit both to change the cards.
 
 interface WrestlingSource {
   url: string;
@@ -11,23 +13,23 @@ interface WrestlingSource {
 }
 
 const WRESTLING_URLS_1: WrestlingSource[] = [
-  { url: 'https://www.cagematch.net/en/?id=5&nr=145', name: 'IWGP Heavyweight Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=1576', name: 'Wonder Of Stardom Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=4380', name: 'DDT Iron Man Heavy Metal Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=311', name: 'Open The Dream Gate Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=1789', name: 'WWE NXT Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=24', name: 'Triple Crown Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=121', name: 'ROH World Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=2964', name: 'Princess Of Princess Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=2827', name: 'RevPro Undisputed British Cruiserweight Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=3796', name: 'GCW World Championship' },
+  { url: 'https://www.cagematch.net/en/?id=5&nr=140', name: 'GHC Heavyweight Championship (NOAH)' },
+  { url: 'https://www.cagematch.net/en/?id=5&nr=179', name: 'NWA Worlds Heavyweight Championship' },
+  { url: 'https://www.cagematch.net/en/?id=5&nr=224', name: 'MLW World Heavyweight Championship' },
 ];
 
 const WRESTLING_URLS_2: WrestlingSource[] = [
-  { url: 'https://www.cagematch.net/en/?id=5&nr=4370', name: "AEW Women's World Championship" },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=650', name: 'TNA Knockouts World Championship' },
   { url: 'https://www.cagematch.net/en/?id=5&nr=1501', name: 'EVE Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=181', name: 'TNA X-Division Championship' },
+  { url: 'https://www.cagematch.net/en/?id=5&nr=1342', name: 'wXw Unified World Wrestling Championship' },
+  { url: 'https://www.cagematch.net/en/?id=5&nr=1723', name: 'PROGRESS World Championship' },
+  { url: 'https://www.cagematch.net/en/?id=5&nr=6915', name: 'Marigold World Championship' },
   { url: 'https://www.thesmackdownhotel.com/tournaments/njpw-best-of-the-super-juniors', name: 'NJPW Best of the Super Juniors' },
   { url: 'https://www.thesmackdownhotel.com/tournaments/njpw-g1-climax', name: 'NJPW G1 Climax' },
   { url: 'https://www.thesmackdownhotel.com/tournaments/njpw-world-tag-league', name: 'NJPW World Tag League' },
