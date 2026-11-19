@@ -12,6 +12,11 @@ export function wikipediaHtmlUrl(title: string): string {
   return `https://en.wikipedia.org/api/rest_v1/page/html/${encodeURIComponent(title)}`;
 }
 
+/** An English Wikipedia article page (the normal page, not the REST API, which can rate-limit cloud hosts). */
+export function wikipediaArticleUrl(title: string): string {
+  return `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`;
+}
+
 /** Cell text with footnote markers ([1], [a]) and hidden sort keys removed. */
 export function cellText($: cheerio.CheerioAPI, el: Parameters<cheerio.CheerioAPI>[0]): string {
   const $cell = $(el).clone();
