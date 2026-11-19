@@ -58,6 +58,7 @@ import {
 } from '@/lib/parsers/money-creators';
 import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom, parseSteamPopularNew } from '@/lib/parsers/steam';
 import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
+import { PROMOTIONS, promotionTitlesUrl, parseCagematchPromotionTitles } from '@/lib/parsers/wrestling';
 
 export interface WidgetDefinition {
   key: string;
@@ -567,5 +568,17 @@ export const WIDGETS: WidgetDefinition[] = [
     title: g.title,
     category: WIDGET_CATEGORIES.news,
     fetchData: () => fetchGovernment(g)
+  })),
+  // Wrestling: each major promotion's current champions, one Cagematch page per card
+  ...PROMOTIONS.map(p => ({
+    key: `wrestling-${p.key}`,
+    title: p.title,
+    category: WIDGET_CATEGORIES.wrestling,
+    config: {
+      primaryUrl: promotionTitlesUrl(p.id),
+      primaryParser: parseCagematchPromotionTitles,
+      // Every active title; the card shows 10 and folds the rest behind "Show more"
+      maxItems: 50
+    }
   })),
 ];

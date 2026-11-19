@@ -116,6 +116,75 @@ export function parseSmackdownHotelWinner(html: string): ChampionInfo | null {
   };
 }
 
+/** Cagematch promotion IDs for the "titles" tab (cagematch.net/en/?id=8&nr=<id>&page=9). */
+export const PROMOTIONS = [
+  { key: 'wwe', id: 1, title: 'WWE Champions' },
+  { key: 'aew', id: 2287, title: 'AEW Champions' },
+  { key: 'tna', id: 5, title: 'TNA Champions' },
+  { key: 'njpw', id: 7, title: 'NJPW Champions (Japan)' },
+  { key: 'stardom', id: 745, title: 'Stardom Champions (Japan)' },
+  { key: 'cmll', id: 78, title: 'CMLL Champions (Mexico)' },
+  { key: 'aaa', id: 122, title: 'AAA Champions (Mexico)' },
+] as const;
+
+export function promotionTitlesUrl(id: number): string {
+  return `https://www.cagematch.net/en/?id=8&nr=${id}&page=9`;
+}
+
+/** Closes brackets Cagematch sometimes leaves open: "The Nemeths (Nic Nemeth & Ryan Nemeth" */
+function balanceBrackets(text: string): string {
+  const open = (text.match(/\(/g) ?? []).length - (text.match(/\)/g) ?? []).length;
+  return open > 0 ? text + ')'.repeat(open) : text;
+}
+
+/**
+ * A promotion's titles tab: "# | Title | Current champion(s) | Since | Rating | Votes".
+ * The first table holds active titles (a second lists retired ones). Titles
+ * are ordered by fan votes, which puts the headline belts first; ties (many
+ * titles have no votes) put "World" titles first, then keep the site's order.
+ */
+export function parseCagematchPromotionTitles(html: string): WidgetItem[] {
+  const $ = cheerio.load(html);
+  const table = $('.TableContents').first();
+  const head = table.find('tr').first().children().toArray().map(c => tidy($(c).text()).toLowerCase());
+  const titleCol = head.indexOf('title');
+  const champCol = head.findIndex(h => h.startsWith('current champion'));
+  const sinceCol = head.indexOf('since');
+  const votesCol = head.indexOf('votes');
+  if (titleCol < 0 || champCol < 0) return [];
+
+  const titles = table.find('tr').slice(1).toArray().map((tr, order) => {
+    const cells = $(tr).children('td').toArray().map(td => tidy($(td).text()));
+    const raw = cells[champCol] ?? '';
+    // A trailing "(2)" is how many times they have held it
+    const times = Number(raw.match(/\((\d+)\)$/)?.[1] ?? 1);
+    const holder = balanceBrackets(raw.replace(/\s*\(\d+\)$/, ''));
+    const vacant = /^(vacant|vakant)$/i.test(holder);
+    const since = sinceCol >= 0 ? cagematchDate(cells[sinceCol] ?? '') : undefined;
+    return {
+      order,
+      title: cells[titleCol],
+      votes: votesCol >= 0 ? Number(cells[votesCol]) || 0 : 0,
+      world: /\bworld\b/i.test(cells[titleCol] ?? ''),
+      champion: vacant ? 'Vacant' : holder,
+      detail: [
+        since ? `${vacant ? 'Vacant since' : 'Since'} ${since}` : undefined,
+        !vacant && times > 1 ? `${ordinal(times)} reign` : undefined,
+      ].filter(Boolean).join(' · ') || undefined,
+    };
+  }).filter(t => t.title && t.champion && !/^inactive$/i.test(t.champion));
+
+  return titles
+    .sort((a, b) => (b.votes - a.votes) || (Number(b.world) - Number(a.world)) || (a.order - b.order))
+    .map((t, i) => ({
+      id: `promotion-title-${i}`,
+      rank: i + 1,
+      title: t.title,
+      subtitle: t.champion,
+      metadata: t.detail,
+    }));
+}
+
 async function fetchChampion(source: WrestlingSource): Promise<ChampionInfo | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10000);
