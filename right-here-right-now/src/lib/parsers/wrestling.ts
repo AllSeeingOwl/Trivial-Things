@@ -1,38 +1,48 @@
 import * as cheerio from 'cheerio';
 import { WidgetData, WidgetItem } from '../scraper';
+import { cellText, WIKIPEDIA_HEADERS, wikipediaArticleUrl } from './wikipedia';
 
-// The two "More Championships" cards: current champions (Cagematch title
-// pages) and latest tournament winners (The SmackDown Hotel), one page per
-// row. Titles from promotions with their own card (WWE, AEW, TNA, NJPW,
-// Stardom, CMLL, AAA; see PROMOTIONS) are left out so nothing appears twice.
-// The list mirrors "Current Wrestling Champs.txt"; edit both to change the cards.
+// The two "More Championships" cards: one title or tournament per row.
+// Championships read the title's Wikipedia article (its infobox names the
+// current champion) and fall back to its Cagematch page; Cagematch answers
+// Render's servers with a redirect, so Wikipedia is the source in production.
+// Tournaments read The SmackDown Hotel. Titles from promotions with their own
+// card (see PROMOTIONS) are left out so nothing appears twice.
+// "Current Wrestling Champs.txt" mirrors this list; edit both to change the cards.
 
 interface WrestlingSource {
-  url: string;
   name: string;
+  /** English Wikipedia article title */
+  wiki?: string;
+  /** Cagematch title page */
+  cagematch?: string;
+  /** The SmackDown Hotel tournament page */
+  tournament?: string;
 }
 
+const cagematchTitle = (nr: number) => `https://www.cagematch.net/en/?id=5&nr=${nr}`;
+
 const WRESTLING_URLS_1: WrestlingSource[] = [
-  { url: 'https://www.cagematch.net/en/?id=5&nr=4380', name: 'DDT Iron Man Heavy Metal Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=311', name: 'Open The Dream Gate Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=24', name: 'Triple Crown Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=121', name: 'ROH World Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=2964', name: 'Princess Of Princess Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=2827', name: 'RevPro Undisputed British Cruiserweight Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=3796', name: 'GCW World Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=140', name: 'GHC Heavyweight Championship (NOAH)' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=179', name: 'NWA Worlds Heavyweight Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=224', name: 'MLW World Heavyweight Championship' },
+  { name: 'DDT Iron Man Heavy Metal Championship', wiki: 'Ironman Heavymetalweight Championship', cagematch: cagematchTitle(4380) },
+  { name: 'Open The Dream Gate Championship', wiki: 'Open the Dream Gate Championship', cagematch: cagematchTitle(311) },
+  { name: 'Triple Crown Championship', wiki: 'Triple Crown Heavyweight Championship', cagematch: cagematchTitle(24) },
+  { name: 'ROH World Championship', wiki: 'ROH World Championship', cagematch: cagematchTitle(121) },
+  { name: 'Princess Of Princess Championship', wiki: 'Princess of Princess Championship', cagematch: cagematchTitle(2964) },
+  { name: 'RevPro Undisputed British Heavyweight Championship', wiki: 'Undisputed British Heavyweight Championship', cagematch: cagematchTitle(1976) },
+  { name: 'GCW World Championship', wiki: 'GCW World Championship', cagematch: cagematchTitle(3796) },
+  { name: 'GHC Heavyweight Championship (NOAH)', wiki: 'GHC Heavyweight Championship', cagematch: cagematchTitle(140) },
+  { name: 'NWA Worlds Heavyweight Championship', wiki: 'NWA Worlds Heavyweight Championship', cagematch: cagematchTitle(179) },
+  { name: 'MLW World Heavyweight Championship', wiki: 'MLW World Heavyweight Championship', cagematch: cagematchTitle(224) },
 ];
 
 const WRESTLING_URLS_2: WrestlingSource[] = [
-  { url: 'https://www.cagematch.net/en/?id=5&nr=1501', name: 'EVE Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=1342', name: 'wXw Unified World Wrestling Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=1723', name: 'PROGRESS World Championship' },
-  { url: 'https://www.cagematch.net/en/?id=5&nr=6915', name: 'Marigold World Championship' },
-  { url: 'https://www.thesmackdownhotel.com/tournaments/njpw-best-of-the-super-juniors', name: 'NJPW Best of the Super Juniors' },
-  { url: 'https://www.thesmackdownhotel.com/tournaments/njpw-g1-climax', name: 'NJPW G1 Climax' },
-  { url: 'https://www.thesmackdownhotel.com/tournaments/njpw-world-tag-league', name: 'NJPW World Tag League' },
+  { name: 'EVE Championship', wiki: 'Pro-Wrestling: EVE Championship', cagematch: cagematchTitle(1501) },
+  { name: 'wXw Unified World Wrestling Championship', wiki: 'wXw Unified World Wrestling Championship', cagematch: cagematchTitle(1342) },
+  { name: 'PROGRESS World Championship', wiki: 'Progress World Championship', cagematch: cagematchTitle(1723) },
+  { name: 'Marigold World Championship', wiki: 'Marigold World Championship', cagematch: cagematchTitle(6915) },
+  { name: 'NJPW Best of the Super Juniors', tournament: 'https://www.thesmackdownhotel.com/tournaments/njpw-best-of-the-super-juniors' },
+  { name: 'NJPW G1 Climax', tournament: 'https://www.thesmackdownhotel.com/tournaments/njpw-g1-climax' },
+  { name: 'NJPW World Tag League', tournament: 'https://www.thesmackdownhotel.com/tournaments/njpw-world-tag-league' },
 ];
 
 const COMMON_HEADERS = {
@@ -118,16 +128,119 @@ export function parseSmackdownHotelWinner(html: string): ChampionInfo | null {
   };
 }
 
+/** "(1)" / "1(2, 1)" -> 1; the first number is the champion's (or team's) reign count. */
+function reignCount(text: string): number {
+  return Number(text.match(/\d+/)?.[0] ?? 1) || 1;
+}
+
+/** "August 9, 2026" -> "9 Aug 2026" (anything else is returned as-is). */
+function wikiDate(text: string): string | undefined {
+  const t = Date.parse(text);
+  if (!/\d{4}/.test(text) || Number.isNaN(t)) return undefined;
+  return new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+/** "The Young Bucks(Matt Jackson and Nick Jackson)" -> "The Young Bucks (Matt Jackson & Nick Jackson)" */
+function tidyHolder(text: string): string {
+  return balanceBrackets(tidy(text).replace(/(\S)\(/g, '$1 (').replace(/ and /g, ' & '));
+}
+
+/**
+ * A championship's Wikipedia article: the infobox's "Current champion(s)"
+ * and "Date won" rows.
+ */
+export function parseWikiInfoboxChampion(html: string): ChampionInfo | null {
+  const $ = cheerio.load(html);
+  const row = (label: RegExp) => $('table.infobox tr').toArray()
+    .find(tr => label.test(cellText($, $(tr).children('th').first()[0] ?? tr)));
+  const champRow = row(/^current\s+champions?(\(s\))?$/i);
+  if (!champRow) return null;
+
+  const champion = tidyHolder(cellText($, $(champRow).children('td').first()[0] ?? champRow));
+  if (!champion) return null;
+  const dateRow = row(/^date won$/i);
+  const won = dateRow ? wikiDate(cellText($, $(dateRow).children('td').first()[0] ?? dateRow)) : undefined;
+  const vacant = /^vacant/i.test(champion);
+  return {
+    champion: vacant ? 'Vacant' : champion,
+    detail: won ? `${vacant ? 'Vacant since' : 'Since'} ${won}` : undefined,
+  };
+}
+
+/**
+ * A promotion's current champions on Wikipedia ("List of current champions
+ * in …", or the promotion article for Stardom and CMLL): tables headed
+ * "Championship | Current champion(s) | Reign | Date won | …". Rows are read
+ * by position, because a belt-image column is sometimes present and
+ * sometimes not. Titles matching `exclude` (other promotions' belts
+ * defended there) are skipped.
+ */
+export function parseWikiPromotionChampions(html: string, exclude?: RegExp): WidgetItem[] {
+  const $ = cheerio.load(html);
+  const items: WidgetItem[] = [];
+  const seen = new Set<string>();
+
+  $('table.wikitable').each((_, table) => {
+    const rows = $(table).find('tr').toArray();
+    const headIndex = rows.findIndex(tr => $(tr).children('th').length > 1);
+    if (headIndex < 0) return;
+    const head = $(rows[headIndex]).children('th').toArray().map(th => cellText($, th).toLowerCase());
+    if (!head[0]?.startsWith('championship') || !head.some(h => h.startsWith('current champion'))) return;
+
+    for (const tr of rows.slice(headIndex + 1)) {
+      const cells = $(tr).children('th, td').toArray().map(c => cellText($, c));
+      const title = cells[0];
+      if (!title || seen.has(title) || exclude?.test(title)) continue;
+      // Skip the empty image cell, if any: champion, reign, date won follow
+      const rest = cells.slice(1);
+      while (rest.length && !rest[0]) rest.shift();
+      const [holderText, reignText, dateText] = rest;
+      if (!holderText) continue;
+
+      const holder = tidyHolder(holderText);
+      const vacant = /^vacant/i.test(holder);
+      const won = dateText ? wikiDate(dateText) : undefined;
+      const times = reignText && /^\d/.test(reignText) ? reignCount(reignText) : 1;
+      seen.add(title);
+      items.push({
+        id: `wiki-title-${items.length}`,
+        rank: items.length + 1,
+        title,
+        subtitle: vacant ? 'Vacant' : holder,
+        metadata: [
+          won ? `${vacant ? 'Vacant since' : 'Since'} ${won}` : undefined,
+          !vacant && times > 1 ? `${ordinal(times)} reign` : undefined,
+        ].filter(Boolean).join(' · ') || undefined,
+      });
+    }
+  });
+
+  return items;
+}
+
 /** Cagematch promotion IDs for the "titles" tab (cagematch.net/en/?id=8&nr=<id>&page=9). */
-export const PROMOTIONS = [
-  { key: 'wwe', id: 1, title: 'WWE Champions' },
-  { key: 'aew', id: 2287, title: 'AEW Champions' },
-  { key: 'tna', id: 5, title: 'TNA Champions' },
-  { key: 'njpw', id: 7, title: 'NJPW Champions (Japan)' },
-  { key: 'stardom', id: 745, title: 'Stardom Champions (Japan)' },
-  { key: 'cmll', id: 78, title: 'CMLL Champions (Mexico)' },
-  { key: 'aaa', id: 122, title: 'AAA Champions (Mexico)' },
-] as const;
+export const PROMOTIONS: {
+  key: string;
+  title: string;
+  /** Cagematch promotion id (backup source) */
+  id: number;
+  /** Wikipedia page listing the current champions (primary source) */
+  wiki: string;
+  /** Titles on that page that belong on another card */
+  exclude?: RegExp;
+}[] = [
+  { key: 'wwe', id: 1, title: 'WWE Champions', wiki: 'List of current champions in WWE', exclude: /^AAA\b/ },
+  { key: 'aew', id: 2287, title: 'AEW Champions', wiki: 'List of current champions in All Elite Wrestling' },
+  { key: 'tna', id: 5, title: 'TNA Champions', wiki: 'List of current champions in Total Nonstop Action Wrestling' },
+  { key: 'njpw', id: 7, title: 'NJPW Champions (Japan)', wiki: 'List of current champions in New Japan Pro-Wrestling', exclude: /^CMLL\b/ },
+  { key: 'stardom', id: 745, title: 'Stardom Champions (Japan)', wiki: 'World Wonder Ring Stardom', exclude: /^(IWGP|Strong|CMLL)\b/ },
+  { key: 'cmll', id: 78, title: 'CMLL Champions (Mexico)', wiki: 'Consejo Mundial de Lucha Libre' },
+  { key: 'aaa', id: 122, title: 'AAA Champions (Mexico)', wiki: 'List of current champions in Lucha Libre AAA Worldwide' },
+];
+
+export function promotionChampionsUrl(promotion: (typeof PROMOTIONS)[number]): string {
+  return wikipediaArticleUrl(promotion.wiki);
+}
 
 export function promotionTitlesUrl(id: number): string {
   return `https://www.cagematch.net/en/?id=8&nr=${id}&page=9`;
@@ -187,21 +300,41 @@ export function parseCagematchPromotionTitles(html: string): WidgetItem[] {
     }));
 }
 
-async function fetchChampion(source: WrestlingSource): Promise<ChampionInfo | null> {
+async function fetchPage(url: string, headers: Record<string, string>): Promise<string> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10000);
   try {
-    const res = await fetch(source.url, {
-      headers: COMMON_HEADERS,
+    const res = await fetch(url, {
+      headers,
       signal: controller.signal,
       next: { revalidate: 86400, tags: ['widgets'] }, // 24 hours, refreshed with the other widgets
     });
     if (!res.ok) throw new Error(`Status: ${res.status}`);
-    const html = await res.text();
-    return source.url.includes('thesmackdownhotel.com') ? parseSmackdownHotelWinner(html) : parseCagematchChampion(html);
+    return await res.text();
   } finally {
     clearTimeout(timer);
   }
+}
+
+/** Tries each of a row's sources in turn: Wikipedia, then Cagematch (or the tournament page). */
+async function fetchChampion(source: WrestlingSource): Promise<ChampionInfo | null> {
+  const attempts: [string, Record<string, string>, (html: string) => ChampionInfo | null][] = [];
+  if (source.wiki) attempts.push([wikipediaArticleUrl(source.wiki), WIKIPEDIA_HEADERS, parseWikiInfoboxChampion]);
+  if (source.cagematch) attempts.push([source.cagematch, COMMON_HEADERS, parseCagematchChampion]);
+  if (source.tournament) attempts.push([source.tournament, COMMON_HEADERS, parseSmackdownHotelWinner]);
+
+  let lastError: unknown = null;
+  for (const [url, headers, parse] of attempts) {
+    try {
+      const info = parse(await fetchPage(url, headers));
+      if (info) return info;
+    } catch (e) {
+      lastError = e;
+      console.warn(`Wrestling source failed for ${source.name} (${url}):`, e);
+    }
+  }
+  if (lastError) throw lastError;
+  return null;
 }
 
 async function fetchWrestlingItems(sources: WrestlingSource[]): Promise<WidgetData> {
@@ -215,7 +348,7 @@ async function fetchWrestlingItems(sources: WrestlingSource[]): Promise<WidgetDa
       try {
         results[i] = await fetchChampion(sources[i]);
       } catch (e) {
-        console.error(`Failed fetching ${sources[i].url}:`, e);
+        console.error(`No source worked for ${sources[i].name}:`, e);
         results[i] = e instanceof Error ? e : new Error(String(e));
       }
     }

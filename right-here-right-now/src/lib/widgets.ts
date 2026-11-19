@@ -58,7 +58,13 @@ import {
 } from '@/lib/parsers/money-creators';
 import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom, parseSteamPopularNew } from '@/lib/parsers/steam';
 import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
-import { PROMOTIONS, promotionTitlesUrl, parseCagematchPromotionTitles } from '@/lib/parsers/wrestling';
+import {
+  PROMOTIONS,
+  promotionChampionsUrl,
+  promotionTitlesUrl,
+  parseCagematchPromotionTitles,
+  parseWikiPromotionChampions
+} from '@/lib/parsers/wrestling';
 
 export interface WidgetDefinition {
   key: string;
@@ -569,14 +575,20 @@ export const WIDGETS: WidgetDefinition[] = [
     category: WIDGET_CATEGORIES.news,
     fetchData: () => fetchGovernment(g)
   })),
-  // Wrestling: each major promotion's current champions, one Cagematch page per card
+  // Wrestling: each major promotion's current champions. Wikipedia's current-champions
+  // table first; Cagematch's titles tab as backup (it redirects Render's servers away)
   ...PROMOTIONS.map(p => ({
     key: `wrestling-${p.key}`,
     title: p.title,
     category: WIDGET_CATEGORIES.wrestling,
     config: {
-      primaryUrl: promotionTitlesUrl(p.id),
-      primaryParser: parseCagematchPromotionTitles,
+      primaryUrl: promotionChampionsUrl(p),
+      primaryParser: (html: string) => parseWikiPromotionChampions(html, p.exclude),
+      extraHeaders: WIKIPEDIA_HEADERS,
+      backupUrl: promotionTitlesUrl(p.id),
+      backupParser: parseCagematchPromotionTitles,
+      // Cagematch gets the standard browser headers
+      backupHeaders: {},
       // Every active title; the card shows 10 and folds the rest behind "Show more"
       maxItems: 50
     }
