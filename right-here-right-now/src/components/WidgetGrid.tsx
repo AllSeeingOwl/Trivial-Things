@@ -47,6 +47,14 @@ import {
   parseWhatsOnNetflixFilms,
   parseWhatsOnNetflixTv
 } from '@/lib/parsers/film-tv';
+import {
+  parseForbesBillionaires,
+  parseFortuneGlobal500,
+  parseLargestCompaniesWiki,
+  parseLatestBreaches,
+  parseMostSubscribedYouTube,
+  parseMostDislikedYouTube
+} from '@/lib/parsers/money-creators';
 import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom } from '@/lib/parsers/steam';
 import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
@@ -360,6 +368,30 @@ const WIDGETS: WidgetDefinition[] = [
       extraHeaders: WIKIPEDIA_HEADERS
     }
   },
+  // Creators
+  {
+    key: 'youtube-most-subscribed',
+    title: 'YouTube Most Subscribed Channels',
+    category: entertainment,
+    config: {
+      // Social Blade blocks scripted requests; Wikipedia's list is updated monthly
+      primaryUrl: wikipediaHtmlUrl('List of most-subscribed YouTube channels'),
+      backupUrl: 'https://en.wikipedia.org/wiki/List_of_most-subscribed_YouTube_channels',
+      primaryParser: parseMostSubscribedYouTube,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'youtube-most-disliked',
+    title: 'Most Disliked YouTube Videos',
+    category: entertainment,
+    config: {
+      primaryUrl: wikipediaHtmlUrl('List of most-disliked YouTube videos'),
+      backupUrl: 'https://en.wikipedia.org/wiki/List_of_most-disliked_YouTube_videos',
+      primaryParser: parseMostDislikedYouTube,
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
   // Video Games: Steam charts via Steam250, with Steam's own chart as a backup
   {
     key: 'steam-most-played',
@@ -406,6 +438,42 @@ const WIDGETS: WidgetDefinition[] = [
     }
   },
   // Business & Tech
+  {
+    key: 'richest-people',
+    title: 'Richest People In The World',
+    category: WIDGET_CATEGORIES.businessTech,
+    config: {
+      // The data feed behind forbes.com/real-time-billionaires (the page itself refuses scripts)
+      primaryUrl: 'https://www.forbes.com/forbesapi/person/rtb/0/position/true.json?limit=10',
+      primaryParser: parseForbesBillionaires,
+      isPrimaryJson: true,
+      extraHeaders: { Accept: 'application/json' }
+    }
+  },
+  {
+    key: 'global-500',
+    title: 'Top Companies (Fortune Global 500)',
+    category: WIDGET_CATEGORIES.businessTech,
+    config: {
+      primaryUrl: 'https://fortune.com/ranking/global500/',
+      backupUrl: wikipediaHtmlUrl('List of largest companies by revenue'),
+      primaryParser: parseFortuneGlobal500,
+      backupParser: parseLargestCompaniesWiki,
+      // Wikimedia asks for a descriptive User-Agent; Fortune accepts it too
+      extraHeaders: WIKIPEDIA_HEADERS
+    }
+  },
+  {
+    key: 'data-breaches',
+    title: 'Latest Data Breaches (Have I Been Pwned)',
+    category: WIDGET_CATEGORIES.businessTech,
+    config: {
+      primaryUrl: 'https://haveibeenpwned.com/api/v3/breaches',
+      primaryParser: parseLatestBreaches,
+      isPrimaryJson: true,
+      extraHeaders: { Accept: 'application/json' }
+    }
+  },
   {
     key: 'trending-crypto',
     title: 'Trending Cryptocurrencies',
