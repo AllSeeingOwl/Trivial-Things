@@ -78,11 +78,12 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
 
   const widgets = WIDGETS.filter(w => w.category === categoryFilter).map(load);
 
-  // Wrestling has its own two combined cards and only appears on its tab
+  // After the promotion cards, the Wrestling tab adds two cards of individual
+  // championships and tournaments (one page per row), kept off the All tab
   if (categoryFilter === WIDGET_CATEGORIES.wrestling) {
     widgets.push(
-      { key: 'wrestling-1', title: 'Wrestling Championships (Part 1)', dataPromise: fetchWrestlingData1() },
-      { key: 'wrestling-2', title: 'Wrestling Championships (Part 2)', dataPromise: fetchWrestlingData2() },
+      { key: 'wrestling-more-1', title: 'More Championships (Part 1)', dataPromise: fetchWrestlingData1() },
+      { key: 'wrestling-more-2', title: 'More Championships & NJPW Tournaments (Part 2)', dataPromise: fetchWrestlingData2() },
     );
   }
 

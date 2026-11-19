@@ -71,6 +71,7 @@ test.describe('Right Here, Right Now E2E', () => {
     ['/video-games', 'Most Played Steam Games (Live)'],
     ['/business-tech', 'Trending Cryptocurrencies'],
     ['/history', 'Roman Catholic Popes'],
+    ['/wrestling', 'WWE Champions'],
   ]) {
     test(`${path} shows its widgets`, async ({ page }) => {
       await page.goto(path);
