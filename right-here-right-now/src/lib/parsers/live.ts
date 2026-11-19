@@ -142,3 +142,65 @@ export function parseTrendingCrypto(json: Record<string, unknown>): WidgetItem[]
       };
     });
 }
+
+interface CorquaidPerson {
+  name?: string;
+  country?: string;
+  agency?: string;
+  position?: string;
+  spacecraft?: string;
+  launched?: number;
+  iss?: boolean;
+}
+
+/** Backup for people in space: corquaid.github.io/international-space-station-APIs/JSON/people-in-space.json. */
+export function parsePeopleInSpaceCorquaid(json: Record<string, unknown>): WidgetItem[] {
+  const people = Array.isArray(json.people) ? (json.people as CorquaidPerson[]) : [];
+  const now = Date.now();
+
+  return people
+    .filter(p => p.name)
+    .map((p, i) => {
+      // launched is a Unix timestamp in seconds
+      const days = typeof p.launched === 'number' ? Math.max(0, Math.floor((now - p.launched * 1000) / DAY_MS)) : undefined;
+      return {
+        id: `space-backup-${i}`,
+        rank: i + 1,
+        title: p.name!,
+        subtitle: [p.position, p.iss ? 'International Space Station' : p.spacecraft].filter(Boolean).join(' · ') || undefined,
+        metadata: [
+          [p.country, p.agency].filter(Boolean).join(' / ') || undefined,
+          days !== undefined ? `${days} day${days === 1 ? '' : 's'} in space` : undefined,
+        ].filter(Boolean).join(' · ') || undefined,
+      };
+    });
+}
+
+interface CmcSearchRank {
+  name?: string;
+  symbol?: string;
+  rank?: number;
+  priceChange?: { price?: number; priceChange24h?: number };
+}
+
+/** Backup for trending crypto: CoinMarketCap's most-searched coins (api.coinmarketcap.com/data-api/v3/topsearch/rank). */
+export function parseCoinMarketCapTrending(json: Record<string, unknown>): WidgetItem[] {
+  const list = ((json.data as { cryptoTopSearchRanks?: CmcSearchRank[] } | undefined)?.cryptoTopSearchRanks) ?? [];
+
+  return list
+    .filter(c => c.name)
+    .map((c, i) => {
+      const price = c.priceChange?.price;
+      const change = c.priceChange?.priceChange24h;
+      return {
+        id: `cmc-${i}`,
+        rank: i + 1,
+        title: c.name!,
+        subtitle: [c.symbol?.toUpperCase(), c.rank ? `Market cap #${c.rank}` : undefined].filter(Boolean).join(' · ') || undefined,
+        metadata: [
+          typeof price === 'number' && Number.isFinite(price) ? formatUsd(price) : undefined,
+          typeof change === 'number' && Number.isFinite(change) ? `${change >= 0 ? '+' : ''}${change.toFixed(1)}% 24h` : undefined,
+        ].filter(Boolean).join(' · ') || undefined,
+      };
+    });
+}

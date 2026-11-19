@@ -1,557 +1,92 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
-import DashboardMasonry from '@/components/DashboardMasonry';
+import DashboardGrid from '@/components/DashboardGrid';
 import { WidgetCard, WidgetCardSkeleton } from '@/components/WidgetCard';
-import { cachedWidgetData, fetchWidgetData, ScraperConfig, WidgetData } from '@/lib/scraper';
-import { WIDGET_CATEGORIES } from '@/lib/categories';
-
-// Parsers
-import {
-  parsePremierLeaguePrimary,
-  parsePremierLeagueBackup,
-  parseRelegationPrimary,
-  parseRelegationBackup,
-  premierLeagueStandingsUrl,
-  resolveCurrentPremierLeagueUrl
-} from '@/lib/parsers/premier-league';
-import { parseEarthquakesPrimary, parseEarthquakesBackup } from '@/lib/parsers/earthquakes';
-import { parseBooksPrimary, parseBooksBackup } from '@/lib/parsers/books';
-import { parseOwgrRankings, parseWikiWomensGolf } from '@/lib/parsers/golf';
-import { parseAthleticsMen, parseAthleticsWomen } from '@/lib/parsers/athletics';
-import { parseFideTop, parseChessComLeaderboard } from '@/lib/parsers/chess';
-import { parseEnglandMensSquad, parseEnglandWomensSquad } from '@/lib/parsers/england-squad';
-import { parseSuperBowlWinners, parseWimbledonGentlemen, parseWimbledonLadies } from '@/lib/parsers/sports-history';
-import { WIKIPEDIA_HEADERS, wikipediaHtmlUrl } from '@/lib/parsers/wikipedia';
-import { parseBillboardHot100, parseSpotifyGlobalWeekly, parseUkNumberOnes } from '@/lib/parsers/music';
-import { parseTopAnime, parseEurovisionWinners, parseOscarBestActor, parseOscarBestActress } from '@/lib/parsers/entertainment';
-import {
-  parsePeopleInSpace,
-  parseWikipediaMostRead,
-  parseWikipediaTop25,
-  resolveWikipediaMostReadUrl,
-  wikipediaMostReadUrl,
-  parseTrendingCrypto
-} from '@/lib/parsers/live';
-import {
-  parsePopes,
-  parseNobelPeace,
-  parseUkPrimeMinisters,
-  parseUsVicePresidents,
-  parseRazzieWorstPicture
-} from '@/lib/parsers/history';
-import {
-  parseImdbTop250Mirror,
-  parseWeeklyBoxOffice,
-  parseNetflixFilms,
-  parseNetflixTv,
-  parseWhatsOnNetflixFilms,
-  parseWhatsOnNetflixTv
-} from '@/lib/parsers/film-tv';
-import {
-  parseForbesBillionaires,
-  parseFortuneGlobal500,
-  parseLargestCompaniesWiki,
-  parseLatestBreaches,
-  parseMostSubscribedYouTube,
-  parseMostDislikedYouTube
-} from '@/lib/parsers/money-creators';
-import { parseSteamMostPlayed, parseSteamStoreMostPlayed, parseSteamWeek, parseSteamBottom } from '@/lib/parsers/steam';
-import { GOVERNMENT_WIDGETS, fetchGovernment } from '@/lib/governments';
+import { fetchWidgetData, ScraperConfig, WidgetData } from '@/lib/scraper';
+import { CATEGORIES, WIDGET_CATEGORIES } from '@/lib/categories';
+import { WIDGETS, WidgetDefinition } from '@/lib/widgets';
 import { fetchWrestlingData1, fetchWrestlingData2 } from '@/lib/parsers/wrestling';
 
 interface WidgetGridProps {
   categoryFilter?: string;
 }
 
-interface WidgetDefinition {
+interface LoadedWidget {
   key: string;
   title: string;
-  category: string;
-  config?: ScraperConfig;
-  /** For widgets that combine several sources instead of one scraper config. */
-  fetchData?: () => Promise<WidgetData>;
+  dataPromise: Promise<WidgetData>;
 }
 
-// ⚡ Bolt Optimization: Stabilize Configuration Objects
-// Explicitly defining these static configuration objects outside the component prevents them
-// from being allocated in memory on every render, avoiding unnecessary garbage collection
-// overhead and maintaining stable references.
-const PREMIER_LEAGUE_CONFIG: ScraperConfig = {
-  // Fallback season (2026/27) if the current-season lookup fails
-  primaryUrl: premierLeagueStandingsUrl(841),
-  resolvePrimaryUrl: resolveCurrentPremierLeagueUrl,
-  backupUrl: 'https://www.skysports.com/premier-league-table',
-  primaryParser: parsePremierLeaguePrimary,
-  backupParser: parsePremierLeagueBackup,
-  isPrimaryJson: true
-};
+function load(w: WidgetDefinition): LoadedWidget {
+  return {
+    key: w.key,
+    title: w.title,
+    dataPromise: w.fetchData ? w.fetchData() : fetchWidgetData(w.config as ScraperConfig),
+  };
+}
 
-// Same feed as the standings widget (Next.js dedupes the cached fetch), bottom 3 rows only
-const RELEGATION_CONFIG: ScraperConfig = {
-  ...PREMIER_LEAGUE_CONFIG,
-  primaryParser: parseRelegationPrimary,
-  backupParser: parseRelegationBackup
-};
+function Cards({ widgets }: { widgets: LoadedWidget[] }) {
+  return (
+    <DashboardGrid>
+      {widgets.map(w => (
+        <Suspense key={w.key} fallback={<WidgetCardSkeleton title={w.title} />}>
+          <WidgetCard title={w.title} dataPromise={w.dataPromise} />
+        </Suspense>
+      ))}
+    </DashboardGrid>
+  );
+}
 
-const sports = WIDGET_CATEGORIES.sports;
-const entertainment = WIDGET_CATEGORIES.entertainment;
-const videoGames = WIDGET_CATEGORIES.videoGames;
+/**
+ * The "All" page: one section per category, in tab order, so the page reads
+ * as labelled blocks rather than one long mixed grid.
+ */
+function AllSections() {
+  const sections = CATEGORIES
+    .filter(cat => cat.id !== 'all')
+    .map(cat => ({ ...cat, widgets: WIDGETS.filter(w => w.category === cat.id).map(load) }))
+    .filter(section => section.widgets.length > 0);
 
-// Widgets shown on the "All" page and their own category page, in display order.
-const WIDGETS: WidgetDefinition[] = [
-  { key: 'premier-league', title: 'Premier League Standings', category: sports, config: PREMIER_LEAGUE_CONFIG },
-  { key: 'relegation', title: 'Premier League Relegation Zone', category: sports, config: RELEGATION_CONFIG },
-  {
-    key: 'golf-men',
-    title: 'Best Male Golfers (OWGR)',
-    category: sports,
-    config: {
-      primaryUrl: 'https://apiweb.owgr.com/api/owgr/rankings/getRankings?regionId=0&pageSize=10&pageNumber=1&countryCode=&sortString=Rank+ASC',
-      primaryParser: parseOwgrRankings,
-      isPrimaryJson: true
-    }
-  },
-  {
-    key: 'golf-women',
-    title: 'Best Female Golfers (Rolex Rankings)',
-    category: sports,
-    // lpga.com and rolexrankings.com render client-side / block scripted requests,
-    // so this reads the weekly-updated top 10 on Wikipedia.
-    config: {
-      primaryUrl: wikipediaHtmlUrl("Women's World Golf Rankings"),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent("Women's_World_Golf_Rankings")}`,
-      primaryParser: parseWikiWomensGolf,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'athletics-men',
-    title: 'World Athletics Rankings (Men)',
-    category: sports,
-    config: {
-      primaryUrl: 'https://worldathletics.org/world-rankings/overall-ranking/men',
-      primaryParser: parseAthleticsMen
-    }
-  },
-  {
-    key: 'athletics-women',
-    title: 'World Athletics Rankings (Women)',
-    category: sports,
-    config: {
-      primaryUrl: 'https://worldathletics.org/world-rankings/overall-ranking/women',
-      primaryParser: parseAthleticsWomen
-    }
-  },
-  {
-    key: 'chess',
-    title: 'Top Chess Players (FIDE)',
-    category: sports,
-    config: {
-      primaryUrl: 'https://ratings.fide.com/a_top.php?list=open',
-      backupUrl: 'https://api.chess.com/pub/leaderboards',
-      primaryParser: parseFideTop,
-      backupParser: parseChessComLeaderboard,
-      isBackupJson: true
-    }
-  },
-  {
-    key: 'england-men',
-    title: 'England Men\'s Squad (Most Capped)',
-    category: sports,
-    config: {
-      primaryUrl: 'https://www.englandfootball.com/england/mens-senior-team/squad',
-      primaryParser: parseEnglandMensSquad
-    }
-  },
-  {
-    key: 'england-women',
-    title: 'England Women\'s Squad (Most Capped)',
-    category: sports,
-    config: {
-      primaryUrl: 'https://www.englandfootball.com/england/womens-senior-team/squad',
-      primaryParser: parseEnglandWomensSquad
-    }
-  },
-  {
-    key: 'super-bowl',
-    title: 'Super Bowl Winners',
-    category: sports,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of Super Bowl champions'),
-      backupUrl: 'https://en.wikipedia.org/wiki/List_of_Super_Bowl_champions',
-      primaryParser: parseSuperBowlWinners,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'wimbledon-gentlemen',
-    title: 'Wimbledon Gentlemen\'s Singles Champions',
-    category: sports,
-    config: {
-      primaryUrl: wikipediaHtmlUrl("List of Wimbledon gentlemen's singles champions"),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent("List_of_Wimbledon_gentlemen's_singles_champions")}`,
-      primaryParser: parseWimbledonGentlemen,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'wimbledon-ladies',
-    title: 'Wimbledon Ladies\' Singles Champions',
-    category: sports,
-    config: {
-      primaryUrl: wikipediaHtmlUrl("List of Wimbledon ladies' singles champions"),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent("List_of_Wimbledon_ladies'_singles_champions")}`,
-      primaryParser: parseWimbledonLadies,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'earthquakes',
-    title: 'Live Earthquakes (Last Hour)',
-    category: WIDGET_CATEGORIES.science,
-    config: {
-      primaryUrl: 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson',
-      backupUrl: 'https://www.emsc-csem.org/Earthquake/',
-      primaryParser: parseEarthquakesPrimary,
-      backupParser: parseEarthquakesBackup,
-      isPrimaryJson: true
-    }
-  },
-  {
-    key: 'people-in-space',
-    title: 'Humans In Space Right Now',
-    category: WIDGET_CATEGORIES.science,
-    config: {
-      primaryUrl: 'https://www.howmanypeopleareinspacerightnow.com/peopleinspace.json',
-      primaryParser: parsePeopleInSpace,
-      isPrimaryJson: true,
-      // Show everyone aboard, not just the first ten
-      maxItems: 30
-    }
-  },
-  {
-    key: 'books',
-    title: 'Best Selling Fiction (US)',
-    category: WIDGET_CATEGORIES.books,
-    config: {
-      // Circana BookScan weekly chart via Publishers Weekly; Goodreads most-read as backup
-      primaryUrl: 'https://www.publishersweekly.com/pw/nielsen/hardcoverfiction.html',
-      backupUrl: 'https://www.goodreads.com/book/most_read',
-      primaryParser: parseBooksPrimary,
-      backupParser: parseBooksBackup
-    }
-  },
-  // Entertainment: music charts, anime and award winners
-  {
-    key: 'billboard-hot-100',
-    title: 'US Billboard Hot 100',
-    category: entertainment,
-    // The chart page is ~4MB, over the fetch cache's 2MB limit, so cache the parsed rows
-    fetchData: cachedWidgetData('billboard-hot-100', {
-      primaryUrl: 'https://www.billboard.com/charts/hot-100/',
-      primaryParser: parseBillboardHot100
-    })
-  },
-  {
-    key: 'uk-number-ones',
-    title: 'UK Number One Singles (Latest)',
-    category: entertainment,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of UK singles chart number ones of the 2020s'),
-      backupUrl: 'https://en.wikipedia.org/wiki/List_of_UK_singles_chart_number_ones_of_the_2020s',
-      primaryParser: parseUkNumberOnes,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'spotify-global',
-    title: 'Most Streamed Songs (Spotify Global, Weekly)',
-    category: entertainment,
-    config: {
-      primaryUrl: 'https://kworb.net/spotify/country/global_weekly.html',
-      primaryParser: parseSpotifyGlobalWeekly
-    }
-  },
-  // Films & TV
-  {
-    key: 'box-office',
-    title: 'Films Of The Week (US Box Office)',
-    category: entertainment,
-    config: {
-      primaryUrl: 'https://www.the-numbers.com/weekly-box-office-chart',
-      primaryParser: parseWeeklyBoxOffice
-    }
-  },
-  {
-    key: 'netflix-films',
-    title: 'Top On Netflix: Films',
-    category: entertainment,
-    config: {
-      // Netflix's official global weekly Top 10 (tab-separated)
-      primaryUrl: 'https://www.netflix.com/tudum/top10/data/all-weeks-global.tsv',
-      backupUrl: 'https://www.whats-on-netflix.com/most-popular/',
-      primaryParser: parseNetflixFilms,
-      backupParser: parseWhatsOnNetflixFilms
-    }
-  },
-  {
-    key: 'netflix-tv',
-    title: 'Top On Netflix: TV',
-    category: entertainment,
-    config: {
-      primaryUrl: 'https://www.netflix.com/tudum/top10/data/all-weeks-global.tsv',
-      backupUrl: 'https://www.whats-on-netflix.com/most-popular/',
-      primaryParser: parseNetflixTv,
-      backupParser: parseWhatsOnNetflixTv
-    }
-  },
-  {
-    key: 'imdb-top-250',
-    title: 'IMDb Top 250 Movies',
-    category: entertainment,
-    config: {
-      // IMDb blocks scripted requests; this Letterboxd list mirrors the chart in order
-      primaryUrl: 'https://letterboxd.com/dave/list/imdb-top-250/',
-      primaryParser: parseImdbTop250Mirror
-    }
-  },
-  {
-    key: 'top-anime',
-    title: 'Top Anime Series (MyAnimeList)',
-    category: entertainment,
-    config: {
-      primaryUrl: 'https://myanimelist.net/topanime.php',
-      primaryParser: parseTopAnime
-    }
-  },
-  {
-    key: 'eurovision',
-    title: 'Eurovision Song Contest Winners',
-    category: entertainment,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of Eurovision Song Contest winners'),
-      backupUrl: 'https://en.wikipedia.org/wiki/List_of_Eurovision_Song_Contest_winners',
-      primaryParser: parseEurovisionWinners,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'oscar-best-actor',
-    title: 'Best Actor Oscar Winners',
-    category: entertainment,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('Academy Award for Best Actor'),
-      backupUrl: 'https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actor',
-      primaryParser: parseOscarBestActor,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'oscar-best-actress',
-    title: 'Best Actress Oscar Winners',
-    category: entertainment,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('Academy Award for Best Actress'),
-      backupUrl: 'https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actress',
-      primaryParser: parseOscarBestActress,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'razzie-worst-picture',
-    title: 'Razzie Winners: Worst Picture',
-    category: entertainment,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('Golden Raspberry Award for Worst Picture'),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('Golden_Raspberry_Award_for_Worst_Picture')}`,
-      primaryParser: parseRazzieWorstPicture,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  // Creators
-  {
-    key: 'youtube-most-subscribed',
-    title: 'YouTube Most Subscribed Channels',
-    category: entertainment,
-    config: {
-      // Social Blade blocks scripted requests; Wikipedia's list is updated monthly
-      primaryUrl: wikipediaHtmlUrl('List of most-subscribed YouTube channels'),
-      backupUrl: 'https://en.wikipedia.org/wiki/List_of_most-subscribed_YouTube_channels',
-      primaryParser: parseMostSubscribedYouTube,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'youtube-most-disliked',
-    title: 'Most Disliked YouTube Videos',
-    category: entertainment,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of most-disliked YouTube videos'),
-      backupUrl: 'https://en.wikipedia.org/wiki/List_of_most-disliked_YouTube_videos',
-      primaryParser: parseMostDislikedYouTube,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  // Video Games: Steam charts via Steam250, with Steam's own chart as a backup
-  {
-    key: 'steam-most-played',
-    title: 'Most Played Steam Games (Live)',
-    category: videoGames,
-    config: {
-      primaryUrl: 'https://steam250.com/most_played',
-      backupUrl: 'https://store.steampowered.com/charts/mostplayed',
-      primaryParser: parseSteamMostPlayed,
-      backupParser: parseSteamStoreMostPlayed
-    }
-  },
-  {
-    key: 'steam-week',
-    title: 'Video Games Of The Week (Steam, Last 7 Days)',
-    category: videoGames,
-    config: {
-      primaryUrl: 'https://steam250.com/7day',
-      primaryParser: parseSteamWeek
-    }
-  },
-  {
-    key: 'steam-bottom',
-    title: 'Worst Rated Steam Games',
-    category: videoGames,
-    config: {
-      primaryUrl: 'https://steam250.com/bottom100',
-      primaryParser: parseSteamBottom
-    }
-  },
-  {
-    key: 'wikipedia-most-read',
-    title: 'Most Read Wikipedia Pages (Yesterday)',
-    category: WIDGET_CATEGORIES.news,
-    config: {
-      // Fallback (yesterday at build time) if the date lookup fails
-      primaryUrl: wikipediaMostReadUrl(),
-      resolvePrimaryUrl: resolveWikipediaMostReadUrl,
-      backupUrl: wikipediaHtmlUrl('Wikipedia:Top 25 Report'),
-      primaryParser: parseWikipediaMostRead,
-      backupParser: parseWikipediaTop25,
-      isPrimaryJson: true,
-      extraHeaders: { ...WIKIPEDIA_HEADERS, Accept: 'application/json, text/html;q=0.9' }
-    }
-  },
-  // Business & Tech
-  {
-    key: 'richest-people',
-    title: 'Richest People In The World',
-    category: WIDGET_CATEGORIES.businessTech,
-    config: {
-      // The data feed behind forbes.com/real-time-billionaires (the page itself refuses scripts)
-      primaryUrl: 'https://www.forbes.com/forbesapi/person/rtb/0/position/true.json?limit=10',
-      primaryParser: parseForbesBillionaires,
-      isPrimaryJson: true,
-      extraHeaders: { Accept: 'application/json' }
-    }
-  },
-  {
-    key: 'global-500',
-    title: 'Top Companies (Fortune Global 500)',
-    category: WIDGET_CATEGORIES.businessTech,
-    config: {
-      primaryUrl: 'https://fortune.com/ranking/global500/',
-      backupUrl: wikipediaHtmlUrl('List of largest companies by revenue'),
-      primaryParser: parseFortuneGlobal500,
-      backupParser: parseLargestCompaniesWiki,
-      // Wikimedia asks for a descriptive User-Agent; Fortune accepts it too
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'data-breaches',
-    title: 'Latest Data Breaches (Have I Been Pwned)',
-    category: WIDGET_CATEGORIES.businessTech,
-    config: {
-      primaryUrl: 'https://haveibeenpwned.com/api/v3/breaches',
-      primaryParser: parseLatestBreaches,
-      isPrimaryJson: true,
-      extraHeaders: { Accept: 'application/json' }
-    }
-  },
-  {
-    key: 'trending-crypto',
-    title: 'Trending Cryptocurrencies',
-    category: WIDGET_CATEGORIES.businessTech,
-    config: {
-      primaryUrl: 'https://api.coingecko.com/api/v3/search/trending',
-      primaryParser: parseTrendingCrypto,
-      isPrimaryJson: true,
-      extraHeaders: { Accept: 'application/json' }
-    }
-  },
-  // History: office-holders and prize winners, newest first
-  {
-    key: 'popes',
-    title: 'Roman Catholic Popes',
-    category: WIDGET_CATEGORIES.history,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of popes'),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_popes')}`,
-      primaryParser: parsePopes,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'nobel-peace',
-    title: 'Nobel Peace Prize Winners',
-    category: WIDGET_CATEGORIES.history,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of Nobel Peace Prize laureates'),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_Nobel_Peace_Prize_laureates')}`,
-      primaryParser: parseNobelPeace,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'uk-prime-ministers',
-    title: 'UK Prime Ministers',
-    category: WIDGET_CATEGORIES.history,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of prime ministers of the United Kingdom'),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_prime_ministers_of_the_United_Kingdom')}`,
-      primaryParser: parseUkPrimeMinisters,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  {
-    key: 'us-vice-presidents',
-    title: 'US Vice Presidents',
-    category: WIDGET_CATEGORIES.history,
-    config: {
-      primaryUrl: wikipediaHtmlUrl('List of vice presidents of the United States'),
-      backupUrl: `https://en.wikipedia.org/wiki/${encodeURIComponent('List_of_vice_presidents_of_the_United_States')}`,
-      primaryParser: parseUsVicePresidents,
-      extraHeaders: WIKIPEDIA_HEADERS
-    }
-  },
-  // News: each country's head of government and ten highest-ranking posts
-  ...GOVERNMENT_WIDGETS.map(g => ({
-    key: g.key,
-    title: g.title,
-    category: WIDGET_CATEGORIES.news,
-    fetchData: () => fetchGovernment(g)
-  })),
-];
+  return (
+    <div className="space-y-12">
+      {sections.map(section => (
+        <section key={section.id} aria-labelledby={`section-${section.id}`}>
+          <div className="flex items-baseline justify-between gap-4 mb-4 pb-2 border-b border-[var(--card-border)]">
+            <h2 id={`section-${section.id}`} className="text-xl font-bold">
+              {section.label}
+              <span className="ml-2 text-sm font-normal text-[var(--text-muted)]">
+                {section.widgets.length} widget{section.widgets.length === 1 ? '' : 's'}
+              </span>
+            </h2>
+            <Link
+              href={section.path}
+              className="text-sm text-[var(--text-muted)] hover:text-white whitespace-nowrap rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              Open tab <span aria-hidden="true">→</span>
+              <span className="sr-only"> {section.label}</span>
+            </Link>
+          </div>
+          <Cards widgets={section.widgets} />
+        </section>
+      ))}
+    </div>
+  );
+}
 
 export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) {
-  // We only fetch and display widgets that match the category filter
-  const visibleWidgets = WIDGETS
-    .filter(w => categoryFilter === 'all' || categoryFilter === w.category)
-    .map(w => ({ ...w, dataPromise: w.fetchData ? w.fetchData() : fetchWidgetData(w.config as ScraperConfig) }));
+  if (categoryFilter === 'all') return <AllSections />;
 
-  // Wrestling is only shown on its own category page
-  const showWrestling = categoryFilter === WIDGET_CATEGORIES.wrestling;
-  const wrestlingData1 = showWrestling ? fetchWrestlingData1() : null;
-  const wrestlingData2 = showWrestling ? fetchWrestlingData2() : null;
+  const widgets = WIDGETS.filter(w => w.category === categoryFilter).map(load);
 
-  // Check if we have any widgets to show for this category
-  if (visibleWidgets.length === 0 && !showWrestling) {
+  // Wrestling has its own two combined cards and only appears on its tab
+  if (categoryFilter === WIDGET_CATEGORIES.wrestling) {
+    widgets.push(
+      { key: 'wrestling-1', title: 'Wrestling Championships (Part 1)', dataPromise: fetchWrestlingData1() },
+      { key: 'wrestling-2', title: 'Wrestling Championships (Part 2)', dataPromise: fetchWrestlingData2() },
+    );
+  }
+
+  if (widgets.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center" role="status">
         <span className="text-4xl mb-4 text-gray-600" aria-hidden="true">🏗️</span>
@@ -567,25 +102,5 @@ export default function WidgetGrid({ categoryFilter = 'all' }: WidgetGridProps) 
     );
   }
 
-  return (
-    <DashboardMasonry>
-      {visibleWidgets.map(w => (
-        <Suspense key={w.key} fallback={<WidgetCardSkeleton title={w.title} />}>
-          <WidgetCard title={w.title} dataPromise={w.dataPromise} />
-        </Suspense>
-      ))}
-
-      {showWrestling && wrestlingData1 && (
-        <Suspense fallback={<WidgetCardSkeleton title="Wrestling Championships (Part 1)" />}>
-          <WidgetCard title="Wrestling Championships (Part 1)" dataPromise={wrestlingData1} />
-        </Suspense>
-      )}
-
-      {showWrestling && wrestlingData2 && (
-        <Suspense fallback={<WidgetCardSkeleton title="Wrestling Championships (Part 2)" />}>
-          <WidgetCard title="Wrestling Championships (Part 2)" dataPromise={wrestlingData2} />
-        </Suspense>
-      )}
-    </DashboardMasonry>
-  );
+  return <Cards widgets={widgets} />;
 }

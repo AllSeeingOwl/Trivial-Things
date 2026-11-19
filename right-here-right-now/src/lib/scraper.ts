@@ -38,6 +38,8 @@ export interface ScraperConfig {
   isPrimaryJson?: boolean;
   isBackupJson?: boolean;
   extraHeaders?: Record<string, string>;
+  /** Headers for the backup request instead of extraHeaders (e.g. a Wikipedia backup for a JSON API). */
+  backupHeaders?: Record<string, string>;
   /** Rows to keep; defaults to 10. */
   maxItems?: number;
   /**
@@ -123,7 +125,10 @@ export async function fetchWidgetData(config: ScraperConfig): Promise<WidgetData
     try {
       if (!config.backupUrl) throw new Error('No backup source configured');
       const backupParser = config.backupParser ?? config.primaryParser;
-      const backupRes = await fetchWithTimeout(config.backupUrl, fetchOptions);
+      const backupOptions: RequestInit = config.backupHeaders
+        ? { ...fetchOptions, headers: { ...COMMON_HEADERS, ...config.backupHeaders } }
+        : fetchOptions;
+      const backupRes = await fetchWithTimeout(config.backupUrl, backupOptions);
       if (!backupRes.ok) throw new Error(`Backup status: ${backupRes.status}`);
 
       let items: WidgetItem[] = [];

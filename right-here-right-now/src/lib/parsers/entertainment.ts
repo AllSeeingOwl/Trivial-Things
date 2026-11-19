@@ -108,3 +108,46 @@ export function parseOscarBestActor(html: string): WidgetItem[] {
 export function parseOscarBestActress(html: string): WidgetItem[] {
   return parseOscarWinners(html, 'actress');
 }
+
+interface KitsuAnime {
+  attributes?: {
+    canonicalTitle?: string;
+    averageRating?: string | null;
+    ratingRank?: number | null;
+    subtype?: string;
+    episodeCount?: number | null;
+    startDate?: string | null;
+    endDate?: string | null;
+  };
+}
+
+function monthYear(iso?: string | null): string | undefined {
+  if (!iso) return undefined;
+  const d = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(d.getTime()) ? undefined : d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+/** Backup for top anime: Kitsu's highest-rated (kitsu.io/api/edge/anime?sort=ratingRank); ratings are out of 100. */
+export function parseKitsuTopAnime(json: Record<string, unknown>): WidgetItem[] {
+  const data = Array.isArray(json.data) ? (json.data as KitsuAnime[]) : [];
+
+  return data
+    .map(d => d.attributes)
+    .filter(a => a?.canonicalTitle)
+    .map((a, i) => {
+      // Kitsu subtypes: TV, movie, OVA, ONA, special, music
+      const subtype = a!.subtype ? a!.subtype.charAt(0).toUpperCase() + a!.subtype.slice(1) : 'TV';
+      const eps = a!.episodeCount ? `${subtype} (${a!.episodeCount} ep${a!.episodeCount === 1 ? '' : 's'})` : subtype;
+      const start = monthYear(a!.startDate);
+      const end = monthYear(a!.endDate);
+      const dates = start ? (end && end !== start ? `${start} - ${end}` : start) : undefined;
+      const rating = Number(a!.averageRating);
+      return {
+        id: `kitsu-anime-${i}`,
+        rank: a!.ratingRank ?? i + 1,
+        title: a!.canonicalTitle!,
+        subtitle: [eps, dates].filter(Boolean).join(' · ') || undefined,
+        metadata: Number.isFinite(rating) && rating > 0 ? `Rated ${(rating / 10).toFixed(2)}/10 on Kitsu` : undefined,
+      };
+    });
+}

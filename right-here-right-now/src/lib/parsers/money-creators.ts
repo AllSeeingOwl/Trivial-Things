@@ -169,3 +169,51 @@ export function parseMostDislikedYouTube(html: string): WidgetItem[] {
       ].filter(Boolean).join(' · ') || undefined,
     }));
 }
+
+/**
+ * Backup for richest people: the latest annual Forbes list on Wikipedia
+ * ("The World's Billionaires"); tables run oldest to newest, so read the last.
+ */
+export function parseBillionairesWiki(html: string): WidgetItem[] {
+  const table = findWikiTable(html, ['no.', 'name', 'net worth', 'source'], { last: true });
+  if (!table) return [];
+
+  const col = (start: string) => table.headers.findIndex(h => h.startsWith(start));
+  const [noCol, nameCol, worthCol, nationCol] = ['no.', 'name', 'net worth', 'nationality'].map(col);
+  const sourceCol = table.headers.findIndex(h => h.includes('source'));
+
+  return table.rows
+    .filter(cells => cells.length === table.headers.length && /^\d+$/.test(cells[noCol]) && cells[nameCol])
+    .map(cells => ({
+      id: `billionaire-wiki-${cells[noCol]}`,
+      rank: Number(cells[noCol]),
+      title: cells[nameCol].replace(/\s*\[Wikidata\]$/, ''),
+      subtitle: [cells[sourceCol], nationCol >= 0 ? cells[nationCol] : undefined].filter(Boolean).join(' · ') || undefined,
+      metadata: cells[worthCol] ? `${cells[worthCol]} (annual list)` : undefined,
+    }));
+}
+
+/**
+ * Backup for data breaches: Wikipedia "List of data breaches" (Entity | Year |
+ * Records | Organization type | Method). Newest year first, largest first.
+ */
+export function parseDataBreachesWiki(html: string): WidgetItem[] {
+  const table = findWikiTable(html, ['entity', 'year', 'records', 'method']);
+  if (!table) return [];
+
+  const col = (start: string) => table.headers.findIndex(h => h.startsWith(start));
+  const [entityCol, yearCol, recordsCol, typeCol, methodCol] = ['entity', 'year', 'records', 'organization', 'method'].map(col);
+  const count = (text: string) => Number((text.match(/[\d,.]+/)?.[0] ?? '').replace(/,/g, '')) || 0;
+
+  return table.rows
+    .filter(cells => cells.length === table.headers.length && cells[entityCol] && /^\d{4}/.test(cells[yearCol]))
+    .map(cells => ({ cells, year: Number(cells[yearCol].slice(0, 4)), records: count(cells[recordsCol] ?? '') }))
+    .sort((a, b) => (b.year - a.year) || (b.records - a.records))
+    .map(({ cells, year, records }, i) => ({
+      id: `breach-wiki-${i}`,
+      rank: i + 1,
+      title: cells[entityCol],
+      subtitle: [records ? `${compact(records)} records` : undefined, cells[methodCol]].filter(Boolean).join(' · ') || undefined,
+      metadata: [String(year), typeCol >= 0 ? cells[typeCol] : undefined].filter(Boolean).join(' · '),
+    }));
+}

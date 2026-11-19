@@ -84,3 +84,39 @@ export function parseSteamStoreMostPlayed(html: string): WidgetItem[] {
 
   return items;
 }
+
+/**
+ * Backup for games of the week: Steam's "popular new releases" search
+ * (store.steampowered.com/search/results/?filter=popularnew&infinite=1),
+ * which returns JSON with the result rows as HTML in results_html.
+ */
+export function parseSteamPopularNew(json: Record<string, unknown>): WidgetItem[] {
+  const html = typeof json.results_html === 'string' ? json.results_html : '';
+  const $ = cheerio.load(html);
+  const items: WidgetItem[] = [];
+  const now = Date.now();
+
+  $('a.search_result_row').each((_, el) => {
+    const $row = $(el);
+    const title = tidy($row.find('.title').first().text());
+    if (!title) return;
+    const released = tidy($row.find('.search_released').first().text());
+    // The search mixes in older games with recent updates; keep the last 30 days' releases
+    const releasedAt = Date.parse(released);
+    if (Number.isFinite(releasedAt) && now - releasedAt > 30 * 86_400_000) return;
+    // "Very Positive<br>94% of the 1,234 user reviews..." -> "Very Positive", "94%"
+    const tooltip = $row.find('.search_review_summary').attr('data-tooltip-html') ?? '';
+    const summary = tooltip.split('<br>')[0]?.trim();
+    const percent = tooltip.match(/(\d+)%/)?.[1];
+    const rank = items.length + 1;
+    items.push({
+      id: `steam-popular-new-${rank}`,
+      rank,
+      title,
+      subtitle: released ? `Released ${released}` : undefined,
+      metadata: [summary, percent ? `${percent}% positive` : undefined].filter(Boolean).join(' · ') || undefined,
+    });
+  });
+
+  return items;
+}

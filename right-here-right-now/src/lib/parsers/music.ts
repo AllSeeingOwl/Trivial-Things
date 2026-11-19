@@ -51,12 +51,15 @@ export function parseBillboardHot100(html: string): WidgetItem[] {
   return items;
 }
 
-/** Spotify global weekly chart as mirrored by kworb.net/spotify/country/global_weekly.html. */
-export function parseSpotifyGlobalWeekly(html: string): WidgetItem[] {
+/**
+ * kworb.net chart tables: Spotify (global_weekly / global_daily, "Artist and Title")
+ * and Apple Music ("Artist - Title"). Streams and weeks columns are optional.
+ */
+function parseKworbChart(html: string, idPrefix: string): WidgetItem[] {
   const $ = cheerio.load(html);
   const headers = $('table thead th').toArray().map(th => tidy($(th).text()).toLowerCase());
   const posCol = headers.indexOf('pos');
-  const nameCol = headers.findIndex(h => h.includes('artist and title'));
+  const nameCol = headers.findIndex(h => h.includes('artist') && h.includes('title'));
   const streamsCol = headers.indexOf('streams');
   const wksCol = headers.indexOf('wks');
   if (posCol < 0 || nameCol < 0) return [];
@@ -78,7 +81,7 @@ export function parseSpotifyGlobalWeekly(html: string): WidgetItem[] {
       wksCol >= 0 && /^\d+$/.test(cells[wksCol] ?? '') ? `${cells[wksCol]} wk${cells[wksCol] === '1' ? '' : 's'}` : undefined,
     ].filter(Boolean).join(' · ');
 
-    items.push({ id: `spotify-${rank}`, rank, title, subtitle: artist, metadata: meta || undefined });
+    items.push({ id: `${idPrefix}-${rank}`, rank, title, subtitle: artist, metadata: meta || undefined });
   });
 
   return items;
@@ -112,4 +115,14 @@ export function parseUkNumberOnes(html: string): WidgetItem[] {
         ].filter(Boolean).join(' · '),
       };
     });
+}
+
+/** Spotify global weekly chart as mirrored by kworb.net/spotify/country/global_weekly.html (daily chart as backup). */
+export function parseSpotifyGlobalWeekly(html: string): WidgetItem[] {
+  return parseKworbChart(html, 'spotify');
+}
+
+/** Backup for the Billboard Hot 100: Apple Music's US top songs (kworb.net/charts/apple_s/us.html). */
+export function parseAppleMusicUs(html: string): WidgetItem[] {
+  return parseKworbChart(html, 'apple-us');
 }
