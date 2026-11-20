@@ -20,6 +20,21 @@ services:
         value: SAMEORIGIN
 
   - type: web
+    name: trivial-things-called-it
+    env: static
+    staticPublishPath: called_it
+    buildFilter:
+      paths:
+        - called_it/**
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+
+  - type: web
     name: trivial-things-interactive-scoreboard
     env: docker
     dockerContext: interactive_scoreboard

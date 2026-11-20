@@ -1,10 +1,10 @@
 # Trivia and Flashcards Apps
 
-Welcome to the Trivia and Flashcards repository! This collection features eleven interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
+Welcome to the Trivia and Flashcards repository! This collection features twelve interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
 
 ## The Applications
 
-The repository is organized into eleven distinct applications (nine Flask, one Next.js, one static HTML page):
+The repository is organized into twelve distinct applications (nine Flask, one Next.js, two static HTML pages):
 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
@@ -60,6 +60,11 @@ A Doctor Who trivia game.
 A single-page clothing and shoe size converter.
 *   **Features**: Converts sizes between men's and women's ranges and across UK, US, EU, French, Italian, Japanese and letter sizing, from a shared set of body measurements. Includes an at-a-glance summary of your sizes, a mystery-label decoder, a checker for "pit to pit" style listing measurements, and a whole-body fit check for swimwear and bodysuits. Everything runs in the browser and settings are remembered with `localStorage`; there is no backend.
 *   **Running**: Open `crossover_size_converter/index.html` directly in a browser, or serve it with `python3 -m http.server 8013 --directory crossover_size_converter`. It is deployed on Render as a static site (see `render.yaml`) and served on port 8013 by `docker compose up`.
+
+### 12. Called It! Cliché Bingo (`called_it/`)
+Satirical bingo for things you can see coming a mile off.
+*   **Features**: Four starter decks (Game Showcase, Live Streamer, Wrestling Promo, Open-World Game) dealt as random 5×5 cards. Tap squares as the clichés happen. The page detects lines and a full house, makes squares that would finish a line glow, and times the run. "Copy card link" sends a friend the exact same card, "Share result" copies an emoji grid, and "Make your own card" builds a custom deck that travels in the link. Everything runs in the browser and marks are remembered with `localStorage`; there is no backend. Decks live in `called_it/cards.js`; the product spec and roadmap are in `called_it/SPEC.md`.
+*   **Running**: Open `called_it/index.html` directly in a browser, or serve it with `python3 -m http.server 8014 --directory called_it`. It is deployed on Render as a static site (see `render.yaml`) and served on port 8014 by `docker compose up`.
 
 ## Tech Stack
 
