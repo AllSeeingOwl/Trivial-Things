@@ -14,12 +14,12 @@ services:
     volumes:
       - ./crossover_size_converter:/usr/share/nginx/html:ro
 
-  called_it:
+  ashwga:
     image: nginx:alpine
     ports:
       - "8014:80"
     volumes:
-      - ./called_it:/usr/share/nginx/html:ro
+      - ./ashwga:/usr/share/nginx/html:ro
 
   interactive_scoreboard:
     build: ./interactive_scoreboard

@@ -20,12 +20,12 @@ services:
         value: SAMEORIGIN
 
   - type: web
-    name: trivial-things-called-it
+    name: trivial-things-ashwga
     env: static
-    staticPublishPath: called_it
+    staticPublishPath: ashwga
     buildFilter:
       paths:
-        - called_it/**
+        - ashwga/**
     headers:
       - path: /*
         name: X-Content-Type-Options

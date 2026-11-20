@@ -1,10 +1,10 @@
-/* Called It! cliché bingo. No backend: the card is rebuilt from the URL hash
+/* ASHWGA ("Ah shit, here we go again") cliché bingo. No backend: the card is rebuilt from the URL hash
  * (deck + seed, plus the squares themselves for a custom card), and marks are
  * kept in localStorage for that exact card. */
 (function () {
   'use strict';
 
-  var DECKS = window.CALLED_IT_DECKS || [];
+  var DECKS = window.ASHWGA_DECKS || [];
   var SIZE = 5;
   var CENTRE = 12;
   var NEEDED = SIZE * SIZE - 1;
@@ -156,7 +156,7 @@
   }
 
   function storageKey() {
-    var k = 'calledit:v1:' + state.deck.id + ':' + state.seed;
+    var k = 'ashwga:v1:' + state.deck.id + ':' + state.seed;
     if (state.deck.custom) k += ':' + hashString(JSON.stringify(state.deck.squares) + state.deck.free).toString(36);
     return k;
   }
@@ -183,15 +183,15 @@
 
     var h = hashFor(deck, seed);
     if (location.hash.slice(1) !== h) history.replaceState(null, '', '#' + h);
-    store('calledit:last', h);
-    if (!deck.custom) store('calledit:seed:' + deck.id, seed);
-    else store('calledit:custom', { t: deck.title, f: deck.free, q: deck.squares, s: seed });
+    store('ashwga:last', h);
+    if (!deck.custom) store('ashwga:seed:' + deck.id, seed);
+    else store('ashwga:custom', { t: deck.title, f: deck.free, q: deck.squares, s: seed });
 
     document.body.dataset.accent = deck.accent || 'showcase';
     el.title.textContent = deck.title;
     el.code.textContent = seed.toUpperCase();
     el.blurb.textContent = deck.blurb || '';
-    document.title = 'Called It! ' + deck.title + ' bingo';
+    document.title = 'ASHWGA: ' + deck.title + ' bingo';
     hideBanner();
     renderDecks();
     renderGrid();
@@ -221,7 +221,7 @@
   function renderDecks() {
     el.decks.textContent = '';
     var list = DECKS.slice();
-    var custom = state.deck && state.deck.custom ? state.deck : customDeck(load('calledit:custom'));
+    var custom = state.deck && state.deck.custom ? state.deck : customDeck(load('ashwga:custom'));
     if (custom) list.push(custom);
     list.forEach(function (d) {
       var b = document.createElement('button');
@@ -235,12 +235,78 @@
     });
   }
 
+  /* Bigger text for short squares, slightly smaller for long ones. */
+  function sizeClass(text, free) {
+    var n = text.length + (free ? 6 : 0); // the free square also carries a FREE label
+    if (n <= 14) return ' short';
+    if (n > 30) return ' long';
+    return '';
+  }
+
+  /* Give wordier columns more width, so long squares wrap onto fewer lines
+   * instead of shrinking. A column's demand mixes its average length, its
+   * longest square and its longest single word (which can't wrap at all). */
+  function columnTemplate(cells) {
+    var cols = [], c, r;
+    for (c = 0; c < SIZE; c++) {
+      var lens = [], longestWord = 0;
+      for (r = 0; r < SIZE; r++) {
+        var t = cells[r * SIZE + c] + (r * SIZE + c === CENTRE ? ' FREE' : '');
+        lens.push(t.length);
+        t.split(/\s+/).forEach(function (w) { longestWord = Math.max(longestWord, w.length); });
+      }
+      var mean = lens.reduce(function (a, b) { return a + b; }, 0) / SIZE;
+      var score = 0.6 * mean + 0.4 * Math.max.apply(null, lens);
+      var weight = 0.85 + 0.5 * Math.min(1, Math.max(0, (score - 16) / 18));
+      weight = Math.max(weight, Math.min(1.5, 0.7 + 0.05 * longestWord)); // 12 letters ~ 1.3
+      cols.push('minmax(0,' + weight.toFixed(2) + 'fr)');
+    }
+    return cols.join(' ');
+  }
+
+  /* If a square's longest word is wider than the square, step its text
+   * down until the word fits whole, rather than breaking it mid-word. Below
+   * 8.5px it stops: very narrow phones let the word wrap (Safari hyphenates). */
+  // Does the longest word fit? Each label is measured at its narrowest
+  // (min-content, word breaking off) against the room inside the padding,
+  // using fractional widths so a 1px overflow is not rounded away.
+  function overflows(b) {
+    var cs = getComputedStyle(b);
+    var room = b.getBoundingClientRect().width - parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth) -
+      parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var widest = 0, k, c;
+    for (k = 0; k < b.children.length; k++) {
+      c = b.children[k];
+      c.style.width = 'min-content';
+      widest = Math.max(widest, c.getBoundingClientRect().width);
+      c.style.width = '';
+    }
+    return widest > room + 0.1;
+  }
+
+  function fitText() {
+    var squares = el.grid.children, i, b, size, guard;
+    for (i = 0; i < squares.length; i++) {
+      b = squares[i];
+      b.style.fontSize = '';
+      b.classList.add('measuring');
+      size = parseFloat(getComputedStyle(b).fontSize);
+      guard = 0;
+      while (overflows(b) && size - 0.5 >= 8.5 && guard++ < 20) {
+        size -= 0.5;
+        b.style.fontSize = size + 'px';
+      }
+      b.classList.remove('measuring');
+    }
+  }
+
   function renderGrid() {
     el.grid.textContent = '';
+    document.getElementById('ticket').style.setProperty('--cols', columnTemplate(state.cells));
     state.cells.forEach(function (text, i) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'sq' + (i === CENTRE ? ' free' : '') + (text.length > (i === CENTRE ? 26 : 32) ? ' long' : '');
+      b.className = 'sq' + (i === CENTRE ? ' free' : '') + sizeClass(text, i === CENTRE);
       b.dataset.i = i;
       b.tabIndex = i === state.focus ? 0 : -1;
       if (i === CENTRE) {
@@ -258,6 +324,7 @@
       b.addEventListener('focus', function () { setFocus(i, false); });
       el.grid.appendChild(b);
     });
+    fitText();
   }
 
   function update(fromUser) {
@@ -286,7 +353,7 @@
     if (s.full) v = 'Full house. Not one single surprise.';
     else if (s.lines >= 3) v = s.lines + ' lines. They are reading from the same script as everyone else.';
     else if (s.lines === 2) v = 'Two lines. This is getting embarrassing for them.';
-    else if (s.lines === 1) v = 'Line! Called it.';
+    else if (s.lines === 1) v = 'Line! Ah shit, here we go again.';
     else if (nearCount) { v = 'One away from a line…'; el.verdict.classList.add('near'); }
     else if (s.count === 0) v = 'Waiting for the first cliché. It won’t be long.';
     el.verdict.textContent = v;
@@ -361,7 +428,7 @@
 
   function switchDeck(d) {
     if (state.deck && d.id === state.deck.id && !d.custom) return;
-    var seed = d.custom ? ((load('calledit:custom') || {}).s || newSeed()) : (load('calledit:seed:' + d.id) || newSeed());
+    var seed = d.custom ? ((load('ashwga:custom') || {}).s || newSeed()) : (load('ashwga:seed:' + d.id) || newSeed());
     openCard(d, seed, { announce: true });
   }
 
@@ -380,7 +447,7 @@
     if (s.full) summary = 'FULL HOUSE in ' + t + '. Nothing surprised me.';
     else if (s.lines) summary = s.lines + (s.lines === 1 ? ' line' : ' lines') + ' in ' + t + ' · ' + s.count + '/' + NEEDED + ' squares';
     else summary = s.count + '/' + NEEDED + ' squares, no line yet';
-    return 'Called It! ' + state.deck.title + ' bingo (card ' + state.seed.toUpperCase() + ')\n' + summary + '\n' + rows.join('\n') + '\n' + location.href;
+    return 'ASHWGA bingo: ' + state.deck.title + ' (card ' + state.seed.toUpperCase() + ')\n' + summary + '\n' + rows.join('\n') + '\n' + location.href;
   }
 
   function copy(text, done) {
@@ -432,9 +499,9 @@
   function start() {
     if (!DECKS.length) { el.verdict.textContent = 'No decks found.'; return; }
     if (!fromHash()) {
-      var last = load('calledit:last');
+      var last = load('ashwga:last');
       if (last) { history.replaceState(null, '', '#' + last); }
-      if (!last || !fromHash()) openCard(DECKS[0], load('calledit:seed:' + DECKS[0].id) || newSeed());
+      if (!last || !fromHash()) openCard(DECKS[0], load('ashwga:seed:' + DECKS[0].id) || newSeed());
     }
 
     $('newCard').addEventListener('click', function () {
@@ -472,6 +539,14 @@
     updateCount();
 
     window.addEventListener('hashchange', fromHash);
+    var resizeTimer;
+    window.addEventListener('resize', function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitText, 120); });
+    // Web fonts change word widths, so measure again once each one arrives.
+    if (document.fonts) {
+      if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', fitText);
+      if (document.fonts.ready) document.fonts.ready.then(fitText);
+    }
+    window.addEventListener('load', fitText);
     setInterval(function () { if (state.t0 && !state.t1) tick(); }, 1000);
   }
 

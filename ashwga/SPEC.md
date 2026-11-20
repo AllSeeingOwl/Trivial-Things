@@ -1,4 +1,4 @@
-# Called It! Cliché Bingo: product spec
+# ASHWGA Cliché Bingo: product spec
 
 ## The idea
 
@@ -6,6 +6,9 @@ Satirical bingo cards for things that always go the same way: game showcases,
 streams, wrestling promos, open-world games. You play along live and dab each
 cliché as it happens. The joke is how fast you get a line. A full house means
 nothing surprised you at all.
+
+**Name:** **ASHWGA**, short for "Ah shit, here we go again". It's the sigh you let out when
+the thing you knew was coming arrives right on time.
 
 **One-line pitch:** "Bingo for things you could see coming a mile off."
 
@@ -28,13 +31,13 @@ nothing surprised you at all.
 3. **Short enough for a phone square.** About 45 characters at most.
 4. **Instant to start.** No account, no setup. Open the page and you have a card.
 
-## Prototype (built: v0.1, `called_it/`)
+## Prototype (built: v0.1, `ashwga/`)
 
 A static page with no backend, deployed like `crossover_size_converter`.
 
 | Feature | Notes |
 |---|---|
-| 4 starter decks | Game Showcase, Live Streamer, Wrestling Promo, Open-World Game. 32 to 34 squares each, so cards vary. |
+| 4 starter decks | Game Showcase, Live Streamer, Wrestling Promo, Open-World Game. 51 to 52 squares each, so two cards share only about half their squares. |
 | Random 5×5 cards | Seeded shuffle; the free centre square is each deck's most certain cliché. |
 | Shareable card | URL `#d=<deck>&s=<seed>` rebuilds the exact card. Friends can play the same card, or press "New card" to get their own. |
 | Marking | Tap, or use the arrow keys and Space. The dab animation respects reduced motion. |
@@ -44,11 +47,12 @@ A static page with no backend, deployed like `crossover_size_converter`.
 | Share result | Emoji grid plus a summary and the link. Uses the native share sheet on phones and the clipboard elsewhere. |
 | Custom cards | Title, free square and at least 24 squares. The whole deck is encoded in the link, so it can be sent with no server. |
 | Persistence | Marks are saved per card in `localStorage`. Each browser keeps its own. |
-| Light and dark themes, phone-first layout | Tested down to a 320px-wide screen. |
+| Squares sized to their text | Each column's width follows how wordy it is and its longest word. Rows grow to fit their tallest square. Short squares get bigger text, and a square only shrinks its text (to no less than 8.5px) when its longest word would otherwise split. |
+| Light and dark themes, phone-first layout | Tested down to a 320px-wide screen. On the very narrowest phones, a few long words still wrap; Safari hyphenates them. |
 
 ### Data format
 
-`cards.js` holds `window.CALLED_IT_DECKS`, an array of
+`cards.js` holds `window.ASHWGA_DECKS`, an array of
 `{ id, title, blurb, accent, free, squares[] }`. Adding a deck means adding an
 object and a colour token (`--a-<accent>`) in `index.html`.
 
@@ -90,8 +94,8 @@ object and a colour token (`--a-<accent>`) in `index.html`.
 - For community squares: the share of suggestions approved.
 
 ## Open questions
-- **Name:** *Called It!* is the working title. Alternatives: *Cliché Bingo*,
-  *Predicta-Bingo*, *Seen It Before*.
+- **Name in public places:** the full phrase contains a swear word. App-store listings,
+  ads or school-friendly settings may want just the acronym, or "Ah sh*t, here we go again".
 - Should the free square sometimes be a "trap" square that never happens? It's funny, but might
   feel unfair.
 - Should rooms allow a shared single card (everyone on one card), as well as one

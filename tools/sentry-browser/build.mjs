@@ -5,7 +5,7 @@ import { build } from 'esbuild';
 import { createRequire } from 'module';
 
 const DSN = 'https://bd9f2c2c618bfb1944db9882f400f53a@o4512436636483584.ingest.de.sentry.io/4512443592933456';
-const SITES = ['portal', 'crossover_size_converter', 'called_it'];
+const SITES = ['portal', 'crossover_size_converter', 'ashwga'];
 const { version } = createRequire(import.meta.url)('@sentry/browser/package.json');
 
 for (const site of SITES) {

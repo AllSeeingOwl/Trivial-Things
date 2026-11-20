@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Called It! Cliché Bingo</title>
+<title>ASHWGA Cliché Bingo</title>
 <meta name="description" content="Satirical bingo cards for game showcases, streamers, wrestling promos and open-world games: the things you could see coming a mile off.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
@@ -45,6 +45,8 @@ header{display:grid;gap:4px}
 .eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,8vw,4rem);line-height:.9;margin:0;letter-spacing:-.02em}
 h1 em{font-style:normal;color:var(--accent)}
+.tagline{margin:2px 0 0;font-family:var(--display);font-weight:600;font-size:clamp(1.1rem,3.6vw,1.5rem);line-height:1.2}
+.tagline b{color:var(--accent);font-weight:800}
 .lede{margin:4px 0 0;color:var(--muted);max-width:60ch}
 h2{font-family:var(--display);font-weight:750;font-size:1.25rem;margin:0}
 button,input,textarea{font:inherit;color:inherit}
@@ -59,7 +61,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,
 .deck:hover{border-color:var(--dot)}
 
 .layout{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
-@media (min-width:900px){.layout{grid-template-columns:minmax(0,600px) minmax(0,1fr)}}
+@media (min-width:900px){.layout{grid-template-columns:minmax(0,680px) minmax(0,1fr)}}
 
 /* The ticket */
 .ticket{background:var(--ticket);border:2px solid var(--ticket-line);border-radius:18px;padding:14px;display:grid;gap:12px;box-shadow:0 2px 0 var(--ticket-line);position:relative;min-width:0}
@@ -67,14 +69,19 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,
 .tickettop h2{color:var(--accent);font-size:clamp(1.2rem,4.5vw,1.6rem)}
 .code{font-size:.8rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 .code b{color:var(--ink);font-variant-numeric:tabular-nums}
-.letters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(1.2rem,5vw,1.8rem);color:var(--accent);line-height:1}
-.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.sq{position:relative;aspect-ratio:1;border:1.5px solid var(--ticket-line);background:var(--surface);border-radius:10px;padding:4px;cursor:pointer;
+.letters{display:grid;grid-template-columns:var(--cols,repeat(5,minmax(0,1fr)));gap:6px;text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(1.2rem,5vw,1.8rem);color:var(--accent);line-height:1}
+/* Column widths come from app.js (--cols): wordier columns get more room. Rows grow to fit
+   their tallest square, never shorter than a square of average width (19cqi). */
+.grid{display:grid;grid-template-columns:var(--cols,repeat(5,minmax(0,1fr)));gap:6px;container-type:inline-size}
+.sq{position:relative;min-height:19cqi;border:1.5px solid var(--ticket-line);background:var(--surface);border-radius:10px;padding:4px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  font-size:clamp(.6rem,2.3vw,.86rem);line-height:1.15;font-weight:700;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;min-width:0;
+  font-size:clamp(.62rem,2.9cqi,1rem);line-height:1.15;font-weight:700;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;min-width:0;
   transition:transform .08s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .sq span,.sq small{position:relative;z-index:1}
-.sq.long{font-size:clamp(.54rem,2vw,.8rem);line-height:1.1;padding:3px}
+.sq.short{font-size:clamp(.78rem,3.9cqi,1.3rem);line-height:1.1}
+.sq.long{font-size:clamp(.6rem,2.6cqi,.92rem);line-height:1.12}
+/* app.js turns word-breaking off briefly to check whether the longest word fits */
+.sq.measuring{overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual}
 .sq:hover{border-color:var(--accent)}
 .sq:active{transform:scale(.96)}
 /* the dauber blot */
@@ -87,13 +94,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,
 .sq.near:not([aria-pressed="true"]){border:2.5px solid var(--near);animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 4px color-mix(in srgb,var(--near) 35%,transparent)}}
 .sq.inline{box-shadow:inset 0 0 0 3px var(--win)}
-.grid{grid-auto-rows:1fr}
-.grid .sq{align-self:stretch;width:100%}
 @media (max-width:420px){
-  .ticket{padding:10px;border-radius:14px}
-  .grid,.letters{gap:4px}
-  .sq{padding:3px 2px;border-radius:8px;font-size:.62rem;line-height:1.12}
-  .sq.long{font-size:.56rem;padding:2px 1px}
+  .ticket{padding:8px;border-radius:14px}
+  .grid,.letters{gap:3px}
+  .sq{padding:4px 1px;border-width:1px;border-radius:8px;font-size:.64rem;line-height:1.12}
+  .sq.short{font-size:.76rem}
+  .sq.long{font-size:.6rem}
 }
 @media (prefers-reduced-motion:reduce){.sq,.sq::before{transition:none}.sq.near:not([aria-pressed="true"]){animation:none}}
 
@@ -148,7 +154,8 @@ footer{color:var(--muted);font-size:.88rem}
 <div class="wrap">
   <header>
     <div class="eyebrow">Cliché bingo · you could see it coming</div>
-    <h1>Called <em>It!</em></h1>
+    <h1 aria-label="ASHWGA: Ah shit, here we go again">ASHWG<em>A</em></h1>
+    <p class="tagline" aria-hidden="true"><b>A</b>h <b>S</b>hit, <b>H</b>ere <b>W</b>e <b>G</b>o <b>A</b>gain.</p>
     <p class="lede">Pick a card, put on the showcase, the stream or the promo, and dab every cliché as it happens. If you don’t get a line inside ten minutes, they’ve surprised you.</p>
   </header>
 
@@ -214,7 +221,7 @@ footer{color:var(--muted);font-size:.88rem}
     </div>
   </div>
 
-  <footer>Called It! makes fun of formats and tropes, not people. Your marks are kept in this browser only.</footer>
+  <footer>ASHWGA makes fun of formats and tropes, not people. Your marks are kept in this browser only.</footer>
 </div>
 <div class="toast" id="toast" hidden role="status"></div>
 <div class="sr" id="announce" aria-live="assertive"></div>
