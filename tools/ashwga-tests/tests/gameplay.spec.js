@@ -121,6 +121,20 @@ test.describe('gameplay', () => {
     await expect(page.locator('.sq').nth(6)).toHaveAttribute('aria-pressed', 'true');
   });
 
+  test('everything, fonts included, comes from the page’s own site', async ({ page }) => {
+    // The squares are sized to these fonts, so a font from elsewhere that fails to
+    // load (as Google Fonts did in CI) changes the layout. It also keeps visitors'
+    // data away from third parties.
+    const elsewhere = [];
+    page.on('request', (r) => { if (!r.url().startsWith('http://localhost:8014/')) elsewhere.push(r.url()); });
+    await openCard(page, 'd=promo&s=play12');
+    await page.locator('.sq').nth(0).click();
+    expect(elsewhere).toEqual([]);
+    const fonts = await page.evaluate(() => [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family));
+    expect(fonts).toContain('Atkinson Hyperlegible');
+    expect(fonts).toContain('Bricolage Grotesque');
+  });
+
   test('the page loads without script errors', async ({ page }) => {
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
