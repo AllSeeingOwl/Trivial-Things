@@ -46,6 +46,7 @@ A static page with no backend, deployed like `crossover_size_converter`.
 | Stats | Lines, time since the first dab, and the share of squares called. |
 | Share result | Emoji grid plus a summary and the link. Uses the native share sheet on phones and the clipboard elsewhere. |
 | Custom cards | Title, free square and at least 24 squares. The whole deck is encoded in the link, so it can be sent with no server. |
+| Edit squares | A panel lists every square in the deck: the 24 on your card, the rest of the deck, and any you removed. **Swap** replaces a card square with a random spare. **Put on card** asks you to tap which square it replaces. **Remove** takes a square out of the deck, swapping it off the card if needed. **Add** puts your own square in the deck. A deck can't drop below 24 squares, and **Reset this deck** undoes the edits. Deck edits live in this browser (`ashwga:edits:<deck>`). An edited card adds `&k=` (its 24 squares) to its link, so the link still shares the exact card. |
 | Persistence | Marks are saved per card in `localStorage`. Each browser keeps its own. |
 | Squares sized to their text | Each column's width follows how wordy it is and its longest word. Rows grow to fit their tallest square. Short squares get bigger text, and a square only shrinks its text (to no less than 8.5px) when its longest word would otherwise split. |
 | Light and dark themes, phone-first layout | Tested down to a 320px-wide screen. On the very narrowest phones, a few long words still wrap; Safari hyphenates them. |

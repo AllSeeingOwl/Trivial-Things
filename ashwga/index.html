@@ -156,6 +156,26 @@ input[type=text],textarea{width:100%;min-width:0;border:1.5px solid var(--line);
 textarea{min-height:220px;resize:vertical;line-height:1.4}
 .count{font-size:.88rem;color:var(--muted)}
 .count.ok{color:var(--win)}
+/* Choosing which square a new one replaces */
+.pickhint{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--accent);color:#fff;border-radius:12px;padding:10px 12px;font-weight:700}
+.pickhint .btn{min-height:36px;padding:4px 14px;background:transparent;color:#fff;border-color:rgb(255 255 255 / .7)}
+body.picking .sq:not(.free){outline:2px dashed var(--accent);outline-offset:-3px;cursor:copy}
+body.picking .sq:not(.free):hover,body.picking .sq:not(.free):focus-visible{background:color-mix(in srgb,var(--accent) 18%,var(--surface))}
+/* Squares in this deck */
+.panel h3{font-family:var(--display);font-size:1rem;margin:6px 0 0}
+.panel h3 span{color:var(--muted);font-weight:600}
+.sqlist{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:360px;overflow:auto;overscroll-behavior:contain;border:1.5px solid var(--line);border-radius:12px;padding:6px}
+.sqlist li{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap;padding:6px 6px 6px 10px;border-radius:8px;background:var(--bg)}
+.sqtext{flex:1 1 12em;min-width:0;font-weight:600;font-size:.92rem;line-height:1.3}
+.tag{font-style:normal;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:var(--chip);color:var(--muted)}
+.tag.marked{background:var(--accent);color:#fff}
+.rowbtns{display:flex;gap:6px;margin-left:auto}
+.mini{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;min-height:36px;cursor:pointer;font-weight:700;font-size:.85rem}
+.mini:hover{border-color:var(--ink)}
+.mini.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.addrow{display:flex;flex-wrap:wrap;gap:8px}
+.addrow input{flex:1 1 14em}
+.btn:disabled,.mini:disabled{opacity:.5;cursor:not-allowed}
 .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;z-index:20;max-width:calc(100% - 32px);text-align:center}
 footer{color:var(--muted);font-size:.88rem}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -181,6 +201,10 @@ footer{color:var(--muted);font-size:.88rem}
         <div class="code">Card <b id="cardCode">—</b></div>
       </div>
       <div class="letters" aria-hidden="true"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
+      <div class="pickhint" id="pickHint" hidden role="status">
+        <span>Tap the square that <b id="pickText"></b> should replace.</span>
+        <button class="btn" id="pickCancel" type="button">Cancel</button>
+      </div>
       <div class="grid" id="grid" role="group" aria-label="Bingo card. Use arrow keys to move between squares and Space to mark one."></div>
 
       <div class="status">
@@ -195,6 +219,7 @@ footer{color:var(--muted);font-size:.88rem}
         <button class="btn" id="newCard" type="button">New card</button>
         <button class="btn" id="copyLink" type="button">Copy card link</button>
         <button class="btn" id="clear" type="button">Clear marks</button>
+        <button class="btn" id="editSquares" type="button">Edit squares</button>
       </div>
 
       <div class="banner" id="banner" hidden role="status">
@@ -215,9 +240,31 @@ footer{color:var(--muted);font-size:.88rem}
           <li>Tap a square when it happens. Squares glowing <b style="color:var(--near)">orange</b> would finish a line.</li>
           <li>Five in a row, column or diagonal is a <b>line</b>. All 25 is a <b>full house</b>, and it means nothing surprised you at all.</li>
           <li><b>Copy card link</b> sends your exact card to a friend. <b>Share result</b> copies an emoji grid of how it went.</li>
+          <li><b>Edit squares</b> lists every square in the deck. Swap one off your card, remove ones you never see, or add your own.</li>
         </ol>
         <p class="muted" id="deckBlurb"></p>
       </section>
+
+      <details class="panel" id="editPanel">
+        <summary>Squares in this deck</summary>
+        <p class="muted" id="eSummary"></p>
+        <label for="eNew">Add your own square</label>
+        <div class="addrow">
+          <input type="text" id="eNew" maxlength="80" placeholder="e.g. Host forgets the winner’s name" autocomplete="off">
+          <button class="btn" id="eAdd" type="button">Add to deck</button>
+          <button class="btn primary" id="eAddPlace" type="button">Add and put on card</button>
+        </div>
+        <h3>On your card <span id="eCardCount"></span></h3>
+        <ul class="sqlist" id="eCard" aria-label="Squares on your card"></ul>
+        <h3>Rest of the deck <span id="eRestCount"></span></h3>
+        <ul class="sqlist" id="eRest" aria-label="Squares in the rest of the deck"></ul>
+        <div id="eRemovedWrap" hidden>
+          <h3>Removed</h3>
+          <ul class="sqlist" id="eRemoved" aria-label="Squares removed from this deck"></ul>
+        </div>
+        <p class="muted">Swap and Put on card change only this card. Remove and Add change the deck in this browser, so new cards follow them. Card links always share the exact card.</p>
+        <div class="actions"><button class="btn" id="eReset" type="button">Reset this deck</button></div>
+      </details>
 
       <details class="panel" id="customPanel">
         <summary>Make your own card</summary>
