@@ -1,0 +1,58 @@
+name: ASHWGA tests
+
+# Browser tests for the ASHWGA cliché bingo page (ashwga/). They only run when
+# the page, its tests or this workflow change.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ashwga/**'
+      - 'tools/ashwga-tests/**'
+      - '.github/workflows/ashwga-tests.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ashwga/**'
+      - 'tools/ashwga-tests/**'
+      - '.github/workflows/ashwga-tests.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ashwga-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: tools/ashwga-tests
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: tools/ashwga-tests/package-lock.json
+
+      - name: Install test dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run tests
+        run: npx playwright test --trace off
+
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ashwga-playwright-report
+          path: tools/ashwga-tests/playwright-report
+          retention-days: 14
