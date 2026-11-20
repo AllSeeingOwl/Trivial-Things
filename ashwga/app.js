@@ -209,6 +209,12 @@
     return m + ':' + String(s).padStart(2, '0');
   }
 
+  /* Smooth scrolling only for people who haven't asked their system for reduced motion. */
+  function scrollTo(elm) {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    elm.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+
   function toast(msg) {
     el.toast.textContent = msg;
     el.toast.hidden = false;
@@ -347,6 +353,7 @@
   /* ---------- rendering ---------- */
 
   function renderDecks() {
+    var hadFocus = el.decks.contains(document.activeElement);
     el.decks.textContent = '';
     var list = DECKS.slice();
     var custom = state.deck && state.deck.custom ? state.deck : customDeck(load('ashwga:custom'));
@@ -357,8 +364,10 @@
       b.className = 'deck';
       b.textContent = d.custom ? d.title + ' (yours)' : d.title;
       b.style.setProperty('--dot', 'var(--a-' + (d.accent || 'custom') + ')');
+      b.style.setProperty('--dotfill', 'var(--f-' + (d.accent || 'custom') + ')');
       b.setAttribute('aria-pressed', String(!!state.deck && state.deck.id === d.id));
       b.addEventListener('click', function () { switchDeck(d); });
+      if (hadFocus && state.deck && state.deck.id === d.id) setTimeout(function () { b.focus(); }, 0);
       el.decks.appendChild(b);
     });
   }
@@ -454,7 +463,8 @@
     b.addEventListener('pointerleave', function (e) {
       if (e.pointerType !== 'mouse') return;
       clearTimeout(hoverTimer);
-      hideAlso();
+      // Give the pointer time to move onto the popover, so its text can be read under magnification.
+      hoverTimer = setTimeout(function () { if (!el.alsoPop.matches(':hover')) hideAlso(); }, 300);
     });
   }
 
@@ -498,6 +508,7 @@
         var small = document.createElement('small');
         small.textContent = 'Free';
         b.appendChild(small);
+        b.appendChild(document.createTextNode(' ')); // so the text reads "Free Name-drops…", not "FreeName-drops…"
         b.setAttribute('aria-disabled', 'true');
       }
       var span = document.createElement('span');
@@ -528,7 +539,9 @@
       buttons[i].classList.toggle('near', !!s.near[i] && !s.full);
       buttons[i].classList.toggle('inline', !!inLine[i]);
       var also = alsoFor(state.cells[i]);
-      var label = state.cells[i] + (i === CENTRE ? ', free square' : '') + (s.near[i] && !state.marked[i] ? ', would complete a line' : '') +
+      // The name starts with the visible text (WCAG 2.5.3), so the free square leads with its "Free" label.
+      var label = (i === CENTRE ? 'Free ' + state.cells[i] + ' (always marked)' : state.cells[i]) +
+        (s.near[i] && !state.marked[i] ? ', would complete a line' : '') +
         (also.length ? '. Also counts: ' + also.join('; ') : '');
       buttons[i].setAttribute('aria-label', label);
     }
@@ -775,7 +788,7 @@
     el.pickHint.hidden = false;
     document.body.classList.add('picking');
     setFocus(state.focus === CENTRE ? 0 : state.focus, true);
-    el.pickHint.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollTo(el.pickHint);
     say('Choose the square on your card that ' + text + ' should replace, or press Escape to cancel.');
   }
 
@@ -823,8 +836,25 @@
     return li;
   }
 
+  /* Rebuilding a list destroys the focused button. Remember where focus was
+   * (which list, which row, which button) so it can land on the same spot after. */
+  function editorFocus() {
+    var a = document.activeElement, li = a && a.closest && a.closest('.sqlist > li');
+    if (!li || !el.editPanel.contains(li)) return null;
+    var btns = [].slice.call(li.querySelectorAll('button'));
+    return { list: li.parentNode.id, row: [].indexOf.call(li.parentNode.children, li), btn: btns.indexOf(a) };
+  }
+  function restoreEditorFocus(f) {
+    if (!f) return;
+    var list = document.getElementById(f.list), rows = list ? list.children : [];
+    var li = rows[Math.min(f.row, rows.length - 1)];
+    var target = li ? li.querySelectorAll('button')[f.btn] || li.querySelector('button') : el.editPanel.querySelector('summary');
+    if (target) target.focus();
+  }
+
   function renderEditor() {
     if (!el.editPanel || !state.deck) return;
+    var focus = editorFocus();
     var deck = state.deck, edits = loadEdits(deck), pool = poolFor(deck, edits);
     var yours = lowerSet(edits.a), onCardSet = lowerSet(state.cells);
     var rest = pool.filter(function (t) { return !onCardSet[t.toLowerCase()]; });
@@ -856,6 +886,7 @@
       (edits.a.length ? ', including ' + edits.a.length + ' of your own' : '') +
       (removed.length ? '. ' + removed.length + ' removed.' : '.') + ' The free square, “' + deck.free + '”, is always on the card.';
     $('eReset').disabled = !edits.a.length && !edits.r.length;
+    restoreEditorFocus(focus);
   }
 
   /* ---------- custom cards ---------- */
@@ -942,7 +973,7 @@
     $('editSquares').addEventListener('click', function () {
       el.editPanel.open = true;
       renderEditor();
-      el.editPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollTo(el.editPanel);
     });
     el.editPanel.addEventListener('toggle', function () { if (el.editPanel.open) renderEditor(); });
     $('pickCancel').addEventListener('click', function () { stopPicking(); toast('Cancelled'); });
@@ -974,7 +1005,7 @@
       var deck = customDeck({ t: el.cTitle.value, f: input.free, q: input.squares, v: input.also });
       if (!deck) return;
       dealCard(deck, { announce: true });
-      document.getElementById('ticket').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollTo(document.getElementById('ticket'));
       toast('Your card is ready');
     });
     updateCount();
@@ -983,9 +1014,10 @@
     // Any new touch or click starts a fresh gesture: forget an earlier press-and-hold, and close the popover.
     document.addEventListener('pointerdown', function (e) {
       suppressClick = false;
-      if (!el.alsoPop.hidden && !el.alsoPop.contains(e.target)) hideAlso();
+      if (!el.alsoPop.hidden && (e.pointerType !== 'mouse' || !el.alsoPop.contains(e.target))) hideAlso();
     }, true);
     window.addEventListener('resize', hideAlso);
+    el.alsoPop.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hideAlso(); });
     var resizeTimer;
     window.addEventListener('resize', function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitText, 120); });
     // Web fonts change word widths, so measure again once each one arrives.
