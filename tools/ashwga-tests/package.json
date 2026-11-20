@@ -1,0 +1,12 @@
+{
+  "name": "trivial-things-ashwga-tests",
+  "private": true,
+  "description": "Browser tests for ASHWGA (ashwga/): gameplay, editing, variations, layout and accessibility.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "axe-core": "4.10.3"
+  }
+}

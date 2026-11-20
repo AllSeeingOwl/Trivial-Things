@@ -407,6 +407,7 @@
   // Does the longest word fit? Each label is measured at its narrowest
   // (min-content, word breaking off) against the room inside the padding,
   // using fractional widths so a 1px overflow is not rounded away.
+  var FIT_SPARE = 1; // px of room every word keeps, so tiny rendering differences between devices can't tip it over
   function overflows(b) {
     var cs = getComputedStyle(b);
     var room = b.getBoundingClientRect().width - parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth) -
@@ -418,7 +419,7 @@
       widest = Math.max(widest, c.getBoundingClientRect().width);
       c.style.width = '';
     }
-    return widest > room + 0.1;
+    return widest > room - FIT_SPARE;
   }
 
   function fitText() {
