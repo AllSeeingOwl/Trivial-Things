@@ -31,7 +31,7 @@ export interface Election {
 export const ELECTIONS = elections as Election[];
 
 /** The comparable form of a government list. */
-export function governmentFingerprint(items: WidgetItem[]): string[] {
+function governmentFingerprint(items: WidgetItem[]): string[] {
   return items.map(i => `${i.title} — ${i.subtitle ?? ''}`);
 }
 
@@ -45,7 +45,7 @@ export function today(): string {
  * holds the leader's or the top ten posts counts; an outage or an emptied
  * page does not.
  */
-export function hasNewGovernment(election: Election, data: WidgetData): boolean {
+function hasNewGovernment(election: Election, data: WidgetData): boolean {
   if (data.source === 'error' || data.items.length === 0) return false;
   const current = governmentFingerprint(data.items);
   return current.length !== election.outgoing.length
@@ -60,7 +60,7 @@ export function electionStatus(election: Election | undefined, data: WidgetData,
   return 'closed';
 }
 
-export function findElection(key: string): Election | undefined {
+function findElection(key: string): Election | undefined {
   return ELECTIONS.find(e => e.key === key);
 }
 
@@ -88,7 +88,8 @@ export function applyElectionClosure(key: string, data: WidgetData, on = today()
 }
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-export const MAX_REASON_LENGTH = 300;
+// Keep in step with MAX_REASON_LENGTH in src/app/admin/elections/controls.tsx.
+const MAX_REASON_LENGTH = 300;
 
 export interface ClosureInput {
   reason: string;
@@ -97,7 +98,7 @@ export interface ClosureInput {
 }
 
 /** Checks a close request; returns the problem in plain words, or null if it's fine. */
-export function validateClosure({ reason, electionDate, closedFrom }: ClosureInput): string | null {
+function validateClosure({ reason, electionDate, closedFrom }: ClosureInput): string | null {
   const isRealDate = (d: string) => ISO_DATE.test(d) && !Number.isNaN(Date.parse(`${d}T00:00:00Z`));
   if (!reason.trim()) return 'Write the reason shown on the card.';
   if (reason.length > MAX_REASON_LENGTH) return `Keep the reason to ${MAX_REASON_LENGTH} characters or fewer.`;

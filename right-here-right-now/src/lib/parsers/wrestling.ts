@@ -72,7 +72,7 @@ function cagematchDate(text: string): string | undefined {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
-export interface ChampionInfo {
+interface ChampionInfo {
   champion: string;
   detail?: string;
 }
@@ -82,7 +82,7 @@ export interface ChampionInfo {
  * no header row and lists the newest reign first; the current reign ends
  * "today". If no reign does, the title is vacant.
  */
-export function parseCagematchChampion(html: string): ChampionInfo | null {
+function parseCagematchChampion(html: string): ChampionInfo | null {
   const $ = cheerio.load(html);
   const rows = $('.TableContents tr').toArray();
   if (rows.length === 0) return null;
@@ -114,7 +114,7 @@ export function parseCagematchChampion(html: string): ChampionInfo | null {
  * A SmackDown Hotel tournament page (thesmackdownhotel.com/tournaments/…):
  * winners newest first. Tag teams list each partner as a separate link.
  */
-export function parseSmackdownHotelWinner(html: string): ChampionInfo | null {
+function parseSmackdownHotelWinner(html: string): ChampionInfo | null {
   const $ = cheerio.load(html);
   const $info = $('table tbody tr').first().find('.reign-info').first();
   const names = $info.find('h3 a').toArray().map(a => tidy($(a).text())).filter(Boolean);
@@ -149,7 +149,7 @@ function tidyHolder(text: string): string {
  * A championship's Wikipedia article: the infobox's "Current champion(s)"
  * and "Date won" rows.
  */
-export function parseWikiInfoboxChampion(html: string): ChampionInfo | null {
+function parseWikiInfoboxChampion(html: string): ChampionInfo | null {
   const $ = cheerio.load(html);
   const row = (label: RegExp) => $('table.infobox tr').toArray()
     .find(tr => label.test(cellText($, $(tr).children('th').first()[0] ?? tr)));

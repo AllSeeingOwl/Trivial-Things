@@ -26,9 +26,9 @@ importers:
       react-dom:
         specifier: 19.2.9
         version: 19.2.9(react@19.3.1)
-      react-masonry-css:
-        specifier: ^1.0.16
-        version: 1.0.16(react@19.3.1)
+      server-only:
+        specifier: 0.0.1
+        version: 0.0.1
     devDependencies:
       '@playwright/test':
         specifier: ^1.65.1
@@ -2112,11 +2112,6 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
-  react-masonry-css@1.0.16:
-    resolution: {integrity: sha512-KSW0hR2VQmltt/qAa3eXOctQDyOu7+ZBevtKgpNDSzT7k5LA/0XntNa9z9HKCdz3QlxmJHglTZ18e4sX4V8zZQ==}
-    peerDependencies:
-      react: '>=16.0.0'
-
   react@19.3.1:
     resolution: {integrity: sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw==}
     engines: {node: '>=0.10.0'}
@@ -2179,6 +2174,9 @@ packages:
     resolution: {integrity: sha512-9tjS0jTx5FQzhwAGhpcnwvqE0MlQiwJtunsIUNqGkw6E9CBOMbijlamIDUqvZTDtJAveVwa9L5ziP44bOJUzcQ==}
     engines: {node: '>=20.0'}
     hasBin: true
+
+  server-only@0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -4521,10 +4519,6 @@ snapshots:
 
   react-is@16.13.1: {}
 
-  react-masonry-css@1.0.16(react@19.3.1):
-    dependencies:
-      react: 19.3.1
-
   react@19.3.1: {}
 
   reflect.getprototypeof@1.0.10:
@@ -4594,6 +4588,8 @@ snapshots:
   semver@7.8.6: {}
 
   sentry@0.49.0: {}
+
+  server-only@0.0.1: {}
 
   set-function-length@1.2.2:
     dependencies:

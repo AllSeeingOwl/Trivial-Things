@@ -8,7 +8,7 @@ import { fetchWidgetData, WidgetData, WidgetItem } from '../scraper';
  */
 
 /** Rank shown next to the head of government, ahead of the ten numbered positions. */
-export const LEADER_RANK = '★';
+const LEADER_RANK = '★';
 
 /** Positions listed below the leader. */
 const POSITIONS_BELOW_LEADER = 10;
@@ -107,9 +107,9 @@ export function parseUkGovernment(json: Record<string, unknown>): WidgetItem[] {
 // United States: whitehouse.gov and house.gov
 // ---------------------------------------------------------------------------
 
-export const US_ADMINISTRATION_URL = 'https://www.whitehouse.gov/administration/';
-export const US_CABINET_URL = 'https://www.whitehouse.gov/administration/cabinet/';
-export const US_HOUSE_LEADERSHIP_URL = 'https://www.house.gov/leadership';
+const US_ADMINISTRATION_URL = 'https://www.whitehouse.gov/administration/';
+const US_CABINET_URL = 'https://www.whitehouse.gov/administration/cabinet/';
+const US_HOUSE_LEADERSHIP_URL = 'https://www.house.gov/leadership';
 
 /**
  * Executive departments in the order of the presidential line of succession.
@@ -138,7 +138,7 @@ const US_DEPARTMENTS: { position: string; match: RegExp }[] = [
  * whitehouse.gov/administration: each principal is an h2 reading
  * "President Donald J. Trump" / "Vice President JD Vance".
  */
-export function parseUsLeaders(html: string): WidgetItem[] {
+function parseUsLeaders(html: string): WidgetItem[] {
   const $ = cheerio.load(html);
   let president = '';
   let vicePresident = '';
@@ -159,7 +159,7 @@ export function parseUsLeaders(html: string): WidgetItem[] {
 }
 
 /** house.gov/leadership: h2 "Speaker of the House" followed by h3 "Rep. Mike Johnson". */
-export function parseUsSpeaker(html: string): WidgetItem[] {
+function parseUsSpeaker(html: string): WidgetItem[] {
   const $ = cheerio.load(html);
   const heading = $('h2').filter((_, h2) => /^Speaker of the House$/i.test(text($, h2))).first();
   const name = clean(heading.nextAll('h3').first().text()).replace(/^Rep\.?\s+/i, '');
@@ -172,7 +172,7 @@ export function parseUsSpeaker(html: string): WidgetItem[] {
  * (name) followed by an h3 (position). Reorders them by line of succession and
  * keeps enough to follow the President, Vice President and Speaker.
  */
-export function parseUsCabinet(html: string): WidgetItem[] {
+function parseUsCabinet(html: string): WidgetItem[] {
   const $ = cheerio.load(html);
   const byPosition = new Map<string, string>();
 
@@ -258,7 +258,7 @@ export function parseGermanyGovernment(html: string): WidgetItem[] {
 // Japan: Prime Minister's Office (japan.kantei.go.jp)
 // ---------------------------------------------------------------------------
 
-export const JAPAN_HOME_URL = 'https://japan.kantei.go.jp/';
+const JAPAN_HOME_URL = 'https://japan.kantei.go.jp/';
 /** Used if the current-cabinet lookup fails. The path includes the cabinet's number. */
 export const JAPAN_MINISTERS_FALLBACK_URL = 'https://japan.kantei.go.jp/105/meibo/daijin/index.html';
 

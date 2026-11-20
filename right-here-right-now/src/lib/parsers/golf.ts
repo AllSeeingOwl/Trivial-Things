@@ -48,10 +48,6 @@ function parseWikiGolfRanking(html: string, idPrefix: string): WidgetItem[] {
     }));
 }
 
-export function parseWikiMensGolf(html: string): WidgetItem[] {
-  return parseWikiGolfRanking(html, 'golf-men-wiki');
-}
-
 export function parseWikiWomensGolf(html: string): WidgetItem[] {
   return parseWikiGolfRanking(html, 'golf-women-wiki');
 }

@@ -23,8 +23,8 @@ export interface WidgetData {
   closed?: WidgetClosure;
 }
 
-export type ScrapeFunction = (html: string) => WidgetItem[];
-export type JsonFunction = (json: Record<string, unknown>) => WidgetItem[];
+type ScrapeFunction = (html: string) => WidgetItem[];
+type JsonFunction = (json: Record<string, unknown>) => WidgetItem[];
 
 export interface ScraperConfig {
   primaryUrl: string;

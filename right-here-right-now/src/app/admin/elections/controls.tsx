@@ -9,6 +9,7 @@ import {
   signOutAction
 } from './actions';
 
+// Keep in step with MAX_REASON_LENGTH in src/lib/elections.ts (checked on the server).
 const MAX_REASON_LENGTH = 300;
 
 const inputClass = 'w-full bg-[#111] border border-[var(--card-border)] rounded-md px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500';
