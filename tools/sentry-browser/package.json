@@ -1,7 +1,7 @@
 {
   "name": "trivial-things-sentry-browser",
   "private": true,
-  "description": "Builds the Sentry browser SDK for the static sites (portal, crossover_size_converter).",
+  "description": "Builds the Sentry browser SDK for the static sites (portal, crossover_size_converter, ashwga).",
   "scripts": {
     "build": "node build.mjs"
   },
