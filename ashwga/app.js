@@ -16,6 +16,8 @@
   var MAX_CUSTOM = 100;
   var MAX_LEN = 80;
   var MAX_ADDED = 50;
+  var MAX_ALSO = 5;       // variations per square
+  var MAX_ALSO_LEN = 60;
   var LINES = buildLines();
 
   var state = {
@@ -29,6 +31,7 @@
     focus: 0,
     picking: null,  // a square waiting for the player to tap where it goes
   };
+  var suppressClick = false; // a press-and-hold just showed variations; don't also mark the square
 
   var $ = function (id) { return document.getElementById(id); };
   var el = {
@@ -40,7 +43,7 @@
     customPanel: $('customPanel'),
     editPanel: $('editPanel'), eSummary: $('eSummary'), eNew: $('eNew'), eCard: $('eCard'), eRest: $('eRest'),
     eRemoved: $('eRemoved'), eRemovedWrap: $('eRemovedWrap'), eCardCount: $('eCardCount'), eRestCount: $('eRestCount'),
-    pickHint: $('pickHint'), pickText: $('pickText'),
+    pickHint: $('pickHint'), pickText: $('pickText'), alsoPop: $('alsoPop'),
   };
 
   /* ---------- helpers ---------- */
@@ -136,17 +139,67 @@
     return true;
   }
 
+  /* ---------- variations ("close enough counts") ---------- */
+
+  function cleanAlso(list) {
+    return cleanSquares((Array.isArray(list) ? list : []).map(function (v) { return String(v || '').slice(0, MAX_ALSO_LEN); }), MAX_ALSO);
+  }
+
+  /* "Square | variation | variation" -> { text, also } */
+  function splitLine(line) {
+    var parts = String(line || '').split('|');
+    return { text: cleanSquare(parts[0]), also: cleanAlso(parts.slice(1)) };
+  }
+
+  /* A {square: [variations]} map, keeping only squares in `allowed` and dropping empties. */
+  function cleanAlsoMap(map, allowed) {
+    var out = {}, ok = allowed ? lowerSet(allowed) : null;
+    if (!map || typeof map !== 'object') return out;
+    Object.keys(map).forEach(function (k) {
+      var key = cleanSquare(k), vs = cleanAlso(map[k]);
+      if (key && vs.length && (!ok || ok[key.toLowerCase()])) out[key] = vs;
+    });
+    return out;
+  }
+
+  function findAlso(map, text) {
+    if (!map) return null;
+    if (map[text]) return map[text];
+    var lower = text.toLowerCase();
+    for (var k in map) if (Object.prototype.hasOwnProperty.call(map, k) && k.toLowerCase() === lower) return map[k];
+    return null;
+  }
+
+  /* Other ways this square's cliché turns up: the deck's own list plus any the player added. */
+  function alsoFor(text) {
+    if (!state.deck) return [];
+    var mine = findAlso(loadEdits(state.deck).v, text) || [];
+    return cleanSquares((findAlso(state.deck.also, text) || []).concat(mine), MAX_ALSO * 2);
+  }
+
+  function withAlso(text, also) {
+    return also && also.length ? text + ' | ' + also.join(' | ') : text;
+  }
+
   function customDeck(data) {
     if (!data || !Array.isArray(data.q)) return null;
     var squares = cleanSquares(data.q);
     if (squares.length < NEEDED) return null;
+    var free = String(data.f || 'Free square').trim().slice(0, 60) || 'Free square';
     return {
       id: 'custom', custom: true, accent: 'custom',
       title: String(data.t || 'My card').trim().slice(0, 40) || 'My card',
-      free: String(data.f || 'Free square').trim().slice(0, 60) || 'Free square',
+      free: free,
       squares: squares,
+      also: cleanAlsoMap(data.v, squares.concat(free)),
       blurb: 'A card you made. Copy the card link to send it, squares and all, to a friend.',
     };
+  }
+
+  function customPayload(deck) {
+    var p = { t: deck.title, f: deck.free, q: deck.squares };
+    if (deck.also && Object.keys(deck.also).length) p.v = deck.also;
+    return p;
   }
 
   function fmtTime(ms) {
@@ -177,7 +230,7 @@
 
   function hashFor(deck, seed, cells) {
     var h = 'd=' + encodeURIComponent(deck.id) + '&s=' + encodeURIComponent(seed);
-    if (deck.custom) h += '&c=' + b64urlEncode({ t: deck.title, f: deck.free, q: deck.squares });
+    if (deck.custom) h += '&c=' + b64urlEncode(customPayload(deck));
     if (cells && !sameList(cells, buildCells(deck, seed))) {
       h += '&k=' + b64urlEncode(cells.filter(function (_, i) { return i !== CENTRE; }));
     }
@@ -195,11 +248,13 @@
     return {
       r: Array.isArray(e.r) ? cleanSquares(e.r, 500) : [],  // removed
       a: Array.isArray(e.a) ? cleanSquares(e.a, MAX_ADDED) : [],  // added
+      v: cleanAlsoMap(e.v),  // the player's own variations
     };
   }
 
   function saveEdits(deck, e) {
-    store('ashwga:edits:' + deckKey(deck), e.r.length || e.a.length ? e : undefined);
+    var any = e.r.length || e.a.length || Object.keys(e.v || {}).length;
+    store('ashwga:edits:' + deckKey(deck), any ? e : undefined);
   }
 
   /* The squares new cards are dealt from: the deck, plus additions, minus removals. */
@@ -267,7 +322,7 @@
     if (location.hash.slice(1) !== h) history.replaceState(null, '', '#' + h);
     store('ashwga:last', h);
     if (!state.deck.custom) store('ashwga:lastcard:' + state.deck.id, h);
-    else store('ashwga:custom', { t: state.deck.title, f: state.deck.free, q: state.deck.squares, s: state.seed, h: h });
+    else store('ashwga:custom', Object.assign(customPayload(state.deck), { s: state.seed, h: h }));
   }
 
   function save() {
@@ -373,13 +428,70 @@
     }
   }
 
+  /* Press and hold (touch), hover (mouse) or ? (keyboard) shows a square's variations. */
+  var press = null, hoverTimer = null;
+  function clearPress() { if (press) { clearTimeout(press.t); press = null; } }
+  function bindAlso(b, i) {
+    b.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse') return;
+      clearPress();
+      press = { x: e.clientX, y: e.clientY, t: setTimeout(function () {
+        press = null;
+        suppressClick = true;
+        showAlso(i);
+      }, 450) };
+    });
+    b.addEventListener('pointermove', function (e) {
+      if (press && Math.abs(e.clientX - press.x) + Math.abs(e.clientY - press.y) > 12) clearPress();
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { b.addEventListener(ev, clearPress); });
+    b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    b.addEventListener('pointerenter', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(function () { showAlso(i); }, 350);
+    });
+    b.addEventListener('pointerleave', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(hoverTimer);
+      hideAlso();
+    });
+  }
+
+  function showAlso(i) {
+    var also = alsoFor(state.cells[i]), sq = el.grid.children[i], pop = el.alsoPop;
+    if (!also.length || !sq) return;
+    pop.textContent = '';
+    var head = document.createElement('b');
+    head.textContent = 'Also counts';
+    var ul = document.createElement('ul');
+    also.forEach(function (v) { var li = document.createElement('li'); li.textContent = v; ul.appendChild(li); });
+    pop.appendChild(head);
+    pop.appendChild(ul);
+    pop.hidden = false;
+    pop.dataset.i = i;
+    var t = document.getElementById('ticket').getBoundingClientRect(), r = sq.getBoundingClientRect();
+    var w = pop.offsetWidth, h = pop.offsetHeight;
+    var left = Math.max(8, Math.min(r.left - t.left + r.width / 2 - w / 2, t.width - w - 8));
+    var top = r.bottom - t.top + 6;
+    if (top + h > t.height - 8) top = Math.max(8, r.top - t.top - h - 6);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+  }
+
+  function hideAlso() {
+    if (el.alsoPop) el.alsoPop.hidden = true;
+  }
+
   function renderGrid() {
+    hideAlso();
     el.grid.textContent = '';
     document.getElementById('ticket').style.setProperty('--cols', columnTemplate(state.cells));
     state.cells.forEach(function (text, i) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'sq' + (i === CENTRE ? ' free' : '') + sizeClass(text, i === CENTRE);
+      var also = alsoFor(text);
+      b.className = 'sq' + (i === CENTRE ? ' free' : '') + sizeClass(text, i === CENTRE) + (also.length ? ' has-also' : '');
       b.dataset.i = i;
       b.tabIndex = i === state.focus ? 0 : -1;
       if (i === CENTRE) {
@@ -392,7 +504,11 @@
       span.textContent = text;
       b.appendChild(span);
       b.setAttribute('aria-pressed', String(state.marked[i]));
-      b.addEventListener('click', function () { toggle(i); });
+      b.addEventListener('click', function () {
+        if (suppressClick) { suppressClick = false; return; }
+        toggle(i);
+      });
+      if (also.length) bindAlso(b, i);
       b.addEventListener('keydown', onKey);
       b.addEventListener('focus', function () { setFocus(i, false); });
       el.grid.appendChild(b);
@@ -411,7 +527,9 @@
       buttons[i].setAttribute('aria-pressed', String(state.marked[i]));
       buttons[i].classList.toggle('near', !!s.near[i] && !s.full);
       buttons[i].classList.toggle('inline', !!inLine[i]);
-      var label = state.cells[i] + (i === CENTRE ? ', free square' : '') + (s.near[i] && !state.marked[i] ? ', would complete a line' : '');
+      var also = alsoFor(state.cells[i]);
+      var label = state.cells[i] + (i === CENTRE ? ', free square' : '') + (s.near[i] && !state.marked[i] ? ', would complete a line' : '') +
+        (also.length ? '. Also counts: ' + also.join('; ') : '');
       buttons[i].setAttribute('aria-label', label);
     }
 
@@ -488,6 +606,14 @@
 
   function onKey(e) {
     var i = state.focus, r = Math.floor(i / SIZE), c = i % SIZE;
+    if (e.key === '?' || e.key === 'i') {
+      e.preventDefault();
+      if (!el.alsoPop.hidden && el.alsoPop.dataset.i === String(i)) hideAlso();
+      else if (alsoFor(state.cells[i]).length) showAlso(i);
+      else toast('No variations listed for this one. Close enough still counts.');
+      return;
+    }
+    hideAlso();
     switch (e.key) {
       case 'ArrowRight': c = Math.min(SIZE - 1, c + 1); break;
       case 'ArrowLeft': c = Math.max(0, c - 1); break;
@@ -596,8 +722,10 @@
       if (!options.length) { toast('No spare squares to put in its place. Add or restore one first.'); return; }
       replaceCell(i, options[Math.floor(Math.random() * options.length)]);
     }
-    if (added) edits.a = edits.a.filter(function (t) { return t.toLowerCase() !== lower; });
-    else edits.r.push(text);
+    if (added) {
+      edits.a = edits.a.filter(function (t) { return t.toLowerCase() !== lower; });
+      Object.keys(edits.v).forEach(function (k) { if (k.toLowerCase() === lower) delete edits.v[k]; });
+    } else edits.r.push(text);
     saveEdits(deck, edits);
     renderEditor();
     toast(added ? 'Deleted your square' : 'Removed from this deck' + (i !== -1 ? ' and swapped off your card' : ''));
@@ -613,11 +741,19 @@
 
   /* Returns the square as it now appears in the deck, or null if it couldn't be added. */
   function addSquare(raw) {
-    var text = cleanSquare(raw);
+    var parsed = splitLine(raw), text = parsed.text;
     if (!text) { toast('Type a square first'); return null; }
     var deck = state.deck, edits = loadEdits(deck), lower = text.toLowerCase();
     var existing = poolFor(deck, edits).filter(function (t) { return t.toLowerCase() === lower; })[0];
-    if (existing) { toast('That one’s already in the deck'); return existing; }
+    if (existing) {
+      if (parsed.also.length) {
+        edits.v[existing] = parsed.also;
+        saveEdits(deck, edits);
+        renderGrid(); update(false); renderEditor();
+        toast('Variations saved for that square');
+      } else toast('That one’s already in the deck');
+      return existing;
+    }
     var original = deck.squares.filter(function (t) { return t.toLowerCase() === lower; })[0];
     if (original) {
       edits.r = edits.r.filter(function (t) { return t.toLowerCase() !== lower; });
@@ -626,6 +762,7 @@
       if (edits.a.length >= MAX_ADDED) { toast('That’s the most squares you can add to one deck'); return null; }
       edits.a.push(text);
     }
+    if (parsed.also.length) edits.v[text] = parsed.also;
     saveEdits(deck, edits);
     renderEditor();
     return text;
@@ -664,6 +801,13 @@
     li.appendChild(label);
     if (opts && opts.yours) { var y = document.createElement('em'); y.className = 'tag'; y.textContent = 'yours'; li.appendChild(y); }
     if (opts && opts.marked) { var m = document.createElement('em'); m.className = 'tag marked'; m.textContent = 'marked'; li.appendChild(m); }
+    var also = alsoFor(text);
+    if (also.length) {
+      var v = document.createElement('small');
+      v.className = 'alsoline';
+      v.textContent = 'Also counts: ' + also.join(' · ');
+      li.appendChild(v);
+    }
     var box = document.createElement('span');
     box.className = 'rowbtns';
     actions.forEach(function (a) {
@@ -716,11 +860,21 @@
 
   /* ---------- custom cards ---------- */
 
+  /* Each line is a square, optionally followed by variations: "Square | variation | variation". */
   function customInput() {
-    return cleanSquares(el.cSquares.value.split('\n'));
+    var squares = [], also = {};
+    el.cSquares.value.split('\n').forEach(function (line) {
+      var p = splitLine(line);
+      if (!p.text) return;
+      squares.push(p.text);
+      if (p.also.length) also[p.text] = p.also;
+    });
+    var free = splitLine(el.cFree.value);
+    if (free.text && free.also.length) also[free.text] = free.also;
+    return { squares: cleanSquares(squares), also: also, free: free.text };
   }
   function updateCount() {
-    var n = customInput().length;
+    var n = customInput().squares.length;
     el.cCount.textContent = n >= NEEDED ? n + ' squares. Ready to play.' : n + ' of ' + NEEDED + ' squares';
     el.cCount.classList.toggle('ok', n >= NEEDED);
     el.cPlay.disabled = n < NEEDED;
@@ -779,6 +933,7 @@
     $('bannerClose').addEventListener('click', function () { hideBanner(); setFocus(state.focus, true); });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
+      if (!el.alsoPop.hidden) { hideAlso(); return; }
       if (state.picking) { stopPicking(); say('Cancelled.'); return; }
       if (!el.banner.hidden) { hideBanner(); setFocus(state.focus, true); }
     });
@@ -809,13 +964,14 @@
     el.cSquares.addEventListener('input', updateCount);
     $('cFromDeck').addEventListener('click', function () {
       el.cTitle.value = state.deck.custom ? state.deck.title : 'My ' + state.deck.title;
-      el.cFree.value = state.deck.free;
-      el.cSquares.value = poolFor(state.deck).join('\n');
+      el.cFree.value = withAlso(state.deck.free, alsoFor(state.deck.free));
+      el.cSquares.value = poolFor(state.deck).map(function (t) { return withAlso(t, alsoFor(t)); }).join('\n');
       updateCount();
       el.cSquares.focus();
     });
     $('cPlay').addEventListener('click', function () {
-      var deck = customDeck({ t: el.cTitle.value, f: el.cFree.value, q: customInput() });
+      var input = customInput();
+      var deck = customDeck({ t: el.cTitle.value, f: input.free, q: input.squares, v: input.also });
       if (!deck) return;
       dealCard(deck, { announce: true });
       document.getElementById('ticket').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -824,6 +980,12 @@
     updateCount();
 
     window.addEventListener('hashchange', fromHash);
+    // Any new touch or click starts a fresh gesture: forget an earlier press-and-hold, and close the popover.
+    document.addEventListener('pointerdown', function (e) {
+      suppressClick = false;
+      if (!el.alsoPop.hidden && !el.alsoPop.contains(e.target)) hideAlso();
+    }, true);
+    window.addEventListener('resize', hideAlso);
     var resizeTimer;
     window.addEventListener('resize', function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitText, 120); });
     // Web fonts change word widths, so measure again once each one arrives.
