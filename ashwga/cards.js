@@ -480,7 +480,7 @@ window.ASHWGA_DECKS = [
       'Expert interviewed over a video call',
       'Gets sidetracked; “anyway…”',
       'Thumbnail has a big red circle',
-      'Mispronounces a name, owns it later',
+      'Says a name wrong, owns it later',
       'Pinned comment full of corrections',
       'Shows their own old cringe video',
       'Says “discourse” more than once',
@@ -584,10 +584,10 @@ window.ASHWGA_DECKS = [
     title: 'Patch Notes',
     blurb: 'Version 1.4.2: the bug you reported is still there, but the shop has new hats.',
     accent: 'patch',
-    free: '“Various bug fixes and improvements”',
+    free: '“Various bug fixes and tweaks”',
     // Other ways the same cliché turns up. They count too (press and hold a square to see them).
     also: {
-      '“Various bug fixes and improvements”': ['“Stability improvements”', '“Minor fixes”', '“General polish”'],
+      '“Various bug fixes and tweaks”': ['“Various bug fixes and improvements”', '“Stability improvements”', '“Minor fixes”', '“General polish”'],
       '“We hear the community’s concerns”': ['“We’re listening”', '“Your feedback matters”', '“We know you’re frustrated”'],
       '“Improved performance”': ['“Optimisation pass”', '“Better frame rates”', '“Reduced stutter”'],
       '“Adjusted” (it was nerfed)': ['“Tuned”', '“Rebalanced”', '“Normalised”'],
