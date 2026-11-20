@@ -6,3 +6,8 @@ backups/
 server.log
 interactive_scoreboard/scoreboard.db
 node_modules/
+# Runtime and leftover files (the weekly redundancy report flags these)
+state.db
+*.log
+*.orig
+*.rej
