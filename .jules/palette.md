@@ -44,3 +44,7 @@
 ## 2026-10-16 - [Keyboard Accessibility and Modal Focus Management for Dynamically Rendered Calendar Events]
 **Learning:** Dynamically injected interactive event elements (like calendar event bars) created as `<div>` tags are omitted from tab ordering and keyboard interaction unless explicitly given `role="button"`, `tabindex="0"`, descriptive `aria-label`s, and `keydown` event listeners for Enter/Space keys. Additionally, opening action modals (such as event deletion dialogs) requires shifting focus directly to a modal focus target to maintain keyboard context.
 **Action:** Always assign `role="button"`, `tabindex="0"`, `focus:ring-2` focus rings, and `keydown` listeners to interactive dynamic elements, and programmatically shift focus into dialogs when opened.
+
+## 2026-10-24 - Tailwind CDN Skip Link Positioning
+**Learning:** In applications using Browser CDN Tailwind CSS, CSS position transitions like `-top-16` on unfocused skip links can cause text bleeding/clipping depending on parent container layout and overflow settings. Using standard `sr-only focus:not-sr-only focus:absolute` cleanly clips unfocused skip links out of visual flow without layout interference.
+**Action:** Always prefer `sr-only focus:not-sr-only focus:absolute` for accessible skip navigation links.

@@ -1,0 +1,128 @@
+name: Weekly Redundancy Report
+
+# Read-only weekly check for things the repo carries but does not need: leftover and
+# generated files, files .gitignore should exclude, duplicates, case-only name clashes,
+# unused Python requirements, the largest files, unused Python code (vulture) and unused
+# Next.js files/exports/packages (knip). It writes a Markdown report, uploads raw output
+# as an artifact and opens an issue. It never modifies or deletes anything.
+# Only schedule/manual triggers are used, so no pull-request code runs with write access.
+
+on:
+  schedule:
+    - cron: '30 9 * * 1' # Mondays at 09:30 UTC, after the weekly quality report
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: weekly-redundancy-report
+  cancel-in-progress: false
+
+env:
+  AUDIT_DIR: redundancy-report-output
+  NEXT_APP_DIR: right-here-right-now
+  PNPM_VERSION: '10.34.9'
+  # Pinned for reproducible weekly runs; bump deliberately.
+  VULTURE_VERSION: '2.16'
+  KNIP_VERSION: '6.44.1'
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Find unused Python code (vulture)
+        continue-on-error: true
+        run: |
+          mkdir -p "$AUDIT_DIR"
+          python -m pip install "vulture==$VULTURE_VERSION"
+          # Exit code 3 means unused code was found; that is the point, not a failure.
+          vulture . --min-confidence 80 \
+            --exclude ".git,node_modules,venv,$AUDIT_DIR" \
+            > "$AUDIT_DIR/vulture.txt" 2> "$AUDIT_DIR/vulture.log" || true
+
+      - name: Find unused Next.js files, exports and packages (knip)
+        continue-on-error: true
+        run: |
+          if [ ! -f "$NEXT_APP_DIR/package.json" ]; then
+            echo "skipped: $NEXT_APP_DIR/package.json not found" > "$AUDIT_DIR/knip.status"
+            exit 0
+          fi
+          cd "$NEXT_APP_DIR"
+          # knip has to load the app's config files, so dependencies must be installed.
+          # Install scripts are skipped; nothing is built or run. If the lockfile cannot be
+          # used, fall back to package.json so the report still runs (the report says so).
+          if npx --yes "pnpm@$PNPM_VERSION" install --frozen-lockfile --ignore-scripts \
+               > "../$AUDIT_DIR/install.log" 2>&1; then
+            install_note="installed from pnpm-lock.yaml"
+          elif npm install --ignore-scripts --no-package-lock --no-audit --no-fund \
+               >> "../$AUDIT_DIR/install.log" 2>&1; then
+            install_note="pnpm-lock.yaml could not be installed (see install.log); used package.json instead"
+          else
+            echo "skipped: dependencies could not be installed (see install.log)" > "../$AUDIT_DIR/knip.status"
+            exit 0
+          fi
+          code=0
+          npx --yes "knip@$KNIP_VERSION" --reporter json --no-progress \
+            > "../$AUDIT_DIR/knip.json" 2> "../$AUDIT_DIR/knip.log" || code=$?
+          echo "ran: exit $code; $install_note" > "../$AUDIT_DIR/knip.status"
+
+      - name: Build Markdown report
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          mkdir -p "$AUDIT_DIR"
+          export REPORT_DATE="$(date -u '+%Y-%m-%d %H:%M')"
+          if ! python .github/scripts/build_redundancy_report.py "$AUDIT_DIR" "$AUDIT_DIR/report.md"; then
+            printf '# Weekly redundancy report — Trivial-Things\n\nThe report builder failed; see the workflow log: %s\n' \
+              "$RUN_URL" > "$AUDIT_DIR/report.md"
+          fi
+          cat "$AUDIT_DIR/report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload raw results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: weekly-redundancy-report-${{ github.run_id }}
+          path: ${{ env.AUDIT_DIR }}/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Create issue with the report
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # GitHub caps issue bodies at 65,536 characters; trim and point to the artifact if needed.
+          python - <<'PY'
+          import os
+          path = os.path.join(os.environ["AUDIT_DIR"], "report.md")
+          body = open(path, encoding="utf-8").read()
+          limit = 60000
+          if len(body) > limit:
+              body = body[:limit] + "\n\n_Report truncated; the full version is `report.md` in the workflow artifact._\n"
+          open("issue-body.md", "w", encoding="utf-8").write(body)
+          PY
+          gh issue create \
+            --title "Weekly redundancy report — $(date -u +%Y-%m-%d)" \
+            --body-file issue-body.md
