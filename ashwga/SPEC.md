@@ -37,7 +37,7 @@ A static page with no backend, deployed like `crossover_size_converter`.
 
 | Feature | Notes |
 |---|---|
-| 4 starter decks | Game Showcase, Live Streamer, Wrestling Promo, Open-World Game. 51 to 52 squares each, so two cards share only about half their squares. |
+| 8 starter decks | Game Showcase, Live Streamer, Wrestling Promo, Open-World Game, Award Show, Video Essay, Girl Talk, Patch Notes. 50 to 52 squares each, so two cards share only about half their squares. |
 | Random 5×5 cards | Seeded shuffle; the free centre square is each deck's most certain cliché. |
 | Shareable card | URL `#d=<deck>&s=<seed>` rebuilds the exact card. Friends can play the same card, or press "New card" to get their own. |
 | Marking | Tap, or use the arrow keys and Space. The dab animation respects reduced motion. |
@@ -59,8 +59,8 @@ object and a colour token (`--a-<accent>`) in `index.html`.
 ## Roadmap
 
 ### v0.2: content and polish (still static)
-- More decks: award shows, patch notes, sports pundits, product keynotes,
-  reality TV, film trailers, cooking shows, "tier list" videos.
+- More decks: sports pundits, product keynotes, reality TV, film trailers,
+  cooking shows, "tier list" videos.
 - **Event cards:** dated cards for specific upcoming events (a showcase
   date or a PPV), linked from a "Tonight" strip.
 - **Share image:** render the finished card to a PNG on a canvas, styled as a
