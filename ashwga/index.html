@@ -14,6 +14,7 @@
   --dab-ink:#ffffff; --near:#f0a020; --win:#1f8f4e; --win-ink:#ffffff;
   --a-showcase:#6a3fd1; --a-streamer:#0d8a7a; --a-promo:#cf2a2a; --a-openworld:#a86400; --a-custom:#2f62c9;
   --a-awards:#6f6a00; --a-essay:#3d5a80; --a-girltalk:#c0217a; --a-patch:#2e7d32;
+  --a-pundit:#b8461c; --a-reality:#8e2fa8; --a-talk:#0b6f91; --a-keynote:#4e7a12;
   --accent:var(--a-showcase);
   --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
   --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -25,6 +26,7 @@
   --dab-ink:#ffffff; --near:#f5b13d; --win:#3cb371; --win-ink:#06210f;
   --a-showcase:#8b63f0; --a-streamer:#1aa391; --a-promo:#e04545; --a-openworld:#c27d12; --a-custom:#5584e6;
   --a-awards:#8f8a14; --a-essay:#6383b0; --a-girltalk:#d9468f; --a-patch:#3f9a44;
+  --a-pundit:#d35a2c; --a-reality:#ab55c4; --a-talk:#2a8fb3; --a-keynote:#6b9a24;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#15130f; --surface:#1f1c17; --ink:#f1ebe1; --muted:#a99f92; --line:#383229; --chip:#2b2620;
@@ -32,6 +34,7 @@
   --dab-ink:#ffffff; --near:#f5b13d; --win:#3cb371; --win-ink:#06210f;
   --a-showcase:#8b63f0; --a-streamer:#1aa391; --a-promo:#e04545; --a-openworld:#c27d12; --a-custom:#5584e6;
   --a-awards:#8f8a14; --a-essay:#6383b0; --a-girltalk:#d9468f; --a-patch:#3f9a44;
+  --a-pundit:#d35a2c; --a-reality:#ab55c4; --a-talk:#2a8fb3; --a-keynote:#6b9a24;
   color-scheme:dark}
 body[data-accent="showcase"]{--accent:var(--a-showcase)}
 body[data-accent="streamer"]{--accent:var(--a-streamer)}
@@ -41,6 +44,10 @@ body[data-accent="awards"]{--accent:var(--a-awards)}
 body[data-accent="essay"]{--accent:var(--a-essay)}
 body[data-accent="girltalk"]{--accent:var(--a-girltalk)}
 body[data-accent="patch"]{--accent:var(--a-patch)}
+body[data-accent="pundit"]{--accent:var(--a-pundit)}
+body[data-accent="reality"]{--accent:var(--a-reality)}
+body[data-accent="talk"]{--accent:var(--a-talk)}
+body[data-accent="keynote"]{--accent:var(--a-keynote)}
 body[data-accent="custom"]{--accent:var(--a-custom)}
 
 *{box-sizing:border-box}
@@ -66,10 +73,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,
 .deck[aria-pressed="true"]{border-color:var(--dot);background:var(--dot);color:#fff}
 .deck[aria-pressed="true"]::before{background:#fff}
 .deck:hover{border-color:var(--dot)}
-/* Phones: eight decks as a compact two-column grid, so the card stays near the top */
+/* Phones: the decks as a compact two-column grid, so the card stays near the top */
 @media (max-width:520px){
-  .decks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-  .deck{min-height:40px;padding:6px 12px;font-size:.9rem;gap:6px;min-width:0}
+  .decks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+  .deck{min-height:38px;padding:5px 10px;font-size:.86rem;gap:6px;min-width:0;border-width:1.5px}
   .deck::before{width:10px;height:10px;flex:none}
 }
 
@@ -197,7 +204,7 @@ footer{color:var(--muted);font-size:.88rem}
     <div class="eyebrow">Cliché bingo · you could see it coming</div>
     <h1 aria-label="ASHWGA: Ah shit, here we go again">ASHWG<em>A</em></h1>
     <p class="tagline" aria-hidden="true"><b>A</b>h <b>S</b>hit, <b>H</b>ere <b>W</b>e <b>G</b>o <b>A</b>gain.</p>
-    <p class="lede">Pick a card, put on the showcase, the stream, the promo or the award show, and dab every cliché as it happens. If you don’t get a line inside ten minutes, they’ve surprised you.</p>
+    <p class="lede">Pick a card, put on the showcase, the stream, the match or the keynote, and dab every cliché as it happens. If you don’t get a line inside ten minutes, they’ve surprised you.</p>
   </header>
 
   <nav class="decks" id="decks" aria-label="Choose a bingo card"></nav>
