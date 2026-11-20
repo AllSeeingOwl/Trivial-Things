@@ -1,6 +1,11 @@
 /* ASHWGA ("Ah shit, here we go again") cliché bingo. No backend: the card is rebuilt from the URL hash
  * (deck + seed, plus the squares themselves for a custom card), and marks are
- * kept in localStorage for that exact card. */
+ * kept in localStorage for that exact card.
+ *
+ * A card whose squares were edited (swapped, removed, added) carries its 24
+ * squares in the link as `k`, so a friend gets exactly that card. Deck edits
+ * (squares removed from or added to a deck) are this browser's own and only
+ * shape the cards it deals from then on. */
 (function () {
   'use strict';
 
@@ -10,6 +15,9 @@
   var NEEDED = SIZE * SIZE - 1;
   var MAX_CUSTOM = 100;
   var MAX_LEN = 80;
+  var MAX_ADDED = 50;
+  var MAX_ALSO = 5;       // variations per square
+  var MAX_ALSO_LEN = 60;
   var LINES = buildLines();
 
   var state = {
@@ -21,7 +29,9 @@
     t1: 0,          // full house (ms)
     celebrated: 0,  // 0 none, 1 first line, 2 full house
     focus: 0,
+    picking: null,  // a square waiting for the player to tap where it goes
   };
+  var suppressClick = false; // a press-and-hold just showed variations; don't also mark the square
 
   var $ = function (id) { return document.getElementById(id); };
   var el = {
@@ -31,6 +41,9 @@
     blurb: $('deckBlurb'), toast: $('toast'), announce: $('announce'),
     cTitle: $('cTitle'), cFree: $('cFree'), cSquares: $('cSquares'), cCount: $('cCount'), cPlay: $('cPlay'),
     customPanel: $('customPanel'),
+    editPanel: $('editPanel'), eSummary: $('eSummary'), eNew: $('eNew'), eCard: $('eCard'), eRest: $('eRest'),
+    eRemoved: $('eRemoved'), eRemovedWrap: $('eRemovedWrap'), eCardCount: $('eCardCount'), eRestCount: $('eRestCount'),
+    pickHint: $('pickHint'), pickText: $('pickText'), alsoPop: $('alsoPop'),
   };
 
   /* ---------- helpers ---------- */
@@ -100,27 +113,93 @@
     } catch (e) { return null; }
   }
 
-  function cleanSquares(list) {
+  function cleanSquare(s) {
+    return String(s || '').replace(/\s+/g, ' ').trim().slice(0, MAX_LEN);
+  }
+
+  function cleanSquares(list, cap) {
     var seen = {}, out = [];
     list.forEach(function (s) {
-      var t = String(s || '').replace(/\s+/g, ' ').trim().slice(0, MAX_LEN);
+      var t = cleanSquare(s);
       var k = t.toLowerCase();
       if (t && !seen[k]) { seen[k] = true; out.push(t); }
     });
-    return out.slice(0, MAX_CUSTOM);
+    return out.slice(0, cap || MAX_CUSTOM);
+  }
+
+  function lowerSet(list) {
+    var set = {};
+    list.forEach(function (t) { set[t.toLowerCase()] = true; });
+    return set;
+  }
+
+  function sameList(a, b) {
+    if (!a || !b || a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  /* ---------- variations ("close enough counts") ---------- */
+
+  function cleanAlso(list) {
+    return cleanSquares((Array.isArray(list) ? list : []).map(function (v) { return String(v || '').slice(0, MAX_ALSO_LEN); }), MAX_ALSO);
+  }
+
+  /* "Square | variation | variation" -> { text, also } */
+  function splitLine(line) {
+    var parts = String(line || '').split('|');
+    return { text: cleanSquare(parts[0]), also: cleanAlso(parts.slice(1)) };
+  }
+
+  /* A {square: [variations]} map, keeping only squares in `allowed` and dropping empties. */
+  function cleanAlsoMap(map, allowed) {
+    var out = {}, ok = allowed ? lowerSet(allowed) : null;
+    if (!map || typeof map !== 'object') return out;
+    Object.keys(map).forEach(function (k) {
+      var key = cleanSquare(k), vs = cleanAlso(map[k]);
+      if (key && vs.length && (!ok || ok[key.toLowerCase()])) out[key] = vs;
+    });
+    return out;
+  }
+
+  function findAlso(map, text) {
+    if (!map) return null;
+    if (map[text]) return map[text];
+    var lower = text.toLowerCase();
+    for (var k in map) if (Object.prototype.hasOwnProperty.call(map, k) && k.toLowerCase() === lower) return map[k];
+    return null;
+  }
+
+  /* Other ways this square's cliché turns up: the deck's own list plus any the player added. */
+  function alsoFor(text) {
+    if (!state.deck) return [];
+    var mine = findAlso(loadEdits(state.deck).v, text) || [];
+    return cleanSquares((findAlso(state.deck.also, text) || []).concat(mine), MAX_ALSO * 2);
+  }
+
+  function withAlso(text, also) {
+    return also && also.length ? text + ' | ' + also.join(' | ') : text;
   }
 
   function customDeck(data) {
     if (!data || !Array.isArray(data.q)) return null;
     var squares = cleanSquares(data.q);
     if (squares.length < NEEDED) return null;
+    var free = String(data.f || 'Free square').trim().slice(0, 60) || 'Free square';
     return {
       id: 'custom', custom: true, accent: 'custom',
       title: String(data.t || 'My card').trim().slice(0, 40) || 'My card',
-      free: String(data.f || 'Free square').trim().slice(0, 60) || 'Free square',
+      free: free,
       squares: squares,
+      also: cleanAlsoMap(data.v, squares.concat(free)),
       blurb: 'A card you made. Copy the card link to send it, squares and all, to a friend.',
     };
+  }
+
+  function customPayload(deck) {
+    var p = { t: deck.title, f: deck.free, q: deck.squares };
+    if (deck.also && Object.keys(deck.also).length) p.v = deck.also;
+    return p;
   }
 
   function fmtTime(ms) {
@@ -149,10 +228,40 @@
     return null;
   }
 
-  function hashFor(deck, seed) {
+  function hashFor(deck, seed, cells) {
     var h = 'd=' + encodeURIComponent(deck.id) + '&s=' + encodeURIComponent(seed);
-    if (deck.custom) h += '&c=' + b64urlEncode({ t: deck.title, f: deck.free, q: deck.squares });
+    if (deck.custom) h += '&c=' + b64urlEncode(customPayload(deck));
+    if (cells && !sameList(cells, buildCells(deck, seed))) {
+      h += '&k=' + b64urlEncode(cells.filter(function (_, i) { return i !== CENTRE; }));
+    }
     return h;
+  }
+
+  /* ---------- deck edits (this browser only) ---------- */
+
+  function deckKey(deck) {
+    return deck.custom ? 'custom:' + hashString(JSON.stringify(deck.squares) + deck.free).toString(36) : deck.id;
+  }
+
+  function loadEdits(deck) {
+    var e = load('ashwga:edits:' + deckKey(deck)) || {};
+    return {
+      r: Array.isArray(e.r) ? cleanSquares(e.r, 500) : [],  // removed
+      a: Array.isArray(e.a) ? cleanSquares(e.a, MAX_ADDED) : [],  // added
+      v: cleanAlsoMap(e.v),  // the player's own variations
+    };
+  }
+
+  function saveEdits(deck, e) {
+    var any = e.r.length || e.a.length || Object.keys(e.v || {}).length;
+    store('ashwga:edits:' + deckKey(deck), any ? e : undefined);
+  }
+
+  /* The squares new cards are dealt from: the deck, plus additions, minus removals. */
+  function poolFor(deck, edits) {
+    edits = edits || loadEdits(deck);
+    var removed = lowerSet(edits.r);
+    return cleanSquares(deck.squares.concat(edits.a), 1000).filter(function (t) { return !removed[t.toLowerCase()]; });
   }
 
   function storageKey() {
@@ -161,8 +270,10 @@
     return k;
   }
 
-  function buildCells(deck, seed) {
-    var pool = deck.squares.slice(), r = rng(deck.id + ':' + seed), i, j, tmp;
+  /* Without a pool this is the card the seed alone describes (the one a link without `k` means). */
+  function buildCells(deck, seed, pool) {
+    pool = (pool || deck.squares).slice();
+    var r = rng(deck.id + ':' + seed), i, j, tmp;
     for (i = pool.length - 1; i > 0; i--) { j = Math.floor(r() * (i + 1)); tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
     pool = pool.slice(0, NEEDED);
     pool.splice(CENTRE, 0, deck.free);
@@ -173,19 +284,17 @@
     opts = opts || {};
     state.deck = deck;
     state.seed = seed;
-    state.cells = buildCells(deck, seed);
+    state.cells = opts.cells || buildCells(deck, seed);
     var saved = load(storageKey()) || {};
+    // Marks saved for a different layout of this card don't belong to this one.
+    if (!sameList(saved.cells || buildCells(deck, seed), state.cells)) saved = {};
     state.marked = state.cells.map(function (_, i) { return i === CENTRE || (saved.m || []).indexOf(i) !== -1; });
     state.t0 = saved.t0 || 0;
     state.t1 = saved.t1 || 0;
     state.celebrated = saved.c || 0;
     state.focus = Math.min(state.focus, 24);
 
-    var h = hashFor(deck, seed);
-    if (location.hash.slice(1) !== h) history.replaceState(null, '', '#' + h);
-    store('ashwga:last', h);
-    if (!deck.custom) store('ashwga:seed:' + deck.id, seed);
-    else store('ashwga:custom', { t: deck.title, f: deck.free, q: deck.squares, s: seed });
+    rememberCard();
 
     document.body.dataset.accent = deck.accent || 'showcase';
     el.title.textContent = deck.title;
@@ -193,16 +302,35 @@
     el.blurb.textContent = deck.blurb || '';
     document.title = 'ASHWGA: ' + deck.title + ' bingo';
     hideBanner();
+    stopPicking();
     renderDecks();
     renderGrid();
     update(false);
+    renderEditor();
     if (opts.announce) say(deck.title + ' card ' + seed.toUpperCase() + ' ready.');
+  }
+
+  /* Deal a fresh card from the deck as this browser has edited it. */
+  function dealCard(deck, opts) {
+    var seed = newSeed();
+    openCard(deck, seed, Object.assign({ cells: buildCells(deck, seed, poolFor(deck)) }, opts || {}));
+  }
+
+  /* Put the card in the address bar and remember it, so switching decks comes back to it. */
+  function rememberCard() {
+    var h = hashFor(state.deck, state.seed, state.cells);
+    if (location.hash.slice(1) !== h) history.replaceState(null, '', '#' + h);
+    store('ashwga:last', h);
+    if (!state.deck.custom) store('ashwga:lastcard:' + state.deck.id, h);
+    else store('ashwga:custom', Object.assign(customPayload(state.deck), { s: state.seed, h: h }));
   }
 
   function save() {
     var m = [];
     state.marked.forEach(function (v, i) { if (v && i !== CENTRE) m.push(i); });
-    store(storageKey(), { m: m, t0: state.t0, t1: state.t1, c: state.celebrated });
+    var rec = { m: m, t0: state.t0, t1: state.t1, c: state.celebrated };
+    if (!sameList(state.cells, buildCells(state.deck, state.seed))) rec.cells = state.cells;
+    store(storageKey(), rec);
   }
 
   function score() {
@@ -300,13 +428,70 @@
     }
   }
 
+  /* Press and hold (touch), hover (mouse) or ? (keyboard) shows a square's variations. */
+  var press = null, hoverTimer = null;
+  function clearPress() { if (press) { clearTimeout(press.t); press = null; } }
+  function bindAlso(b, i) {
+    b.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse') return;
+      clearPress();
+      press = { x: e.clientX, y: e.clientY, t: setTimeout(function () {
+        press = null;
+        suppressClick = true;
+        showAlso(i);
+      }, 450) };
+    });
+    b.addEventListener('pointermove', function (e) {
+      if (press && Math.abs(e.clientX - press.x) + Math.abs(e.clientY - press.y) > 12) clearPress();
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { b.addEventListener(ev, clearPress); });
+    b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    b.addEventListener('pointerenter', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(function () { showAlso(i); }, 350);
+    });
+    b.addEventListener('pointerleave', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(hoverTimer);
+      hideAlso();
+    });
+  }
+
+  function showAlso(i) {
+    var also = alsoFor(state.cells[i]), sq = el.grid.children[i], pop = el.alsoPop;
+    if (!also.length || !sq) return;
+    pop.textContent = '';
+    var head = document.createElement('b');
+    head.textContent = 'Also counts';
+    var ul = document.createElement('ul');
+    also.forEach(function (v) { var li = document.createElement('li'); li.textContent = v; ul.appendChild(li); });
+    pop.appendChild(head);
+    pop.appendChild(ul);
+    pop.hidden = false;
+    pop.dataset.i = i;
+    var t = document.getElementById('ticket').getBoundingClientRect(), r = sq.getBoundingClientRect();
+    var w = pop.offsetWidth, h = pop.offsetHeight;
+    var left = Math.max(8, Math.min(r.left - t.left + r.width / 2 - w / 2, t.width - w - 8));
+    var top = r.bottom - t.top + 6;
+    if (top + h > t.height - 8) top = Math.max(8, r.top - t.top - h - 6);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+  }
+
+  function hideAlso() {
+    if (el.alsoPop) el.alsoPop.hidden = true;
+  }
+
   function renderGrid() {
+    hideAlso();
     el.grid.textContent = '';
     document.getElementById('ticket').style.setProperty('--cols', columnTemplate(state.cells));
     state.cells.forEach(function (text, i) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'sq' + (i === CENTRE ? ' free' : '') + sizeClass(text, i === CENTRE);
+      var also = alsoFor(text);
+      b.className = 'sq' + (i === CENTRE ? ' free' : '') + sizeClass(text, i === CENTRE) + (also.length ? ' has-also' : '');
       b.dataset.i = i;
       b.tabIndex = i === state.focus ? 0 : -1;
       if (i === CENTRE) {
@@ -319,7 +504,11 @@
       span.textContent = text;
       b.appendChild(span);
       b.setAttribute('aria-pressed', String(state.marked[i]));
-      b.addEventListener('click', function () { toggle(i); });
+      b.addEventListener('click', function () {
+        if (suppressClick) { suppressClick = false; return; }
+        toggle(i);
+      });
+      if (also.length) bindAlso(b, i);
       b.addEventListener('keydown', onKey);
       b.addEventListener('focus', function () { setFocus(i, false); });
       el.grid.appendChild(b);
@@ -338,7 +527,9 @@
       buttons[i].setAttribute('aria-pressed', String(state.marked[i]));
       buttons[i].classList.toggle('near', !!s.near[i] && !s.full);
       buttons[i].classList.toggle('inline', !!inLine[i]);
-      var label = state.cells[i] + (i === CENTRE ? ', free square' : '') + (s.near[i] && !state.marked[i] ? ', would complete a line' : '');
+      var also = alsoFor(state.cells[i]);
+      var label = state.cells[i] + (i === CENTRE ? ', free square' : '') + (s.near[i] && !state.marked[i] ? ', would complete a line' : '') +
+        (also.length ? '. Also counts: ' + also.join('; ') : '');
       buttons[i].setAttribute('aria-label', label);
     }
 
@@ -394,6 +585,7 @@
 
   function toggle(i) {
     if (i === CENTRE) return;
+    if (state.picking) { placePicked(i); return; }
     state.marked[i] = !state.marked[i];
     if (state.marked[i] && !state.t0) state.t0 = Date.now();
     var s = score();
@@ -402,6 +594,7 @@
     if (s.count === 0) state.t0 = 0;
     setFocus(i, false);
     update(true);
+    if (el.editPanel.open) renderEditor();
   }
 
   function setFocus(i, move) {
@@ -413,6 +606,14 @@
 
   function onKey(e) {
     var i = state.focus, r = Math.floor(i / SIZE), c = i % SIZE;
+    if (e.key === '?' || e.key === 'i') {
+      e.preventDefault();
+      if (!el.alsoPop.hidden && el.alsoPop.dataset.i === String(i)) hideAlso();
+      else if (alsoFor(state.cells[i]).length) showAlso(i);
+      else toast('No variations listed for this one. Close enough still counts.');
+      return;
+    }
+    hideAlso();
     switch (e.key) {
       case 'ArrowRight': c = Math.min(SIZE - 1, c + 1); break;
       case 'ArrowLeft': c = Math.max(0, c - 1); break;
@@ -428,8 +629,11 @@
 
   function switchDeck(d) {
     if (state.deck && d.id === state.deck.id && !d.custom) return;
-    var seed = d.custom ? ((load('ashwga:custom') || {}).s || newSeed()) : (load('ashwga:seed:' + d.id) || newSeed());
-    openCard(d, seed, { announce: true });
+    var last = d.custom ? (load('ashwga:custom') || {}).h : load('ashwga:lastcard:' + d.id);
+    if (last && openHash(last, { announce: true })) return;
+    var seed = d.custom ? (load('ashwga:custom') || {}).s : load('ashwga:seed:' + d.id); // saved before card edits existed
+    if (seed) openCard(d, seed, { announce: true });
+    else dealCard(d, { announce: true });
   }
 
   function resultText() {
@@ -472,13 +676,205 @@
     } else copy(text, 'Result copied. Paste it anywhere.');
   }
 
+  /* ---------- editing a card and its deck ---------- */
+
+  function onCard(text) {
+    var t = text.toLowerCase();
+    for (var i = 0; i < state.cells.length; i++) if (i !== CENTRE && state.cells[i].toLowerCase() === t) return i;
+    return -1;
+  }
+
+  function spares() {
+    var used = lowerSet(state.cells);
+    return poolFor(state.deck).filter(function (t) { return !used[t.toLowerCase()]; });
+  }
+
+  /* Put `text` in square i. The new square starts unmarked; every other mark stays. */
+  function replaceCell(i, text) {
+    state.cells[i] = text;
+    state.marked[i] = false;
+    var s = score();
+    if (!s.full) state.t1 = 0;
+    if (s.count === 0) state.t0 = 0;
+    rememberCard();
+    renderGrid();
+    update(true);
+    renderEditor();
+  }
+
+  function swapOut(i) {
+    var options = spares();
+    if (!options.length) { toast('No spare squares left in this deck. Add or restore one first.'); return false; }
+    var old = state.cells[i], pick = options[Math.floor(Math.random() * options.length)];
+    replaceCell(i, pick);
+    say('Swapped ' + old + ' for ' + pick + '.');
+    return true;
+  }
+
+  function removeSquare(text) {
+    var deck = state.deck, edits = loadEdits(deck), lower = text.toLowerCase();
+    var added = edits.a.some(function (t) { return t.toLowerCase() === lower; });
+    if (poolFor(deck, edits).length - 1 < NEEDED) { toast('A deck needs at least ' + NEEDED + ' squares to deal a card.'); return; }
+    var i = onCard(text);
+    if (i !== -1) {
+      // Take it off the card first; if nothing can replace it, the removal is cancelled.
+      var options = spares().filter(function (t) { return t.toLowerCase() !== lower; });
+      if (!options.length) { toast('No spare squares to put in its place. Add or restore one first.'); return; }
+      replaceCell(i, options[Math.floor(Math.random() * options.length)]);
+    }
+    if (added) {
+      edits.a = edits.a.filter(function (t) { return t.toLowerCase() !== lower; });
+      Object.keys(edits.v).forEach(function (k) { if (k.toLowerCase() === lower) delete edits.v[k]; });
+    } else edits.r.push(text);
+    saveEdits(deck, edits);
+    renderEditor();
+    toast(added ? 'Deleted your square' : 'Removed from this deck' + (i !== -1 ? ' and swapped off your card' : ''));
+  }
+
+  function restoreSquare(text) {
+    var edits = loadEdits(state.deck), lower = text.toLowerCase();
+    edits.r = edits.r.filter(function (t) { return t.toLowerCase() !== lower; });
+    saveEdits(state.deck, edits);
+    renderEditor();
+    toast('Back in the deck');
+  }
+
+  /* Returns the square as it now appears in the deck, or null if it couldn't be added. */
+  function addSquare(raw) {
+    var parsed = splitLine(raw), text = parsed.text;
+    if (!text) { toast('Type a square first'); return null; }
+    var deck = state.deck, edits = loadEdits(deck), lower = text.toLowerCase();
+    var existing = poolFor(deck, edits).filter(function (t) { return t.toLowerCase() === lower; })[0];
+    if (existing) {
+      if (parsed.also.length) {
+        edits.v[existing] = parsed.also;
+        saveEdits(deck, edits);
+        renderGrid(); update(false); renderEditor();
+        toast('Variations saved for that square');
+      } else toast('That one’s already in the deck');
+      return existing;
+    }
+    var original = deck.squares.filter(function (t) { return t.toLowerCase() === lower; })[0];
+    if (original) {
+      edits.r = edits.r.filter(function (t) { return t.toLowerCase() !== lower; });
+      text = original;
+    } else {
+      if (edits.a.length >= MAX_ADDED) { toast('That’s the most squares you can add to one deck'); return null; }
+      edits.a.push(text);
+    }
+    if (parsed.also.length) edits.v[text] = parsed.also;
+    saveEdits(deck, edits);
+    renderEditor();
+    return text;
+  }
+
+  function startPicking(text) {
+    if (onCard(text) !== -1) { toast('That square is already on your card'); return; }
+    state.picking = text;
+    el.pickText.textContent = text;
+    el.pickHint.hidden = false;
+    document.body.classList.add('picking');
+    setFocus(state.focus === CENTRE ? 0 : state.focus, true);
+    el.pickHint.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    say('Choose the square on your card that ' + text + ' should replace, or press Escape to cancel.');
+  }
+
+  function stopPicking() {
+    state.picking = null;
+    if (el.pickHint) el.pickHint.hidden = true;
+    document.body.classList.remove('picking');
+  }
+
+  function placePicked(i) {
+    var text = state.picking, old = state.cells[i];
+    stopPicking();
+    replaceCell(i, text);
+    setFocus(i, true);
+    toast('Swapped in. “' + old + '” went back to the deck.');
+  }
+
+  function row(text, actions, opts) {
+    var li = document.createElement('li');
+    var label = document.createElement('span');
+    label.className = 'sqtext';
+    label.textContent = text;
+    li.appendChild(label);
+    if (opts && opts.yours) { var y = document.createElement('em'); y.className = 'tag'; y.textContent = 'yours'; li.appendChild(y); }
+    if (opts && opts.marked) { var m = document.createElement('em'); m.className = 'tag marked'; m.textContent = 'marked'; li.appendChild(m); }
+    var also = alsoFor(text);
+    if (also.length) {
+      var v = document.createElement('small');
+      v.className = 'alsoline';
+      v.textContent = 'Also counts: ' + also.join(' · ');
+      li.appendChild(v);
+    }
+    var box = document.createElement('span');
+    box.className = 'rowbtns';
+    actions.forEach(function (a) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mini' + (a.primary ? ' primary' : '');
+      b.textContent = a.label;
+      b.setAttribute('aria-label', a.label + ': ' + text);
+      b.addEventListener('click', a.run);
+      box.appendChild(b);
+    });
+    li.appendChild(box);
+    return li;
+  }
+
+  function renderEditor() {
+    if (!el.editPanel || !state.deck) return;
+    var deck = state.deck, edits = loadEdits(deck), pool = poolFor(deck, edits);
+    var yours = lowerSet(edits.a), onCardSet = lowerSet(state.cells);
+    var rest = pool.filter(function (t) { return !onCardSet[t.toLowerCase()]; });
+    var removed = edits.r.filter(function (t) { return deck.squares.some(function (d) { return d.toLowerCase() === t.toLowerCase(); }); });
+
+    el.eCard.textContent = '';
+    state.cells.forEach(function (t, i) {
+      if (i === CENTRE) return;
+      el.eCard.appendChild(row(t, [
+        { label: 'Swap', run: function () { swapOut(i); } },
+        { label: yours[t.toLowerCase()] ? 'Delete' : 'Remove', run: function () { removeSquare(t); } },
+      ], { yours: yours[t.toLowerCase()], marked: state.marked[i] }));
+    });
+    el.eRest.textContent = '';
+    rest.forEach(function (t) {
+      el.eRest.appendChild(row(t, [
+        { label: 'Put on card', primary: true, run: function () { startPicking(t); } },
+        { label: yours[t.toLowerCase()] ? 'Delete' : 'Remove', run: function () { removeSquare(t); } },
+      ], { yours: yours[t.toLowerCase()] }));
+    });
+    el.eRemoved.textContent = '';
+    removed.forEach(function (t) {
+      el.eRemoved.appendChild(row(t, [{ label: 'Restore', run: function () { restoreSquare(t); } }]));
+    });
+    el.eRemovedWrap.hidden = !removed.length;
+    el.eCardCount.textContent = '(' + NEEDED + ')';
+    el.eRestCount.textContent = '(' + rest.length + ')';
+    el.eSummary.textContent = pool.length + ' squares in play: ' + NEEDED + ' on your card and ' + rest.length + ' more in the deck' +
+      (edits.a.length ? ', including ' + edits.a.length + ' of your own' : '') +
+      (removed.length ? '. ' + removed.length + ' removed.' : '.') + ' The free square, “' + deck.free + '”, is always on the card.';
+    $('eReset').disabled = !edits.a.length && !edits.r.length;
+  }
+
   /* ---------- custom cards ---------- */
 
+  /* Each line is a square, optionally followed by variations: "Square | variation | variation". */
   function customInput() {
-    return cleanSquares(el.cSquares.value.split('\n'));
+    var squares = [], also = {};
+    el.cSquares.value.split('\n').forEach(function (line) {
+      var p = splitLine(line);
+      if (!p.text) return;
+      squares.push(p.text);
+      if (p.also.length) also[p.text] = p.also;
+    });
+    var free = splitLine(el.cFree.value);
+    if (free.text && free.also.length) also[free.text] = free.also;
+    return { squares: cleanSquares(squares), also: also, free: free.text };
   }
   function updateCount() {
-    var n = customInput().length;
+    var n = customInput().squares.length;
     el.cCount.textContent = n >= NEEDED ? n + ' squares. Ready to play.' : n + ' of ' + NEEDED + ' squares';
     el.cCount.classList.toggle('ok', n >= NEEDED);
     el.cPlay.disabled = n < NEEDED;
@@ -486,14 +882,30 @@
 
   /* ---------- start ---------- */
 
-  function fromHash() {
-    var p = new URLSearchParams(location.hash.slice(1));
+  /* An edited card's squares, from a link. Ignored unless it's 24 distinct squares. */
+  function cellsFromK(k, deck) {
+    var list = b64urlDecode(k || '');
+    if (!Array.isArray(list) || list.length !== NEEDED) return null;
+    var clean = cleanSquares(list);
+    if (clean.length !== NEEDED || clean.some(function (t, i) { return t !== list[i]; })) return null;
+    clean.splice(CENTRE, 0, deck.free);
+    return clean;
+  }
+
+  function openHash(hash, opts) {
+    var p = new URLSearchParams(hash);
     var id = p.get('d'), seed = (p.get('s') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
     if (!id) return false;
     var deck = id === 'custom' ? customDeck(b64urlDecode(p.get('c') || '')) : deckById(id);
     if (!deck) return false;
-    openCard(deck, seed || newSeed());
+    if (!seed) { dealCard(deck, opts); return true; }
+    var cells = p.get('k') ? cellsFromK(p.get('k'), deck) : null;
+    openCard(deck, seed, Object.assign({ cells: cells || undefined }, opts || {}));
     return true;
+  }
+
+  function fromHash() {
+    return openHash(location.hash.slice(1));
   }
 
   function start() {
@@ -501,11 +913,11 @@
     if (!fromHash()) {
       var last = load('ashwga:last');
       if (last) { history.replaceState(null, '', '#' + last); }
-      if (!last || !fromHash()) openCard(DECKS[0], load('ashwga:seed:' + DECKS[0].id) || newSeed());
+      if (!last || !fromHash()) dealCard(DECKS[0]);
     }
 
     $('newCard').addEventListener('click', function () {
-      openCard(state.deck, newSeed(), { announce: true });
+      dealCard(state.deck, { announce: true });
       toast('Fresh card dealt');
     });
     $('clear').addEventListener('click', function () {
@@ -519,26 +931,61 @@
     $('share').addEventListener('click', share);
     $('bannerShare').addEventListener('click', share);
     $('bannerClose').addEventListener('click', function () { hideBanner(); setFocus(state.focus, true); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !el.banner.hidden) { hideBanner(); setFocus(state.focus, true); } });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (!el.alsoPop.hidden) { hideAlso(); return; }
+      if (state.picking) { stopPicking(); say('Cancelled.'); return; }
+      if (!el.banner.hidden) { hideBanner(); setFocus(state.focus, true); }
+    });
+
+    // Editing squares
+    $('editSquares').addEventListener('click', function () {
+      el.editPanel.open = true;
+      renderEditor();
+      el.editPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    el.editPanel.addEventListener('toggle', function () { if (el.editPanel.open) renderEditor(); });
+    $('pickCancel').addEventListener('click', function () { stopPicking(); toast('Cancelled'); });
+    $('eAdd').addEventListener('click', function () {
+      var t = addSquare(el.eNew.value);
+      if (t) { el.eNew.value = ''; toast('Added to the deck. New cards can draw it.'); }
+    });
+    $('eAddPlace').addEventListener('click', function () {
+      var t = addSquare(el.eNew.value);
+      if (t) { el.eNew.value = ''; startPicking(t); }
+    });
+    el.eNew.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('eAdd').click(); } });
+    $('eReset').addEventListener('click', function () {
+      saveEdits(state.deck, { r: [], a: [] });
+      renderEditor();
+      toast('Deck reset. Your card stays as it is.');
+    });
 
     el.cSquares.addEventListener('input', updateCount);
     $('cFromDeck').addEventListener('click', function () {
       el.cTitle.value = state.deck.custom ? state.deck.title : 'My ' + state.deck.title;
-      el.cFree.value = state.deck.free;
-      el.cSquares.value = state.deck.squares.join('\n');
+      el.cFree.value = withAlso(state.deck.free, alsoFor(state.deck.free));
+      el.cSquares.value = poolFor(state.deck).map(function (t) { return withAlso(t, alsoFor(t)); }).join('\n');
       updateCount();
       el.cSquares.focus();
     });
     $('cPlay').addEventListener('click', function () {
-      var deck = customDeck({ t: el.cTitle.value, f: el.cFree.value, q: customInput() });
+      var input = customInput();
+      var deck = customDeck({ t: el.cTitle.value, f: input.free, q: input.squares, v: input.also });
       if (!deck) return;
-      openCard(deck, newSeed(), { announce: true });
+      dealCard(deck, { announce: true });
       document.getElementById('ticket').scrollIntoView({ behavior: 'smooth', block: 'start' });
       toast('Your card is ready');
     });
     updateCount();
 
     window.addEventListener('hashchange', fromHash);
+    // Any new touch or click starts a fresh gesture: forget an earlier press-and-hold, and close the popover.
+    document.addEventListener('pointerdown', function (e) {
+      suppressClick = false;
+      if (!el.alsoPop.hidden && !el.alsoPop.contains(e.target)) hideAlso();
+    }, true);
+    window.addEventListener('resize', hideAlso);
     var resizeTimer;
     window.addEventListener('resize', function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitText, 120); });
     // Web fonts change word widths, so measure again once each one arrives.
