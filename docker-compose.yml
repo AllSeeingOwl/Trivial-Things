@@ -46,6 +46,11 @@ services:
     ports:
       - "8005:5000"
 
+  point_it_out:
+    build: ./point_it_out
+    ports:
+      - "8015:5000"
+
   quarterly_calendar:
     build: ./quarterly_calendar
     ports:

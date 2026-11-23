@@ -11,6 +11,7 @@ APPS = {
     "mcq_flashcards": "mcq_flashcards_app.py",
     "pdf_grid_flashcards": "pdf_grid_flashcards_app.py",
     "periodic_name": "periodic_name_app.py",
+    "point_it_out": "point_it_out_app.py",
     "price_time_machine": "price_time_machine_app.py",
     "quarterly_calendar": "quarterly_calendar_app.py",
     "sliding_rows_flashcards": "sliding_rows_flashcards_app.py",

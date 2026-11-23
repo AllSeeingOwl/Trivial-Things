@@ -98,6 +98,13 @@ services:
     plan: free
 
   - type: web
+    name: trivial-things-point-it-out
+    env: docker
+    dockerContext: point_it_out
+    dockerfilePath: point_it_out/Dockerfile
+    plan: free
+
+  - type: web
     name: trivial-things-what-the-spell
     env: docker
     dockerContext: what_the_spell

@@ -37,6 +37,10 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "pip"
+    directory: "/point_it_out"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
     directory: "/whovian_degrees"
     schedule:
       interval: "weekly"
@@ -79,6 +83,10 @@ updates:
       interval: "weekly"
   - package-ecosystem: "docker"
     directory: "/where_in_the_world"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/point_it_out"
     schedule:
       interval: "weekly"
   - package-ecosystem: "docker"

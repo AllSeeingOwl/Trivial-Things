@@ -1,0 +1,53 @@
+# Point It Out
+
+A picture quiz where you answer by pointing. Each question shows one or more
+pictures: click the right picture, or the right spot on it.
+
+## Playing
+
+```bash
+pip install -r requirements.txt
+python3 point_it_out_app.py
+```
+
+Open <http://127.0.0.1:5010>. Click (or tap) to drop a pin, move it as often as
+you like, then press **Lock it in**. Keyboard players can Tab to a picture,
+press Enter to drop a pin and move it with the arrow keys (Shift for big steps).
+
+Scoring:
+
+| Result | Points |
+| --- | --- |
+| Right picture, inside the answer area (or any spot, when the question has no area) | 10 |
+| Right picture, within 5% of the answer area | 5 |
+| Anything else | 0 |
+
+## Adding questions
+
+Questions live in `Point It Out.csv` (set `CSV_FILE` to use another file):
+
+| Column | Meaning |
+| --- | --- |
+| Category | Shown above the question. |
+| Question | What the player is asked. |
+| Pictures | File names in `static/images`, separated by `\|`. Shown in random order. |
+| Correct Picture | Which picture is right, counting from 1. Defaults to 1. |
+| Answer Area | Optional `left, top, width, height` in percent of the correct picture. Blank means any click on the right picture counts. |
+| Explanation | Shown after the player answers. |
+
+The easiest way to write a row is the question maker at
+<http://127.0.0.1:5010/editor>: add pictures, click the correct one, drag a box
+over the answer, and copy the finished CSV line.
+
+Rows with a missing picture or a bad answer area are skipped, and the server
+prints which CSV line was skipped and why.
+
+Pictures can be SVG, PNG, JPEG, GIF or WebP. The starter pictures are simple
+SVG drawings made for this app; if you add photos, check you're allowed to use
+them, especially if the app is public.
+
+## Tests
+
+```bash
+python3 -m pytest
+```
