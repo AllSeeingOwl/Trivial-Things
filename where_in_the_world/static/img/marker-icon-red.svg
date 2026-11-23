@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41">
+  <!-- Red map pin, the same size and shape as Leaflet's default marker. Marks the answer. -->
+  <path d="M12.5 1C6.15 1 1 6.15 1 12.5c0 2.3.68 4.45 1.85 6.25L12.5 40l9.65-21.25A11.45 11.45 0 0 0 24 12.5C24 6.15 18.85 1 12.5 1z"
+        fill="#e11d2e" stroke="#7a0b14" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="12.5" cy="12.5" r="4.6" fill="#ffffff"/>
+</svg>
