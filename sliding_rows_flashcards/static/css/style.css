@@ -1,20 +1,10 @@
-/* Basic styling using variables and resets */
+/* Sliding Rows Flashcards. Shared look and action colours come from quiz-night.css. */
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2c3e50;
-    --background-color: #ecf0f1;
-    --text-color: #333;
-    --row-bg: #fff;
-    --row-hover: #f1f5f8;
-    --row-revealed-bg: #e8f4f8;
-    --border-radius: 8px;
     --transition-speed: 0.3s;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    --qn-accent: #fbbf24; /* gold */
     margin: 0;
     padding: 20px;
     display: flex;
@@ -24,7 +14,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 60rem;
     width: 100%;
 }
 
@@ -32,84 +22,48 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--secondary-color);
+    flex-wrap: wrap;
+    gap: 0.6em 1.2em;
+    margin-bottom: 1.2em;
+    padding-bottom: 0.6em;
+    border-bottom: 2px solid var(--qn-line);
 }
 
-h1 {
-    margin: 0;
-    color: var(--secondary-color);
-}
+.quiz-night header h1 { margin: 0.2em 0; }
+.quiz-night header h1::after { margin-left: 0; }
 
 .stats-container {
     display: flex;
     align-items: center;
-    gap: 15px;
-    font-weight: bold;
+    flex-wrap: wrap;
+    gap: 0.8em;
+    font-weight: 700;
+    color: var(--qn-muted);
+    font-variant-numeric: tabular-nums;
 }
+#chains-remaining, #chains-total { color: var(--qn-text); }
 
 #empty-state {
     flex-direction: column;
     justify-content: center;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 1.2em;
+    padding: 1.2em 2em;
 }
-
-#empty-state h2 {
-    margin: 0;
-}
-
-#empty-state p {
-    margin-bottom: 15px;
-    font-weight: normal;
-}
-
-#empty-state button {
-    width: auto;
-    margin-top: 0;
-}
-
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: var(--border-radius);
-    background-color: var(--secondary-color);
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color var(--transition-speed);
-}
-
-.btn:hover:not(:disabled) {
-    background-color: #1a252f;
-}
-
-.btn:focus-visible {
-    outline: 3px solid var(--primary-color);
-    outline-offset: 2px;
-}
-
-.btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
+#empty-state h2 { margin: 0; }
+#empty-state p { margin: 0.4em 0 1em; font-weight: 400; color: var(--qn-muted); }
+#empty-state button { width: auto; margin-top: 0; }
 
 .primary-btn {
-    background-color: var(--primary-color);
-    padding: 12px 24px;
-    font-size: 16px;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 1.2em;
+    font-size: var(--qn-step-1);
 }
 
-.primary-btn:hover:not(:disabled) {
-    background-color: #2980b9;
-}
+.hidden { display: none !important; }
 
-.hidden {
-    display: none !important;
-}
+#loading { color: var(--qn-muted); }
+.error { color: var(--qn-wrong); font-weight: 700; }
 
 /* Screen reader only utility class to comply with WCAG 1.4.1 */
 .sr-only {
@@ -124,60 +78,61 @@ h1 {
     border-width: 0;
 }
 
-/* --- Sliding Rows Styles --- */
+/* --- Sliding Rows --- */
 .chain-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.6em;
 }
 
 .sliding-row {
-    background-color: var(--row-bg);
-    border-radius: var(--border-radius);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: var(--qn-surface);
+    border: 2px solid var(--qn-line);
+    border-radius: var(--qn-radius);
     overflow: hidden;
     cursor: pointer;
-    transition: background-color var(--transition-speed);
+    transition: border-color var(--transition-speed), background-color var(--transition-speed);
     position: relative;
 }
 
-.sliding-row:hover {
-    background-color: var(--row-hover);
-}
+.sliding-row:hover { border-color: var(--qn-accent); }
 
 /* The header of the row that acts as the clickable "handle" */
 .row-handle {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    font-size: 18px;
-    font-weight: bold;
+    padding: 0.7em 1em;
+    font-size: var(--qn-step-1);
+    font-weight: 700;
 }
 
 .row-handle:focus-visible {
-    outline: 3px solid var(--primary-color);
+    outline: 3px solid var(--qn-accent);
     outline-offset: -3px; /* Inset to prevent clipping */
-    border-radius: var(--border-radius);
+    border-radius: var(--qn-radius);
 }
 
 .row-number {
-    width: 40px;
-    height: 40px;
-    background-color: var(--secondary-color);
-    color: white;
+    width: 2.2em;
+    height: 2.2em;
+    background: var(--qn-surface-2);
+    color: var(--qn-text);
+    border: 2px solid var(--qn-line);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 15px;
+    margin-right: 0.8em;
     flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
 }
 
 .row-status-text {
     flex-grow: 1;
-    color: #7f8c8d;
+    color: var(--qn-muted);
     font-style: italic;
-    font-size: 14px;
+    font-size: var(--qn-step-0);
+    font-weight: 400;
     text-align: right;
 }
 
@@ -186,64 +141,63 @@ h1 {
     max-height: 0;
     overflow: hidden;
     transition: max-height var(--transition-speed) ease-in-out, padding var(--transition-speed) ease-in-out;
-    background-color: var(--row-revealed-bg);
+    background: var(--qn-surface-2);
     border-top: 1px solid transparent;
 }
 
 /* State Classes controlled by JS */
 
 /* 1. Question Revealed */
+.sliding-row.state-question { border-color: var(--qn-accent); }
+.sliding-row.state-question .row-number { background: var(--qn-accent); border-color: var(--qn-accent); color: var(--qn-ink); }
+
 .sliding-row.state-question .row-content {
-    max-height: 200px; /* arbitrary max-height larger than content */
-    padding: 20px;
-    border-top: 1px solid #dcdde1;
+    max-height: 30rem; /* larger than any question */
+    padding: 1em 1.2em;
+    border-top: 1px solid var(--qn-line);
 }
 
 .sliding-row.state-question .question-text {
     display: block;
-    font-size: 18px;
-    font-weight: 500;
+    font-size: var(--qn-step-2);
+    font-weight: 700;
+    line-height: 1.25;
 }
 
-.sliding-row.state-question .answer-text {
-    display: none;
-}
+.sliding-row.state-question .answer-text { display: none; }
 
 .sliding-row.state-question .row-status-text {
-    color: var(--primary-color);
+    color: var(--qn-accent);
     font-style: normal;
 }
 
 /* 2. Answer Revealed */
 .sliding-row.state-answer .row-content {
-    max-height: 400px;
-    padding: 20px;
-    border-top: 1px solid #dcdde1;
+    max-height: 40rem;
+    padding: 1em 1.2em;
+    border-top: 1px solid var(--qn-line);
 }
 
 .sliding-row.state-answer .question-text {
     display: block;
-    font-size: 16px;
-    color: #7f8c8d;
-    margin-bottom: 10px;
+    font-size: var(--qn-step-1);
+    color: var(--qn-muted);
+    margin-bottom: 0.4em;
 }
 
 .sliding-row.state-answer .answer-text {
     display: block;
-    font-size: 20px;
-    font-weight: bold;
-    color: #27ae60;
+    font-size: var(--qn-step-2);
+    font-weight: 700;
+    color: var(--qn-accent);
 }
 
-.sliding-row.state-answer .row-status-text {
-    color: #27ae60;
-}
+.sliding-row.state-answer .row-status-text { color: var(--qn-muted); }
 
-.sliding-row.state-answer {
-    cursor: default; /* No more clicking needed */
-    background-color: #f8f9fa;
-}
+.sliding-row.state-answer .row-number { background: transparent; color: var(--qn-accent); border-color: var(--qn-accent); }
 
+.sliding-row.state-answer,
 .sliding-row.state-answer:hover {
-    background-color: #f8f9fa;
+    cursor: default; /* No more clicking needed */
+    border-color: var(--qn-line);
 }

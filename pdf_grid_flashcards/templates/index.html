@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Grid Flashcards</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     {% set portal_app_name = "PDF Grid Flashcards" %}
     {% include '_portal_nav.html' %}
 
@@ -21,9 +22,9 @@
             <form id="upload-form">
                 <label for="pdf-file" class="sr-only">Select PDF File</label>
                 <input type="file" id="pdf-file" accept="application/pdf" required aria-label="Select PDF File">
-                <button type="submit">Upload PDF</button>
+                <button type="submit" class="qn-go">Upload PDF</button>
             </form>
-            <button id="reset-btn">Reset Grid Colors</button>
+            <button id="reset-btn" class="qn-reset">Reset Grid Colors</button>
         </section>
 
         <div id="loading" aria-live="polite" aria-busy="false">Processing PDF... Please wait.</div>

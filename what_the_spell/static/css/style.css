@@ -1,23 +1,6 @@
-:root {
-    --bg-color: #f0f2f5;
-    --text-color: #333;
-    --text-muted: #666;
-    --border-color: #ccc;
-    --bg-white: white;
-    --btn-primary: #007bff;
-    --btn-primary-hover: #0056b3;
-    --cell-bg: #e9ecef;
-    --cell-header-bg: #343a40;
-    --cell-header-color: white;
-    --cell-revealed-bg: #28a745;
-    --cell-revealed-hover: #218838;
-    --mode-btn-bg: #6c757d;
-    --mode-btn-active: #28a745;
-}
-
+/* What The Spell. Shared look and action colours come from quiz-night.css. */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
+    --qn-accent: #f472b6; /* pink */
     margin: 0;
     padding: 20px;
     display: flex;
@@ -49,155 +32,161 @@ body {
     overflow: visible;
     clip: auto;
     white-space: normal;
-    background-color: #2563eb;
-    color: #ffffff;
-    font-weight: 600;
+    background: var(--qn-accent);
+    color: var(--qn-ink);
+    font-weight: 700;
     border-radius: 6px;
     z-index: 1000;
     text-decoration: none;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-h1 {
-    color: var(--text-color);
-    margin-bottom: 20px;
+header { text-align: center; }
+
+main {
+    width: 100%;
+    max-width: 64rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .controls {
     display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.7em;
+    margin-bottom: 1.2em;
     align-items: center;
+    font-weight: 700;
 }
 
-select, button {
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    background-color: var(--bg-white);
-    cursor: pointer;
-}
-
-select:focus-visible, button:focus-visible {
-    outline: 3px solid rgba(0, 123, 255, 0.5);
-    outline-offset: 2px;
-}
-
-button {
-    background-color: var(--btn-primary);
-    color: white;
-    border: none;
-    transition: background-color 0.2s, opacity 0.2s;
-}
-
-button:hover:not(:disabled) {
-    background-color: var(--btn-primary-hover);
-}
-
-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
+/* The grid scrolls sideways on a narrow phone rather than squashing the words. */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 5px;
-    background-color: var(--bg-white);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
+    grid-template-columns: repeat(6, minmax(5.5rem, 1fr));
+    gap: 0.4em;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    padding: 0.9em;
+    border-radius: var(--qn-radius);
+    margin-bottom: 1.6em;
+    overflow-x: auto;
 }
 
 .cell {
-    width: 100px;
-    height: 60px;
+    min-height: 3.4em;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--cell-bg);
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 14px;
+    background: var(--qn-surface-2);
+    border-radius: var(--qn-radius-sm);
+    font-weight: 700;
+    font-size: var(--qn-step-0);
+    line-height: 1.15;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
     user-select: none;
-    padding: 5px;
+    padding: 0.35em;
     box-sizing: border-box;
-    word-wrap: break-word;
+    overflow-wrap: anywhere;
 }
 
 .cell.header {
-    background-color: var(--cell-header-bg);
-    color: var(--cell-header-color);
+    background: transparent;
+    color: var(--qn-accent);
     cursor: default;
-    font-size: 16px;
+    font-size: var(--qn-step-1);
 }
 
+/* Hidden word: a dark tile with a coloured edge. */
 .cell.word-cell {
-    background-color: var(--btn-primary);
-    color: white;
+    background: var(--qn-surface-2);
+    color: var(--qn-muted);
+    border: 2px solid var(--qn-line);
 }
 
 .cell.word-cell:hover,
 .cell.word-cell:focus-visible {
-    background-color: var(--btn-primary-hover);
-    transform: scale(1.05);
+    border-color: var(--qn-accent);
+    color: var(--qn-text);
+    transform: scale(1.04);
     outline: none;
 }
 
 .cell.word-cell:focus-visible {
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 0 3px var(--qn-text);
 }
 
-.cell.revealed {
-    background-color: var(--cell-revealed-bg) !important;
+/* Revealed word: fills with the app's colour. */
+.cell.revealed,
+.cell.word-cell.revealed:hover,
+.cell.word-cell.revealed:focus-visible {
+    background: var(--qn-accent) !important;
+    border-color: var(--qn-accent);
+    color: var(--qn-ink);
+    font-size: var(--qn-step-1);
 }
 
 .cell.revealed:focus-visible {
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
-    background-color: var(--cell-revealed-hover) !important;
+    box-shadow: 0 0 0 3px var(--qn-text);
 }
 
 .spell-challenge {
-    background-color: var(--bg-white);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    padding: 1.2em;
+    border-radius: var(--qn-radius);
     text-align: center;
-    width: 80%;
-    max-width: 600px;
+    width: 100%;
+    max-width: 48rem;
+    box-sizing: border-box;
 }
 
+.spell-challenge h2 { margin: 0 0 0.6em; }
+
 .challenge-word {
-    font-size: 32px;
-    font-weight: bold;
-    margin: 20px 0;
-    min-height: 40px;
-    letter-spacing: 2px;
+    font-size: var(--qn-step-3);
+    font-weight: 700;
+    margin: 0.3em 0;
+    min-height: 1.2em;
+    letter-spacing: 0.06em;
+    color: var(--qn-accent);
+    overflow-wrap: anywhere;
 }
 
 .modes {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 0.5em;
+    margin-bottom: 1.2em;
 }
 
-.mode-btn {
-    background-color: var(--mode-btn-bg);
+/* Mode picker: one choice is on at a time. */
+.quiz-night .mode-btn {
+    background: var(--qn-surface-2);
+    color: var(--qn-muted);
+    border-color: var(--qn-line);
 }
 
-.mode-btn.active {
-    background-color: var(--mode-btn-active);
+.quiz-night .mode-btn.active {
+    background: var(--qn-surface-2);
+    color: var(--qn-text);
+    border-color: var(--qn-accent);
+    box-shadow: inset 0 -4px 0 var(--qn-accent);
 }
 
 .expected-result {
-    margin-top: 15px;
-    font-size: 18px;
-    color: var(--text-muted);
-    font-style: italic;
+    margin-top: 0.8em;
+    font-size: var(--qn-step-1);
+    color: var(--qn-muted);
+}
+
+#expected-spelling {
+    color: var(--qn-text);
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }

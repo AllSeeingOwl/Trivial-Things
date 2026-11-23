@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Point It Out</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     {% set portal_app_name = "Point It Out" %}
     {% include '_portal_nav.html' %}
 
@@ -37,7 +38,7 @@
                 <form id="team-form" class="inline team-form">
                     <label for="team-name" class="sr-only">Team name</label>
                     <input id="team-name" type="text" maxlength="40" placeholder="Team name" autocomplete="off">
-                    <button class="btn secondary" type="submit">Add team</button>
+                    <button class="btn secondary qn-skip" type="submit">Add team</button>
                 </form>
                 <p id="team-message" class="small" role="status" aria-live="polite"></p>
             </div>
@@ -60,7 +61,7 @@
                     <option value="90">1½ minutes</option>
                 </select>
             </div>
-            <button id="start-btn" class="btn primary">Start</button>
+            <button id="start-btn" class="btn primary qn-go">Start</button>
             <p id="start-message" class="small" role="status" aria-live="polite"></p>
             <p class="small"><a href="{{ url_for('editor') }}">Make your own questions</a></p>
         </section>
@@ -83,8 +84,8 @@
                     <div id="pictures" class="pictures"></div>
                     <div id="result" class="result" role="status" aria-live="polite"></div>
                     <div class="controls">
-                        <button id="lock-btn" class="btn primary" disabled>Lock it in</button>
-                        <button id="next-btn" class="btn primary" hidden>Next round</button>
+                        <button id="lock-btn" class="btn primary qn-go" disabled>Lock it in</button>
+                        <button id="next-btn" class="btn primary qn-go" hidden>Next round</button>
                     </div>
                 </div>
                 <aside id="scoreboard" class="scoreboard" aria-labelledby="scoreboard-title" hidden>
@@ -104,7 +105,7 @@
                 <summary>Round by round</summary>
                 <ol id="summary" class="summary"></ol>
             </details>
-            <button id="play-again-btn" class="btn primary">Play again</button>
+            <button id="play-again-btn" class="btn primary qn-go">Play again</button>
         </section>
     </main>
     <script src="{{ url_for('static', filename='js/pointer.js') }}"></script>

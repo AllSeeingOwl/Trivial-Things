@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sliding Rows Flashcards</title>
-    <!-- We'll link to our new stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     {% set portal_app_name = "Sliding Rows Flashcards" %}
     {% include '_portal_nav.html' %}
 
@@ -17,7 +17,7 @@
             <h1>Sliding Rows Flashcards</h1>
             <div class="stats-container">
                 <span>Chains Remaining: <span id="chains-remaining">0</span>/<span id="chains-total">0</span></span>
-                <button id="reset-button" class="btn">Reset All</button>
+                <button id="reset-button" class="btn qn-reset">Reset All</button>
             </div>
         </header>
 
@@ -25,10 +25,10 @@
             <div id="loading" class="hidden" aria-live="polite">Loading chain...</div>
             <div id="error-message" class="hidden error" aria-live="assertive"></div>
 
-            <section id="empty-state" class="hidden stats-container" aria-live="polite">
+            <section id="empty-state" class="hidden stats-container qn-panel" aria-live="polite">
                 <h2><span aria-hidden="true">🎉</span> You're all done!</h2>
                 <p>You've completed all the question chains.</p>
-                <button class="btn primary-btn" id="practice-again-btn">Practice Again</button>
+                <button class="btn primary-btn qn-go" id="practice-again-btn">Practice Again</button>
             </section>
 
             <div class="chain-container" id="chain-container">
@@ -36,7 +36,7 @@
             </div>
 
             <div class="navigation-controls hidden" id="nav-controls">
-                <button id="next-chain-button" class="btn primary-btn">Load Next Chain</button>
+                <button id="next-chain-button" class="btn primary-btn qn-go">Load Next Chain</button>
             </div>
         </main>
     </div>

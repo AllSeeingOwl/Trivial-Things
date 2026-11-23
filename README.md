@@ -115,6 +115,17 @@ pnpm dev
 ```
 
 ### Shared portal bar
-Every Flask app shows the same "Back to Central Portal" bar. Its canonical files are in `shared/portal_nav/` (a Jinja partial, a stylesheet and a small script). Each app is deployed from its own directory, so each keeps a copy: edit the files in `shared/portal_nav/`, then run `python3 tools/sync_portal_nav.py` to update the copies. To use it, a page sets the Jinja variable `portal_app_name` to the app's name, includes `_portal_nav.html`, and links `css/portal-nav.css` in its `<head>` (see any app's `templates/index.html` for an example); if the page's `<body>` has padding, set `--portal-nav-inset` to that padding so the bar spans the page. `test_portal_nav.py` fails if a copy is out of date.
+Every Flask app shows the same "Back to Central Portal" bar. Its canonical files are in `shared/portal_nav/` (a Jinja partial, a stylesheet and a small script). Each app is deployed from its own directory, so each keeps a copy: edit the files in `shared/portal_nav/`, then run `python3 tools/sync_shared.py` to update the copies (it also copies the Quiz Night files below). To use it, a page sets the Jinja variable `portal_app_name` to the app's name, includes `_portal_nav.html`, and links `css/portal-nav.css` in its `<head>` (see any app's `templates/index.html` for an example); if the page's `<body>` has padding, set `--portal-nav-inset` to that padding so the bar spans the page. `test_portal_nav.py` fails if a copy is out of date.
+
+### Quiz Night look
+The eight quiz apps (Trivia, MCQ, Sliding Rows, What The Spell, PDF Grid, Point It Out, Where In The World and the Scoreboard) share one look, built to read well on a projector or TV: a dark stage, large text that grows with the screen, and the Atkinson Hyperlegible font (self-hosted, OFL licence). The shared stylesheet is `shared/quiz_night/quiz-night.css`, copied into each app by `python3 tools/sync_shared.py` like the portal bar. Each page loads it before its own `style.css` and gives `<body>` the class `quiz-night`; each app picks its own colour with `--qn-accent` in its `style.css`.
+
+Buttons mean the same thing in every app:
+*   `qn-go` (the app's colour): the main forward action, such as Start, Next, Submit or Upload.
+*   `qn-skip` (grey): move on without changing anything, such as Skip.
+*   `qn-eliminate` (red): remove something, such as Eliminate & Next.
+*   `qn-reset` (outlined): admin and housekeeping, such as Reset All.
+
+Green and red are kept for right and wrong answers. `test_quiz_night.py` checks every quiz page uses the shared look and that no two apps share a colour.
 
 *Note: Ensure you are running each application from within its respective directory so that it can locate its associated data files and dependencies correctly.*

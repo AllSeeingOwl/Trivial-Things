@@ -1,5 +1,5 @@
 /* Shared portal bar. Canonical copy: shared/portal_nav/portal-nav.css.
-   Edit that file and run `python3 tools/sync_portal_nav.py`; do not edit the copies in each app.
+   Edit that file and run `python3 tools/sync_shared.py`; do not edit the copies in each app.
    Kept in its own file (not inline styles) so it works under a `style-src 'self'` CSP.
    If the app's <body> has padding, set `--portal-nav-inset` to that padding so the bar
    still spans the full width of the page. */

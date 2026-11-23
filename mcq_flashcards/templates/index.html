@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MCQ Flashcards</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     {% set portal_app_name = "MCQ Flashcards" %}
     {% include '_portal_nav.html' %}
 
@@ -34,18 +35,18 @@
         </section>
 
         <section class="controls" aria-label="Flashcard Actions">
-            <button class="btn-primary" id="next-btn">Skip (Keep)</button>
-            <button class="btn-danger" id="eliminate-btn">Eliminate & Next</button>
+            <button class="qn-skip" id="next-btn">Skip (Keep)</button>
+            <button class="qn-eliminate" id="eliminate-btn">Eliminate & Next</button>
         </section>
 
         <section aria-label="Administrative Actions">
-            <button class="btn-warning" id="admin-reset-btn">Reset All Questions</button>
+            <button class="qn-reset" id="admin-reset-btn">Reset All Questions</button>
         </section>
 
-        <section id="empty-state" class="hidden stats" aria-live="polite">
+        <section id="empty-state" class="hidden qn-panel" aria-live="polite">
             <h2><span aria-hidden="true">🎉</span> You're all done!</h2>
             <p>You've completed all the flashcards in this deck.</p>
-            <button class="btn-primary" id="practice-again-btn">Practice Again</button>
+            <button class="qn-go" id="practice-again-btn">Practice Again</button>
         </section>
 
         <div id="error-msg" class="hidden" role="alert" aria-live="assertive"></div>

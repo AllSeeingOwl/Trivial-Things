@@ -41,7 +41,7 @@ uploadForm.addEventListener('submit', async (e) => {
         } else {
             gridContainer.textContent = '';
             const errorMsg = document.createElement('p');
-            errorMsg.style.color = 'red';
+            errorMsg.className = 'grid-error';
             errorMsg.setAttribute('role', 'alert');
             // Sentinel: Prevent DOM-based XSS by using textContent instead of innerHTML
             errorMsg.textContent = `Error: ${data.error || 'No grid data found.'}`;
@@ -52,7 +52,7 @@ uploadForm.addEventListener('submit', async (e) => {
         console.error('Error uploading PDF:', error);
         gridContainer.textContent = '';
         const errorMsg = document.createElement('p');
-        errorMsg.style.color = 'red';
+        errorMsg.className = 'grid-error';
         errorMsg.setAttribute('role', 'alert');
         errorMsg.textContent = 'Upload failed.';
         gridContainer.appendChild(errorMsg);

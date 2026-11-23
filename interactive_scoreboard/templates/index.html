@@ -4,163 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Scoreboard</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
-        }
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            outline: none;
-            color: #555;
-            border-radius: 4px 4px 0 0;
-            transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-        }
-        .tab-btn:focus-visible {
-            outline: 2px solid #2563eb;
-            outline-offset: 2px;
-        }
-        .tab-btn.active {
-            border-bottom: 3px solid #3498db;
-            color: #3498db;
-            font-weight: bold;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-        .btn {
-            display: inline-block;
-            background: #3498db;
-            color: #fff;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        .btn:hover {
-            background: #2980b9;
-        }
-        .btn:focus-visible {
-            outline: 2px solid #2563eb;
-            outline-offset: 2px;
-        }
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            background: #7f8c8d;
-        }
-        .btn-success {
-            background: #2ecc71;
-        }
-        .btn-success:hover {
-            background: #27ae60;
-        }
-        form {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 6px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            vertical-align: middle;
-            margin-right: 10px;
-            object-fit: cover;
-        }
-        .default-avatar {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #ccc;
-            vertical-align: middle;
-            margin-right: 10px;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     {% set portal_app_name = "Interactive Scoreboard" %}
     {% include '_portal_nav.html' %}
 
     <div class="container">
         <div class="header-actions">
             <h1>Interactive Scoreboard</h1>
-            <a href="/api/export" class="btn btn-success" aria-label="Export scoreboard rankings to CSV file">Export to CSV</a>
+            <a href="/api/export" class="btn qn-skip" aria-label="Export scoreboard rankings to CSV file">Export to CSV</a>
         </div>
 
         <div class="tabs" role="tablist" aria-label="Scoreboard Sections">
@@ -208,13 +63,13 @@
         <div id="add-score" class="tab-content" role="tabpanel" aria-labelledby="tab-add-score">
             <h2>Submit New Score</h2>
             <form id="score-form">
-                <div id="form-feedback" role="status" aria-live="polite" style="display: none; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 14px; font-weight: 500;"></div>
+                <div id="form-feedback" class="feedback" role="status" aria-live="polite"></div>
                 <div class="form-group">
-                    <label for="player_name">Player Name <span style="color: #e53e3e;" aria-hidden="true">*</span></label>
+                    <label for="player_name">Player Name <span class="required" aria-hidden="true">*</span></label>
                     <input type="text" id="player_name" placeholder="e.g. Alex Smith" required>
                 </div>
                 <div class="form-group">
-                    <label for="score">Score <span style="color: #e53e3e;" aria-hidden="true">*</span></label>
+                    <label for="score">Score <span class="required" aria-hidden="true">*</span></label>
                     <input type="number" id="score" placeholder="e.g. 2500" required>
                 </div>
                 <div class="form-group">
@@ -225,7 +80,7 @@
                     <label for="avatar_url">Avatar URL - Optional</label>
                     <input type="url" id="avatar_url" placeholder="https://example.com/avatar.png">
                 </div>
-                <button type="submit" class="btn">Submit Score</button>
+                <button type="submit" class="btn qn-go">Submit Score</button>
             </form>
         </div>
     </div>
@@ -357,16 +212,7 @@
             const feedback = document.getElementById('form-feedback');
             if (!feedback) return;
             feedback.textContent = message;
-            feedback.style.display = 'block';
-            if (isSuccess) {
-                feedback.style.backgroundColor = '#d1fae5';
-                feedback.style.color = '#065f46';
-                feedback.style.border = '1px solid #a7f3d0';
-            } else {
-                feedback.style.backgroundColor = '#fee2e2';
-                feedback.style.color = '#991b1b';
-                feedback.style.border = '1px solid #fca5a5';
-            }
+            feedback.className = 'feedback ' + (isSuccess ? 'is-ok' : 'is-error');
         }
 
         document.getElementById('score-form').addEventListener('submit', async (e) => {
@@ -400,7 +246,7 @@
                     document.getElementById('score-form').reset();
                     setTimeout(() => {
                         const feedback = document.getElementById('form-feedback');
-                        if (feedback) feedback.style.display = 'none';
+                        if (feedback) feedback.className = 'feedback';
                         showTab('rankings');
                     }, 1000);
                 } else {
