@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point It Out: Question Maker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% include '_nav.html' %}
+
+    <main class="container">
+        <header class="app-header">
+            <h1>Question Maker</h1>
+            <a class="header-link" href="{{ url_for('index') }}">Back to the game</a>
+        </header>
+
+        <section class="screen active editor">
+            <p class="small">Build a question here, then paste the finished line into <code>Point It Out.csv</code>. Put any new pictures in the pictures folder first (<code>static/images</code>, or the folder named by <code>PICTURES_DIR</code>) so they appear in the list.</p>
+
+            <div class="field">
+                <label for="ed-category">Category</label>
+                <input id="ed-category" type="text" placeholder="e.g. Art">
+            </div>
+            <div class="field">
+                <label for="ed-set">Set (optional)</label>
+                <input id="ed-set" type="text" placeholder="e.g. PlayStations" aria-describedby="ed-set-help">
+                <p id="ed-set-help" class="small">Questions with the same set name share their pictures and are played one after another. Use it for several questions about the same four consoles, or about one busy picture.</p>
+            </div>
+            <div class="field">
+                <label for="ed-question">Question</label>
+                <input id="ed-question" type="text" placeholder="e.g. Point to the forged signature.">
+            </div>
+
+            <fieldset class="field">
+                <legend>Pictures</legend>
+                <div class="inline">
+                    <label for="ed-image-select" class="sr-only">Picture file</label>
+                    <select id="ed-image-select"></select>
+                    <button id="ed-add" class="btn secondary" type="button">Add picture</button>
+                </div>
+                <p class="small">Click a picture to make it the correct one. To mark an exact spot, drag a box on it (or type the numbers below). Leave the box empty if any click on the right picture counts.</p>
+                <div id="ed-pictures" class="pictures editor-pictures"></div>
+            </fieldset>
+
+            <fieldset class="field">
+                <legend>Answer area (percent of the correct picture)</legend>
+                <div class="area-inputs">
+                    <label>Left <input id="ed-left" type="number" min="0" max="100" step="0.1"></label>
+                    <label>Top <input id="ed-top" type="number" min="0" max="100" step="0.1"></label>
+                    <label>Width <input id="ed-width" type="number" min="0" max="100" step="0.1"></label>
+                    <label>Height <input id="ed-height" type="number" min="0" max="100" step="0.1"></label>
+                    <button id="ed-clear-area" class="btn secondary" type="button">Clear area</button>
+                </div>
+            </fieldset>
+
+            <div class="field">
+                <label for="ed-explanation">Explanation (shown after answering)</label>
+                <textarea id="ed-explanation" rows="2"></textarea>
+            </div>
+
+            <div class="field">
+                <label for="ed-output">CSV line</label>
+                <textarea id="ed-output" rows="3" readonly></textarea>
+                <div class="inline">
+                    <button id="ed-copy" class="btn primary" type="button">Copy line</button>
+                    <button id="ed-next" class="btn secondary" type="button">Save and write the next question on these pictures</button>
+                    <span id="ed-status" role="status" aria-live="polite" class="small"></span>
+                </div>
+            </div>
+
+            <div class="field" id="ed-list-field" hidden>
+                <label for="ed-list">Saved lines</label>
+                <textarea id="ed-list" rows="5" readonly></textarea>
+                <div class="inline">
+                    <button id="ed-copy-all" class="btn primary" type="button">Copy all saved lines</button>
+                    <button id="ed-clear-list" class="btn secondary" type="button">Clear saved lines</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pointer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+</body>
+</html>

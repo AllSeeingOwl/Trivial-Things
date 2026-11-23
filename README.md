@@ -1,10 +1,10 @@
 # Trivia and Flashcards Apps
 
-Welcome to the Trivia and Flashcards repository! This collection features twelve interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
+Welcome to the Trivia and Flashcards repository! This collection features thirteen interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
 
 ## The Applications
 
-The repository is organized into twelve distinct applications (nine Flask, one Next.js, two static HTML pages):
+The repository is organized into thirteen distinct applications (ten Flask, one Next.js, two static HTML pages):
 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
@@ -66,6 +66,11 @@ Satirical bingo for things you can see coming a mile off. The name is short for 
 *   **Features**: Twelve starter decks of about 50 squares each (Game Showcase, Live Streamer, Wrestling Promo, Open-World Game, Award Show, Video Essay, Girl Talk, Patch Notes, Sports Pundit, Reality TV, TED-Style Talk, Tech Keynote) dealt as random 5×5 cards. Square sizes adapt to their text: wordier columns get more width, rows grow to fit, and long words are never split mid-word on most screens. Tap squares as the clichés happen. The page detects lines and a full house, makes squares that would finish a line glow, and times the run. "Copy card link" sends a friend the exact same card, "Share result" copies an emoji grid, and "Make your own card" builds a custom deck that travels in the link. "Edit squares" lists every square in the deck: swap any square off your card, put a particular one on it, remove squares from the deck, or add your own. Deck edits are kept in the browser, and an edited card's link carries its squares, so a friend gets exactly that card. Close enough counts: squares marked ≈ list other wordings of the same cliché (press and hold, hover, or press `?`), and custom or added squares can list their own after a `|`. Everything runs in the browser and marks are remembered with `localStorage`; there is no backend. Decks live in `ashwga/cards.js`; the product spec and roadmap are in `ashwga/SPEC.md`.
 *   **Running**: Open `ashwga/index.html` directly in a browser, or serve it with `python3 -m http.server 8014 --directory ashwga`. It is deployed on Render as a static site (see `render.yaml`) and served on port 8014 by `docker compose up`.
 *   **Testing**: Browser tests (gameplay, editing, variations, layout and WCAG 2.2 AA accessibility) live in `tools/ashwga-tests/`; run `npm ci && npx playwright test` there. CI runs them on pull requests that touch `ashwga/`.
+
+### 13. Point It Out (`point_it_out/`)
+A picture quiz where you answer by pointing, a cousin of Where In The World.
+*   **Features**: Each question shows one or more pictures. Players click the right picture or the right part of it, can move their pin before locking it in, and score 10 points for a hit or 5 for a near miss. Questions can be grouped into sets that share pictures (four related pictures, or one busy picture) and are played back to back. Questions come from `Point It Out.csv` (category, question, pictures, correct picture, an optional answer area as left/top/width/height percentages, and an explanation); pictures live in `static/images`. A question maker at `/editor` lets you pick pictures, drag a box over the answer and copy the finished CSV line. Pins can be placed and moved from the keyboard.
+*   **Running**: `cd point_it_out && python3 point_it_out_app.py` (Runs on port 5010 by default; port 8015 under `docker compose up`).
 
 ## Tech Stack
 
