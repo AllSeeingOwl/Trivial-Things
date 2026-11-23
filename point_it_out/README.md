@@ -77,6 +77,40 @@ Pictures can be SVG, PNG, JPEG, GIF or WebP. The starter pictures are simple
 SVG drawings made for this app; if you add photos, check you're allowed to use
 them, especially if the app is public.
 
+## Making questions from PDFs of numbered pictures
+
+`tools/pdf_to_questions.py` turns a PDF page of numbered pictures, plus its
+answers, into questions. Run it on your own computer; it writes only into the
+folder you give it with `--out`. It needs PyMuPDF (`pip install pymupdf`).
+
+```bash
+python3 tools/pdf_to_questions.py "Page A (Alpha).pdf" "Page A (Answers-Alpha).pdf" --out ~/PointItOutPictures --dry-run
+```
+
+`--dry-run` lists every picture number and answer it found, and the questions
+it would write, without saving anything. Drop it to save them. Then start the
+app with `PICTURES_DIR=~/PointItOutPictures CSV_FILE=~/PointItOutPictures/questions.csv`.
+
+- **Two modes.** `--mode page` (the default) keeps each page whole and asks
+  "Point to …" for every picture on it. `--mode split` cuts the pictures out and
+  groups them, four at a time by default (`--choices`), asking "Which of these
+  is …?".
+- **A whole folder at once.** `--folder "…/20 Pics/Alpha"` pairs each pictures
+  PDF with the answers PDF whose name matches apart from the word "Answers".
+- **Your own wording.** `--question`, `--split-question`, `--category`, `--set`,
+  `--split-set` and `--explanation` take text with placeholders: `{answer}` (the
+  full answer), `{name}` (the answer without a bracketed note at the end),
+  `{number}`, `{pdf}` and `{page}`. For example
+  `--question "Who or what is number {number}?"`.
+- **Numbering.** By default each picture gets the number printed nearest to it.
+  If a page has no printed numbers, pictures are counted down each column, then
+  across; `--order rows` counts across each row first.
+- **Answers** can come from a PDF, a text file, or a CSV of `number,answer`
+  rows, which is handy for fixing any answer the PDF reading gets wrong.
+- Each run adds to the CSV (`--replace` starts it afresh) and never overwrites
+  a picture. Use `--help` for the rest (`--dpi`, `--padding`, `--min-size`,
+  `--seed`).
+
 ## Tests
 
 ```bash
