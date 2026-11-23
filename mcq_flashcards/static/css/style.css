@@ -30,6 +30,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 20px;
+    --portal-nav-inset: 20px; /* matches the padding, so the portal bar spans the page */
 }
 
 h1 {
@@ -199,4 +200,9 @@ button:active:not(:disabled) {
 
 .mcq-choice:not(:disabled):hover {
     background-color: rgba(255,255,255,0.4);
+}
+
+#empty-state {
+    text-align: center;
+    margin-top: 20px;
 }

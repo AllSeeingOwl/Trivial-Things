@@ -19,6 +19,8 @@ body {
     padding: 20px;
     display: flex;
     justify-content: center;
+    flex-wrap: wrap; /* puts the portal bar on its own row */
+    --portal-nav-inset: 20px; /* matches the padding, so the portal bar spans the page */
 }
 
 .container {

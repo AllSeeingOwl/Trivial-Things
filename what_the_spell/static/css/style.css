@@ -23,6 +23,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    --portal-nav-inset: 20px; /* matches the padding, so the portal bar spans the page */
 }
 
 .skip-link {

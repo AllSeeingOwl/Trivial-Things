@@ -29,6 +29,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 20px;
+    --portal-nav-inset: 20px; /* matches the padding, so the portal bar spans the page */
 }
 
 h1 {
@@ -173,5 +174,10 @@ button:active:not(:disabled) {
 #error-msg {
     color: var(--btn-danger);
     font-weight: bold;
+    margin-top: 20px;
+}
+
+#empty-state {
+    text-align: center;
     margin-top: 20px;
 }
