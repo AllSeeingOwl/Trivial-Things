@@ -43,14 +43,21 @@ NEAR_DISTANCE = 0.05
 
 
 def parse_area(text):
-    """Parse 'left, top, width, height' percentages into fractions.
+    """Parse one or more 'left, top, width, height' boxes, in percent.
 
-    Returns (left, top, width, height) as 0-1 fractions, None for a blank
-    cell, and raises ValueError for anything malformed.
+    Boxes are separated by ';', for answers found in more than one place (both
+    C keys on a piano) or with an awkward shape. Returns a list of
+    (left, top, width, height) tuples as 0-1 fractions, None for a blank cell,
+    and raises ValueError for anything malformed.
     """
     text = (text or '').strip()
     if not text:
         return None
+    return [parse_box(part) for part in text.split(';') if part.strip()] or None
+
+
+def parse_box(text):
+    text = text.strip()
     parts = [p.strip() for p in text.split(',')]
     if len(parts) != 4:
         raise ValueError(f'answer area needs 4 numbers, got {text!r}')
@@ -154,10 +161,10 @@ def score_answer(question, picture, x, y):
     """Return (points, verdict) where verdict is 'correct', 'close' or 'wrong'."""
     if picture != question['correct']:
         return 0, 'wrong'
-    area = question['area']
-    if area is None:
+    boxes = question['area']
+    if boxes is None:
         return FULL_POINTS, 'correct'
-    distance = distance_to_area(x, y, area)
+    distance = min(distance_to_area(x, y, box) for box in boxes)
     if distance == 0:
         return FULL_POINTS, 'correct'
     if distance <= NEAR_DISTANCE:
@@ -192,12 +199,18 @@ def get_questions():
     return jsonify([q['public'] for q in pick_questions(QUESTIONS, count)])
 
 
-def pick_questions(questions, count):
+# Most questions from one set played in a single game, so a set with dozens of
+# questions doesn't take over the whole game.
+SET_ROUND_SIZE = 5
+
+
+def pick_questions(questions, count, per_set=SET_ROUND_SIZE):
     """Pick up to count questions at random, keeping each set's questions together.
 
     A set's questions are played back to back (in random order), so players
-    keep looking at the same pictures. The last set picked may be cut short to
-    hit the count.
+    keep looking at the same pictures. At most per_set questions come from any
+    one set, unless there aren't enough questions otherwise. The last set
+    picked may be cut short to hit the count.
     """
     groups = {}
     order = []
@@ -208,13 +221,24 @@ def pick_questions(questions, count):
             order.append(key)
         groups[key].append(q)
     random.shuffle(order)
+    for group in groups.values():
+        random.shuffle(group)
+    # Take up to per_set from each set; if that's not enough to reach count,
+    # take more from each set in further passes.
+    taken = {key: 0 for key in order}
+    limit = per_set
+    while True:
+        total = sum(taken.values())
+        if total >= count or all(taken[k] == len(groups[k]) for k in order):
+            break
+        for key in order:
+            taken[key] = min(len(groups[key]), max(taken[key], limit))
+        limit += per_set
     picked = []
     for key in order:
         if len(picked) >= count:
             break
-        group = groups[key][:]
-        random.shuffle(group)
-        picked.extend(group)
+        picked.extend(groups[key][:taken[key]])
     return picked[:count]
 
 
@@ -242,12 +266,12 @@ def answer():
         return jsonify({'error': 'Picture out of range'}), 400
 
     points, verdict = score_answer(question, picture, x, y)
-    area = question['area']
+    boxes = question['area'] or []
     return jsonify({
         'points': points,
         'verdict': verdict,
         'correct_picture': question['correct'],
-        'area': None if area is None else dict(zip(('left', 'top', 'width', 'height'), area)),
+        'areas': [dict(zip(('left', 'top', 'width', 'height'), box)) for box in boxes],
         'explanation': question['explanation'],
     })
 

@@ -1,18 +1,213 @@
 Category,Question,Pictures,Correct Picture,Answer Area,Explanation,Set
-Flags,Which of these is the flag of Ireland?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,"Ireland is green, white and orange from the flagpole out. Côte d'Ivoire uses the same colours the other way round.",Tricolours
-Flags,Which of these is the flag of Côte d'Ivoire (Ivory Coast)?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,2,,"Côte d'Ivoire is orange, white and green: Ireland's flag flipped.",Tricolours
-Flags,Which of these is the flag of Italy?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,"Italy is green, white and red, often nicknamed Il Tricolore.",Tricolours
-Flags,Which of these flags has the same colour on both outer stripes?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,"Nigeria's flag is green, white, green.",Tricolours
-Flags,Which of these is the flag of Poland?,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,Poland is white over red. Indonesia (and Monaco) are red over white.,Stripes
-Flags,Which of these is the flag of Austria?,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,Austria's red-white-red is one of the oldest national flags still in use.,Stripes
-Flags,Which of these is the flag of Ukraine?,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,Ukraine's blue over yellow is often described as a blue sky over fields of wheat.,Stripes
-Space,Point to Jupiter.,solar_system.svg,1,"40.6, 36.7, 10, 26.7","Jupiter is the fifth planet from the Sun and the largest, with its banded clouds and Great Red Spot.",Solar System
-Space,Point to the planet closest to the Sun.,solar_system.svg,1,"14.5, 45, 3.5, 10",Mercury is the closest planet to the Sun and the smallest of the eight.,Solar System
-Space,Point to Saturn.,solar_system.svg,1,"54, 39.3, 14.5, 21.3","Saturn's rings are mostly ice, and some are only about ten metres thick.",Solar System
-Space,Point to the planet we live on.,solar_system.svg,1,"26.25, 45, 3.5, 10",Earth is the third planet from the Sun.,Solar System
-Music,Point to the F sharp key.,piano.svg,1,"46.25, 0, 7.5, 60","F sharp is the black key between F and G, the first of the group of three black keys.",Piano
-Music,Point to the E key.,piano.svg,1,"28.75, 0, 8.75, 100",E is the white key straight after the pair of two black keys.,Piano
-Music,Point to the B key.,piano.svg,1,"78.75, 0, 8.75, 100",B is the white key straight after the group of three black keys.,Piano
-Colours,"Red, orange, yellow, green, blue… Point to indigo.",spectrum.svg,1,"71.43, 0, 14.29, 100",Indigo sits between blue and violet. Isaac Newton added it so the rainbow would have seven colours.,
-Time,"At a quarter to the hour, where does the minute hand point?",clock.svg,1,"4.7, 43.3, 19.3, 13.3","A quarter to means 45 minutes past, so the minute hand points at the 9.",
-Shapes,Which of these shapes is a rhombus?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,"A rhombus has four equal sides. A kite has two pairs of equal sides next to each other, and a parallelogram's sides differ in length.",
+Time,Fighter pilots shout 'Bandit at six o'clock!' Point to where the enemy is.,clock.svg,1,"43.33, 76.67, 13.33, 13.33","Pilots use the clock face for directions: 12 is straight ahead, so 6 o'clock is right behind you.",Clock
+Time,Point to where the hour hand points at 12:30.,clock.svg,1,"54.63, 13.8, 8, 8","Not the 12! At half past, the hour hand has moved halfway towards the next hour.",Clock
+Time,Point to where the hour hand points at 6:30.,clock.svg,1,"37.37, 78.2, 8, 8",Halfway between the 6 and the 7: the hour hand creeps on as the minutes pass.,Clock
+Time,Point to where the hour hand points at a quarter past 9.,clock.svg,1,"12.95, 41.65, 8, 8","A quarter of the way from the 9 towards the 10, not on the 9.",Clock
+Time,Point to where the hour hand points at a quarter to 4.,clock.svg,1,"76.8, 58.76, 8, 8","Three quarters of the way from the 3 to the 4, so close to the 4 but not on it.",Clock
+Time,Hold this clock up to a mirror. Point to where the 3 would appear.,clock.svg,1,"10, 43.33, 13.33, 13.33","A mirror swaps left and right, so the 3 shows up where the 9 is.",Clock
+Time,"It's 9 o'clock. Point to where the hour hand will be 1,000 hours from now.",clock.svg,1,"60, 14.47, 13.33, 13.33","1,000 hours is 83 full turns of 12 hours plus 4 more, and 4 hours after 9 is 1.",Clock
+Time,It's 11 o'clock. Point to where the hour hand will be 100 hours from now.,clock.svg,1,"76.67, 43.33, 13.33, 13.33","100 hours is 8 full turns of 12 hours plus 4 more, and 4 hours after 11 is 3.",Clock
+Time,Only once every 12 hours do the hands lie exactly on top of each other while pointing at a number. Point to where.,clock.svg,1,"43.33, 10, 13.33, 13.33","Every other overlap falls between numbers: about 1:05, 2:11, 3:16 and so on.",Clock
+Time,Point to where the minute hand is at 'twenty-five to'.,clock.svg,1,"26.67, 72.2, 13.33, 13.33","Twenty-five to means 35 minutes past, which is the 7.",Clock
+Time,Point to where the minute hand is at 'five to'.,clock.svg,1,"26.67, 14.47, 13.33, 13.33","Five to means 55 minutes past, which is the 11.",Clock
+Time,Point to where the minute hand is at 'twenty past'.,clock.svg,1,"72.2, 60, 13.33, 13.33","Each number is five minutes, so 20 minutes past is the 4.",Clock
+Time,"Point to the exact mark the minute hand points at, at 13 minutes past.",clock.svg,1,"89.71, 37.92, 6, 6",It's not a number at all: 13 minutes is three small marks after the 2.,Clock
+Time,"Point to the exact mark the minute hand points at, at 37 minutes past.",clock.svg,1,"17.78, 79.45, 6, 6","Two small marks after the 7, which stands for 35 minutes.",Clock
+Time,Point to the mark the second hand reaches after 58 seconds.,clock.svg,1,"37.92, 4.29, 6, 6",Two marks before the 12: the same small marks count seconds too.,Clock
+Time,"On many clocks with Roman numerals, one number is written 'wrongly' on purpose. Point to it.",clock.svg,1,"72.2, 60, 13.33, 13.33",Clockmakers often write 4 as IIII rather than IV. One popular explanation is that it balances the VIII on the other side.,Clock
+Time,Point to the number written as XI in Roman numerals.,clock.svg,1,"26.67, 14.47, 13.33, 13.33",X is 10 and I is 1; with the I after the X you add them: 11.,Clock
+Time,Point to the only number on this clock that's both even and prime.,clock.svg,1,"72.2, 26.67, 13.33, 13.33",2 is the only even prime number: every other even number divides by 2.,Clock
+Time,Point to the hour Cinderella had to leave the ball.,clock.svg,1,"43.33, 10, 13.33, 13.33","Midnight, when the magic wore off.",Clock
+Time,UK clocks 'spring forward' at 1 a.m. one night in March. Point to the hour that never happens that night.,clock.svg,1,"60, 14.47, 13.33, 13.33","At 1:00 the clocks jump straight to 2:00, so there's no 1 o'clock hour that night.",Clock
+Time,Point to where the hour hand points at 15:00.,clock.svg,1,"76.67, 43.33, 13.33, 13.33","On a 12-hour face, 15:00 is 3 p.m.",Clock
+Time,Point to where the hour hand points at 20:00.,clock.svg,1,"14.47, 60, 13.33, 13.33","20:00 is 8 p.m., so the hour hand is on the 8.",Clock
+Time,Point to the spot every hand turns around.,clock.svg,1,"45.33, 45.33, 9.33, 9.33","The centre spindle, which the hands are fixed to.",Clock
+Time,Point to the number of sides on a 50p coin.,clock.svg,1,"26.67, 72.2, 13.33, 13.33","The 50p has seven curved sides, shaped so it's the same width all the way round and works in coin machines.",Clock
+Time,Point to the number of sides on the current UK £1 coin.,clock.svg,1,"43.33, 10, 13.33, 13.33",The £1 coin introduced in 2017 has 12 sides.,Clock
+Time,Point to the number that opposite faces of a normal dice always add up to.,clock.svg,1,"26.67, 72.2, 13.33, 13.33","1 and 6, 2 and 5, 3 and 4: always 7.",Clock
+Time,Point to the number of legs on a spider.,clock.svg,1,"14.47, 60, 13.33, 13.33",Spiders have eight legs; insects have six.,Clock
+Time,Point to the number of players a football (soccer) team has on the pitch.,clock.svg,1,"26.67, 14.47, 13.33, 13.33","Eleven a side, goalkeeper included.",Clock
+Time,Point to the number of pairs of ribs most people have.,clock.svg,1,"43.33, 10, 13.33, 13.33","Most people have 12 pairs, 24 ribs in all.",Clock
+Time,Point to the number exactly opposite the 2.,clock.svg,1,"14.47, 60, 13.33, 13.33",Opposite numbers are 6 apart: 2 and 8.,Clock
+Time,Add together the two numbers on either side of the 12. Point to the answer.,clock.svg,1,"43.33, 10, 13.33, 13.33","11 + 1 = 12, so you end up right back where you started.",Clock
+Time,Point to the number of sides on a nonagon.,clock.svg,1,"10, 43.33, 13.33, 13.33",'Nona' means ninth in Latin: a nonagon has nine sides.,Clock
+Time,Point to how many Spice Girls there were.,clock.svg,1,"60, 72.2, 13.33, 13.33","Scary, Sporty, Baby, Ginger and Posh: five.",Clock
+Space,Point to the star closest to Earth.,solar_system.svg,1,"0, 20, 11.5, 60","The Sun is a star, and the nearest one by far.",Solar System
+Space,Point to the hottest thing in this picture.,solar_system.svg,1,"0, 20, 11.5, 60","The Sun's surface is around 5,500°C.",Solar System
+Space,Point to the hottest planet.,solar_system.svg,1,"19.88, 44.67, 4, 10.67","Not Mercury! Venus's thick atmosphere traps heat, making it the hottest planet at around 465°C.",Solar System
+Space,"Point to the planet, on average, closest to Earth.",solar_system.svg,1,"14.5, 45, 3.5, 10","Not Venus! Averaged over time, Mercury is the closest planet to Earth, because it never strays far from the Sun.",Solar System
+Space,"Point to the planet, on average, closest to Neptune.",solar_system.svg,1,"14.5, 45, 3.5, 10","Mercury again: hugging the Sun keeps it, on average, closest to every other planet.",Solar System
+Space,Point to the planet with the most known moons.,solar_system.svg,1,"53.75, 38.67, 15, 22.67",Not Jupiter! Saturn has well over 200 known moons.,Solar System
+Space,Point to the planet that would float in a big enough bath.,solar_system.svg,1,"53.75, 38.67, 15, 22.67",Saturn is less dense than water.,Solar System
+Space,Point to the planet that spins on its side.,solar_system.svg,1,"74.75, 42.67, 5.5, 14.67","Uranus is tipped over by about 98 degrees, so it rolls around the Sun.",Solar System
+Space,Point to the planet whose day is longer than its year.,solar_system.svg,1,"19.88, 44.67, 4, 10.67",Venus takes 243 Earth days to spin once but only 225 to go round the Sun.,Solar System
+Space,Point to the planet where the Sun rises in the west.,solar_system.svg,1,"19.88, 44.67, 4, 10.67",Venus spins backwards compared with most planets.,Solar System
+Space,Point to the planet with the shortest day.,solar_system.svg,1,"40.38, 36, 10.5, 28",The biggest planet spins the fastest: a Jupiter day lasts under 10 hours.,Solar System
+Space,Point to the planet with the strongest winds.,solar_system.svg,1,"87.38, 43, 5.25, 14","The farthest, coldest planet has winds of over 2,000 km/h.",Solar System
+Space,Point to the only planet not named after a god.,solar_system.svg,1,"26.12, 44.67, 4, 10.67",Earth's name comes from old English and Germanic words for the ground.,Solar System
+Space,Point to the only planet named after a Greek god rather than a Roman one.,solar_system.svg,1,"74.75, 42.67, 5.5, 14.67","Uranus is Ouranos, the Greek god of the sky.",Solar System
+Space,Point to the storm that's bigger than Earth.,solar_system.svg,1,"45.75, 50.67, 3, 5.33","Jupiter's Great Red Spot, a storm that has been raging for at least 150 years.",Solar System
+Space,Point to the planet with the tallest volcano in the solar system.,solar_system.svg,1,"32.25, 45, 3, 10",Olympus Mons on Mars is about two and a half times the height of Everest.,Solar System
+Space,Point to the planet whose sunsets are blue.,solar_system.svg,1,"32.25, 45, 3, 10","The Red Planet has blue sunsets, because its fine dust scatters blue light forward.",Solar System
+Space,Point to the 'Morning Star'.,solar_system.svg,1,"19.88, 44.67, 4, 10.67","It's not a star at all: it's Venus, bright in the sky before dawn.",Solar System
+Space,Point to the planet the 'Spiders' came from in David Bowie's Ziggy Stardust.,solar_system.svg,1,"32.25, 45, 3, 10",Ziggy Stardust and the Spiders from Mars.,Solar System
+Space,Point to the planet Gustav Holst called 'the Bringer of Jollity'.,solar_system.svg,1,"40.38, 36, 10.5, 28",From Holst's suite The Planets.,Solar System
+Space,Point to the planet Gustav Holst called 'the Magician'.,solar_system.svg,1,"74.75, 42.67, 5.5, 14.67",From Holst's suite The Planets.,Solar System
+Space,Point to the planet Gustav Holst left out of The Planets.,solar_system.svg,1,"26.12, 44.67, 4, 10.67","Holst wrote about the planets' astrological characters, and Earth didn't have one.",Solar System
+Space,Point to the planet that shares its name with a chocolate bar.,solar_system.svg,1,"32.25, 45, 3, 10","The Mars bar, named after the Mars family who made it, not the planet.",Solar System
+Space,Point to the planet with a moon whose name means 'fear'.,solar_system.svg,1,"32.25, 45, 3, 10",Phobos means fear; its partner Deimos means dread.,Solar System
+Space,Point to the planet whose seasons each last about 21 years.,solar_system.svg,1,"74.75, 42.67, 5.5, 14.67","Uranus takes 84 years to orbit the Sun, and its tilt gives each pole decades of sun then darkness.",Solar System
+Space,Point to the planet that gave its name to a day of the week in English.,solar_system.svg,1,"53.75, 38.67, 15, 22.67","Saturday is Saturn's day. The other days come from Norse gods, the Sun and the Moon.",Solar System
+Space,Point to the planet whose symbol is also the symbol for female.,solar_system.svg,1,"19.88, 44.67, 4, 10.67",The ♀ symbol is Venus's mirror.,Solar System
+Space,Point to the planet whose symbol is also the symbol for male.,solar_system.svg,1,"32.25, 45, 3, 10",The ♂ symbol is Mars's shield and spear.,Solar System
+Space,Point to the planet that element 93 is named after.,solar_system.svg,1,"87.38, 43, 5.25, 14","Neptunium comes right after uranium (92) in the periodic table, just as Neptune comes after Uranus.",Solar System
+Space,Point to the planet that element 92 is named after.,solar_system.svg,1,"74.75, 42.67, 5.5, 14.67","Uranium was named after Uranus, discovered only a few years before.",Solar System
+Space,Point to where you'd weigh the most.,solar_system.svg,1,"40.38, 36, 10.5, 28",Jupiter's gravity is about two and a half times Earth's.,Solar System
+Space,Point to where the asteroid belt would be.,solar_system.svg,1,"35.5, 33.33, 4.75, 33.33",It's the gap between Mars and Jupiter: an empty-looking spot that's really full of rocks.,Solar System
+Space,Point to the first planet discovered with a telescope.,solar_system.svg,1,"74.75, 42.67, 5.5, 14.67",William Herschel found Uranus in 1781. All the planets nearer the Sun can be seen with the naked eye.,Solar System
+Space,Point to the planet found by maths before anyone saw it.,solar_system.svg,1,"87.38, 43, 5.25, 14",Wobbles in Uranus's orbit let astronomers predict where Neptune was in 1846.,Solar System
+Space,Point to the planet whose moons are named after Shakespeare characters.,solar_system.svg,1,"74.75, 42.67, 5.5, 14.67","Titania, Oberon, Miranda, Ariel and more.",Solar System
+Space,Point to the planet with a moon that has a thick atmosphere and lakes.,solar_system.svg,1,"53.75, 38.67, 15, 22.67",Saturn's moon Titan has lakes of liquid methane.,Solar System
+Space,Point to the planet about 70% covered in water.,solar_system.svg,1,"26.12, 44.67, 4, 10.67",Home.,Solar System
+Space,Point to the smallest planet.,solar_system.svg,1,"14.5, 45, 3.5, 10",Mercury is only a little bigger than our Moon.,Solar System
+Space,Point to the planet named after the Roman god of the sea.,solar_system.svg,1,"87.38, 43, 5.25, 14",Its deep blue colour suits the name.,Solar System
+Music,Point to E sharp.,piano.svg,1,"37.5, 0, 8.75, 60; 37.5, 60, 12.5, 40","There's no black key above E, so E sharp is simply F.",Piano
+Music,Point to B sharp.,piano.svg,1,"87.5, 0, 12.5, 60; 87.5, 60, 12.5, 40",B sharp is the C just above B.,Piano
+Music,Point to C flat.,piano.svg,1,"78.75, 0, 8.75, 60; 75, 60, 12.5, 40","C flat is the white key just below a C, which is B.",Piano
+Music,Point to F flat.,piano.svg,1,"28.75, 0, 8.75, 60; 25, 60, 12.5, 40",F flat is the white key just below F: E.,Piano
+Music,Point to G flat.,piano.svg,1,"46.25, 0, 7.5, 60",G flat and F sharp are the same black key.,Piano
+Music,Point to D flat.,piano.svg,1,"8.75, 0, 7.5, 60",D flat and C sharp are the same black key.,Piano
+Music,Point to A flat.,piano.svg,1,"58.75, 0, 7.5, 60",A flat and G sharp are the same black key.,Piano
+Music,Point to E flat.,piano.svg,1,"21.25, 0, 7.5, 60",E flat and D sharp are the same black key.,Piano
+Music,Point to B flat.,piano.svg,1,"71.25, 0, 7.5, 60",B flat and A sharp are the same black key.,Piano
+Music,Point to A double sharp.,piano.svg,1,"78.75, 0, 8.75, 60; 75, 60, 12.5, 40",Two semitones up from A lands on B.,Piano
+Music,"In the key of C major, point to 'mi', 'a name I call myself'.",piano.svg,1,"28.75, 0, 8.75, 60; 25, 60, 12.5, 40","Do-re-mi: do is C, re is D, mi is E.",Piano
+Music,"In the key of C major, point to 'fa', 'a long, long way to run'.",piano.svg,1,"37.5, 0, 8.75, 60; 37.5, 60, 12.5, 40",Do-re-mi-fa: fa is F.,Piano
+Music,"In the key of C major, point to 'so', 'a needle pulling thread'.",piano.svg,1,"53.75, 0, 5, 60; 50, 60, 12.5, 40",The fifth note of the scale: G.,Piano
+Music,"In the key of C major, point to 'la', 'a note to follow so'.",piano.svg,1,"66.25, 0, 5, 60; 62.5, 60, 12.5, 40",The sixth note of the scale: A.,Piano
+Music,"In the key of C major, point to 'ti', 'a drink with jam and bread'.",piano.svg,1,"78.75, 0, 8.75, 60; 75, 60, 12.5, 40",The seventh note of the scale: B.,Piano
+Music,Point to the note an orchestra tunes to.,piano.svg,1,"66.25, 0, 5, 60; 62.5, 60, 12.5, 40",The oboe plays an A (usually 440 vibrations a second) and everyone tunes to it.,Piano
+Music,Beethoven's Fifth goes 'da-da-da-DUM'. Point to the long DUM note.,piano.svg,1,"21.25, 0, 7.5, 60","Three Gs then a long E flat, which is this black key.",Piano
+Music,Point to the note that starts Beethoven's Fifth.,piano.svg,1,"53.75, 0, 5, 60; 50, 60, 12.5, 40",Da-da-da-DUM opens on three Gs.,Piano
+Music,The Beatles' 'A Day in the Life' ends on one huge chord. Point to the note it's built on.,piano.svg,1,"28.75, 0, 8.75, 60; 25, 60, 12.5, 40",Several pianos struck an E major chord at once and let it ring for about 40 seconds.,Piano
+Music,Bach's famous 'Air' is played on just one string of the violin. Point to that note.,piano.svg,1,"53.75, 0, 5, 60; 50, 60, 12.5, 40","'Air on the G String', from an arrangement that fits the whole tune on the violin's lowest string.",Piano
+Music,Point to a note that's also a vitamin you get from sunshine.,piano.svg,1,"16.25, 0, 5, 60; 12.5, 60, 12.5, 40",Your skin makes vitamin D in sunlight.,Piano
+Music,Point to a note that's also the vitamin in oranges.,piano.svg,1,"0, 0, 8.75, 60; 0, 60, 12.5, 40; 87.5, 0, 12.5, 60; 87.5, 60, 12.5, 40",Vitamin C. Either C counts.,Piano
+Music,Point to a note that's also the Roman numeral for 500.,piano.svg,1,"16.25, 0, 5, 60; 12.5, 60, 12.5, 40",D = 500 in Roman numerals.,Piano
+Music,Point to a note that's also the Roman numeral for 100.,piano.svg,1,"0, 0, 8.75, 60; 0, 60, 12.5, 40; 87.5, 0, 12.5, 60; 87.5, 60, 12.5, 40",C = 100 (from the Latin centum). Either C counts.,Piano
+Music,Point to the note that's also the grade you'd fail an American exam with.,piano.svg,1,"37.5, 0, 8.75, 60; 37.5, 60, 12.5, 40","American grades go A, B, C, D, then F for fail.",Piano
+Music,Point to the note that starts the only major scale with no sharps or flats.,piano.svg,1,"0, 0, 8.75, 60; 0, 60, 12.5, 40; 87.5, 0, 12.5, 60; 87.5, 60, 12.5, 40",C major uses only white keys. Either C counts.,Piano
+Music,Point to the note a perfect fifth above the C on the left.,piano.svg,1,"53.75, 0, 5, 60; 50, 60, 12.5, 40","Count up five white notes, C-D-E-F-G.",Piano
+Music,Point to the note a major third above the C on the left.,piano.svg,1,"28.75, 0, 8.75, 60; 25, 60, 12.5, 40",C to E is a major third: four semitones.,Piano
+Music,Point to the note one octave above the leftmost key.,piano.svg,1,"87.5, 0, 12.5, 60; 87.5, 60, 12.5, 40","An octave above C is the next C, eight white notes up.",Piano
+Music,Point to the note one semitone below the C on the right.,piano.svg,1,"78.75, 0, 8.75, 60; 75, 60, 12.5, 40","There's no black key between B and C, so a semitone down from C is B.",Piano
+Music,Point to the note between F sharp and G sharp.,piano.svg,1,"53.75, 0, 5, 60; 50, 60, 12.5, 40",The white key between those two black keys is G.,Piano
+Music,Point to the black key that's G sharp and A flat at the same time.,piano.svg,1,"58.75, 0, 7.5, 60","One key, two names: the middle of the three black keys.",Piano
+Colours,Point to the colour of an aeroplane's 'black box'.,spectrum.svg,1,"14.29, 0, 14.29, 100",Flight recorders are bright orange so they're easier to find after a crash.,Rainbow
+Colours,Point to the colour San Francisco's Golden Gate Bridge is painted.,spectrum.svg,1,"14.29, 0, 14.29, 100","It's 'International Orange', chosen to stand out in fog.",Rainbow
+Colours,Point to the colour of the Statue of Liberty today.,spectrum.svg,1,"42.86, 0, 14.29, 100","It's copper, which turned green as it weathered.",Rainbow
+Colours,Point to the colour of a 'red' fox.,spectrum.svg,1,"14.29, 0, 14.29, 100",'Red' foxes are really a rusty orange.,Rainbow
+Colours,Point to the colour of 'white' wine.,spectrum.svg,1,"28.57, 0, 14.29, 100",Most white wine is pale yellow or straw-coloured.,Rainbow
+Colours,Point to the colour of 'red' cabbage.,spectrum.svg,1,"85.71, 0, 14.29, 100",Red cabbage is purple. It even turns blue or green depending on how acidic it's cooked.,Rainbow
+Colours,Point to the colour of the Red Sea.,spectrum.svg,1,"57.14, 0, 14.29, 100","Like other seas, it's blue. The name may come from seasonal red algae or an old word for 'south'.",Rainbow
+Colours,"Point to the colour of a sunset on the Red Planet, Mars.",spectrum.svg,1,"57.14, 0, 14.29, 100",Fine Martian dust scatters blue light around the setting Sun.,Rainbow
+Colours,Royals are said to be 'blue-blooded'. Point to the actual colour of their blood.,spectrum.svg,1,"0, 0, 14.29, 100",Everyone's blood is red; the phrase came from pale skin showing bluish veins.,Rainbow
+Colours,Point to the only colour here named after a fruit.,spectrum.svg,1,"14.29, 0, 14.29, 100",The fruit came first: the colour was named after it.,Rainbow
+Colours,Point to the colour named after a flower.,spectrum.svg,1,"85.71, 0, 14.29, 100",Violets gave the colour its name.,Rainbow
+Colours,Point to the colour named after a plant used to make dye.,spectrum.svg,1,"71.43, 0, 14.29, 100",Indigo dye comes from indigo plants. It's what originally made jeans blue.,Rainbow
+Colours,"Point to the colour printers use alongside cyan, magenta and black.",spectrum.svg,1,"28.57, 0, 14.29, 100","CMYK printing: cyan, magenta, yellow and K for key (black).",Rainbow
+Colours,Point to the colour of light with the longest wavelength.,spectrum.svg,1,"0, 0, 14.29, 100",Red light has the longest wavelength we can see.,Rainbow
+Colours,Point to the colour of light with the shortest wavelength.,spectrum.svg,1,"85.71, 0, 14.29, 100",Violet has the shortest; just past it is ultraviolet.,Rainbow
+Colours,"Plants look green, so point to the colour of light they use least.",spectrum.svg,1,"42.86, 0, 14.29, 100",Plants look green because they reflect green light rather than use it.,Rainbow
+Colours,Shine a red light and a green light on the same spot. Point to the colour you see.,spectrum.svg,1,"28.57, 0, 14.29, 100",Light mixes differently from paint: red plus green light makes yellow.,Rainbow
+Colours,Mix blue and yellow paint. Point to the colour you get.,spectrum.svg,1,"42.86, 0, 14.29, 100","Paint absorbs light, so blue plus yellow paint makes green.",Rainbow
+Colours,Point to the colour of the hottest stars.,spectrum.svg,1,"57.14, 0, 14.29, 100",It's the opposite of taps: blue stars are hottest and red stars are coolest.,Rainbow
+Colours,Point to the colour of the coolest stars.,spectrum.svg,1,"0, 0, 14.29, 100",Red stars are the coolest; blue ones are the hottest.,Rainbow
+Colours,Point to the colour on the outside edge of a rainbow.,spectrum.svg,1,"0, 0, 14.29, 100",A main rainbow has red on the outside and violet on the inside.,Rainbow
+Colours,Point to the colour on the inside edge of a rainbow.,spectrum.svg,1,"85.71, 0, 14.29, 100",Violet sits on the inside of the arc.,Rainbow
+Colours,Point to the colour in the middle of the rainbow.,spectrum.svg,1,"42.86, 0, 14.29, 100","Red, orange, yellow, GREEN, blue, indigo, violet: green is fourth of seven.",Rainbow
+Colours,Point to the colour of a cooked lobster.,spectrum.svg,1,"0, 0, 14.29, 100",Live lobsters are dark blue-green; cooking reveals the red pigment underneath.,Rainbow
+Colours,Point to the colour many carrots were before orange ones caught on in the 1600s.,spectrum.svg,1,"85.71, 0, 14.29, 100",Early carrots were often purple or yellow; orange carrots became popular later.,Rainbow
+Colours,A yellow card is a warning. Point to the colour that sends a player off.,spectrum.svg,1,"0, 0, 14.29, 100",Two yellows make a red.,Rainbow
+Colours,Point to the colour Isaac Newton added to make the rainbow seven colours.,spectrum.svg,1,"71.43, 0, 14.29, 100","Newton liked seven, to match the seven notes of the musical scale.",Rainbow
+Colours,Point to the colour of copper sulphate crystals.,spectrum.svg,1,"57.14, 0, 14.29, 100",A favourite of school science labs: bright blue crystals.,Rainbow
+Colours,Point to the colour of the 'Rain' Prince sang about.,spectrum.svg,1,"85.71, 0, 14.29, 100",Purple Rain.,Rainbow
+Flags,"Point to the flag of the world's biggest grower of cocoa, the bean behind chocolate.",flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,2,,Côte d'Ivoire grows more cocoa than any other country.,Tricolours
+Flags,Point to the flag of the country that asks to be called by its French name in every language.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,2,,"It's Côte d'Ivoire, not Ivory Coast, by the government's own request.",Tricolours
+Flags,"Point to the flag of the country whose capital isn't its biggest city, Abidjan.",flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,2,,The capital is Yamoussoukro; Abidjan is the largest city.,Tricolours
+Flags,Point to the flag of the football team nicknamed 'the Elephants'.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,2,,"Côte d'Ivoire's national team, once led by Didier Drogba.",Tricolours
+Flags,Point to the flag that was modelled on France's.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,2,,Côte d'Ivoire's vertical tricolour follows the French design.,Tricolours
+Flags,Point to the flag with only two colours.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,"Nigeria's flag is green, white, green.",Tricolours
+Flags,Point to the flag of the home of 'Nollywood'.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,Nigeria's film industry makes more films a year than Hollywood.,Tricolours
+Flags,Point to the flag of the country with the most people in Africa.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,Nigeria has over 200 million people.,Tricolours
+Flags,Point to the flag of the football team called 'the Super Eagles'.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,Nigeria's national team.,Tricolours
+Flags,"Point to the flag of the country whose capital is Abuja, not its biggest city, Lagos.",flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,Abuja was purpose-built as the capital in the 1980s.,Tricolours
+Flags,Point to the flag of the home of Afrobeat pioneer Fela Kuti.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,Fela Kuti was from Nigeria.,Tricolours
+Flags,Point to the flag of the country with two other countries completely inside it.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,Italy surrounds both Vatican City and San Marino.,Tricolours
+Flags,"Point to the flag of 'the Azzurri', who play in a colour that isn't on their flag.",flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,"Italy play in blue, the colour of the old royal House of Savoy.",Tricolours
+Flags,Point to the flag of the boot-shaped country.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,"Italy, kicking Sicily.",Tricolours
+Flags,Point to the flag often mixed up with Mexico's.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,"Same green, white and red stripes; Mexico adds an eagle in the middle.",Tricolours
+Flags,Point to the flag of the country whose city has canals instead of roads.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,Venice.,Tricolours
+Flags,Point to the flag of the country where pizza comes from.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,"Naples, Italy.",Tricolours
+Flags,Point to the flag of the country that gave us the word 'ciao'.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,"From the Venetian 's-ciào', 'I am your servant'.",Tricolours
+Flags,"Point to the flag where the green and orange stand for two communities, with white for peace between them.",flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,"Ireland: green for the Gaelic and Catholic tradition, orange for Protestants, and white for peace.",Tricolours
+Flags,Point to the flag of the country with no native snakes.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,"Legend credits St Patrick; really, Ireland was cut off by sea before snakes could arrive after the Ice Age.",Tricolours
+Flags,Point to the flag of the country where Halloween began.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,Halloween grew out of the Celtic festival of Samhain.,Tricolours
+Flags,Point to the flag of the country where Dracula's author was born.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,Not Romania! Bram Stoker was born in Dublin.,Tricolours
+Flags,Point to the flag of the country whose national symbol is a harp.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,"The harp appears on Irish coins and on Guinness cans, facing the other way.",Tricolours
+Flags,Point to the flag of 'the Boys in Green'.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,Ireland's football team.,Tricolours
+Flags,Point to the flag of the home of Guinness.,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,"Brewed at St James's Gate, Dublin, since 1759.",Tricolours
+Flags,Point to the flag that looks exactly the same upside down.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,Austria's red-white-red is the same either way up.,Stripes
+Flags,Point to the flag of the country with no kangaroos.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,"Austria, not Australia, as the tourist T-shirts in Vienna say.",Stripes
+Flags,Point to the flag of the country with no coastline.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,Austria is landlocked; the other three all reach the sea.,Stripes
+Flags,Point to the flag of the country where the croissant's ancestor was baked.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,Not France! The croissant grew from the Austrian kipferl.,Stripes
+Flags,Point to the flag of Mozart's birthplace.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,"Salzburg, now in Austria.",Stripes
+Flags,Point to the flag of the country where Arnold Schwarzenegger was born.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,He grew up near Graz.,Stripes
+Flags,Point to the flag of the setting of 'The Sound of Music'.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,Salzburg and the Austrian Alps.,Stripes
+Flags,Point to the flag of the country that won Eurovision in 2014 with Conchita Wurst.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,'Rise Like a Phoenix'.,Stripes
+Flags,Point to the flag of the home of the schnitzel.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,Wiener schnitzel: 'Viennese cutlet'.,Stripes
+Flags,Point to the flag of the city where Sigmund Freud did most of his work.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,"Vienna, Austria.",Stripes
+Flags,Point to the flag that's almost identical to Monaco's.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,2,,Indonesia's and Monaco's flags are both red over white; only their shapes differ.,Stripes
+Flags,Point to the flag of the home of the Komodo dragon.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,2,,The largest living lizard lives on a few Indonesian islands.,Stripes
+Flags,Point to the flag of the country Bali is part of.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,2,,Bali is one of Indonesia's islands.,Stripes
+Flags,Point to the flag of the country with more Muslims than any other.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,2,,Not a Middle Eastern country: it's Indonesia.,Stripes
+Flags,Point to the flag of the country where the volcano Krakatoa erupted in 1883.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,2,,"It was heard nearly 5,000 km away.",Stripes
+Flags,Point to the flag of the world's biggest country made up only of islands.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,2,,"Indonesia has over 17,000 islands.",Stripes
+Flags,Point to the flag of the country building a new capital to replace Jakarta.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,2,,"The new capital, Nusantara, is on Borneo.",Stripes
+Flags,Point to the flag that's Indonesia's turned upside down.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,Poland: white over red.,Stripes
+Flags,Point to the flag of the country where Marie Curie was born.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,Not France! She was born Maria Skłodowska in Warsaw.,Stripes
+Flags,Point to the flag of Chopin's birthplace.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,Chopin was born near Warsaw.,Stripes
+Flags,"Point to the flag of the home of Copernicus, who put the Sun at the centre.",flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,He was born in Toruń.,Stripes
+Flags,Point to the flag of the country Pope John Paul II came from.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,"Karol Wojtyła, from Wadowice.",Stripes
+Flags,Point to the flag of Robert Lewandowski's country.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,Poland's record goalscorer.,Stripes
+Flags,Point to the flag of the biggest country that lies entirely in Europe.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,Not Russia (which is partly in Asia) and not France: it's Ukraine.,Stripes
+Flags,Point to the flag of the country where Chernobyl is.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,The 1986 nuclear disaster was in northern Ukraine.,Stripes
+Flags,Point to the flag of the country that won Eurovision in 2022.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,Kalush Orchestra with 'Stefania'.,Stripes
+Flags,Point to the flag of the capital that chicken Kiev is named after.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,"Kyiv, Ukraine.",Stripes
+Flags,Point to the flag often described as a blue sky over fields of wheat.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,Ukraine's blue and yellow.,Stripes
+Flags,Point to the flag of Andriy Shevchenko's country.,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,The Ballon d'Or winner from Ukraine.,Stripes
+Shapes,Which of these shapes is the 'diamond' on a playing card?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,The diamond suit is a rhombus.,Quadrilaterals
+Shapes,Which of these shapes has four equal sides but no right angles?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,A rhombus: a square that's been pushed over.,Quadrilaterals
+Shapes,Which of these is a square that's been pushed over?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,Keep all four sides equal and lean it over: a rhombus.,Quadrilaterals
+Shapes,Which of these shapes has the most lines of symmetry?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,"The rhombus has two; the kite and this trapezium have one each, and the parallelogram has none.",Quadrilaterals
+Shapes,Which of these shapes is a 'lozenge' in heraldry?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,"Heraldry calls the diamond shape a lozenge, like the cough sweet.",Quadrilaterals
+Shapes,Argyle socks are covered in which of these shapes?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,Argyle patterns are rows of diamonds.,Quadrilaterals
+Shapes,Which of these shapes takes its name from the Greek for 'spinning top'?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,Greek 'rhombos' was a spinning top or a whirling toy.,Quadrilaterals
+Shapes,Which of these shapes is also a bird of prey?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,2,,"The red kite, often seen soaring over Britain.",Quadrilaterals
+Shapes,Which of these shapes is the British 'mark' of safety on products?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,2,,The BSI Kitemark.,Quadrilaterals
+Shapes,Which of these shapes did Mary Poppins' song tell us to go and fly?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,2,,'Let's Go Fly a Kite'.,Quadrilaterals
+Shapes,Which of these shapes did Benjamin Franklin fly in a thunderstorm?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,2,,His famous (and very risky) kite experiment with electricity.,Quadrilaterals
+Shapes,"Which of these shapes has two pairs of equal sides next to each other, but not all four equal?",shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,2,,"That's a kite. In a parallelogram the equal sides are opposite each other, and a rhombus has all four equal.",Quadrilaterals
+Shapes,Which of these shapes is in the title of Khaled Hosseini's first novel?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,2,,The Kite Runner.,Quadrilaterals
+Shapes,Which of these shapes do Americans call a 'trapezoid'?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,4,,British and American English swap the names trapezium and trapezoid.,Quadrilaterals
+Shapes,Which of these shapes gives its name to a big muscle across your upper back?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,4,,"The trapezius, named for its four-sided shape.",Quadrilaterals
+Shapes,Which of these shapes is also the name of a small bone in your wrist?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,4,,One of the eight wrist bones is the trapezium.,Quadrilaterals
+Shapes,Which of these shapes takes its name from the Greek for 'little table'?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,4,,"Greek 'trapezion', a small table.",Quadrilaterals
+Shapes,Which of these shapes has exactly one pair of parallel sides?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,4,,Only the top and bottom of the trapezium are parallel.,Quadrilaterals
+Shapes,"Seen from the side, a classic lampshade is which of these shapes?",shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,4,,"Narrow at the top, wide at the bottom: a trapezium.",Quadrilaterals
+Shapes,"Seen from the side, a cinema popcorn bucket is which of these shapes?",shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,4,,Wider at the top than the bottom: an upside-down trapezium.,Quadrilaterals
+Shapes,Which of these is a rectangle that's been pushed over?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,1,,Lean a rectangle over and you get a parallelogram.,Quadrilaterals
+Shapes,Which of these shapes looks the same upside down but has no lines of symmetry?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,1,,A parallelogram has rotational symmetry but can't be folded onto itself.,Quadrilaterals
+Shapes,"Which of these shapes has both pairs of opposite sides parallel, but not all four sides equal?",shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,1,,"The parallelogram. The rhombus also has parallel sides, but all four are equal.",Quadrilaterals
+Shapes,Which of these shapes is named after its parallel lines?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,1,,Parallel + gram (Greek for a line or drawing).,Quadrilaterals
+Shapes,"Which of these shapes has both pairs of opposite angles equal, but sides that aren't all the same length?",shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,1,,Opposite angles in a parallelogram match.,Quadrilaterals
