@@ -289,3 +289,20 @@ def test_pages_have_back_link_and_security_headers(client, path):
     assert res.headers['X-Frame-Options'] == 'SAMEORIGIN'
     csp = res.headers['Content-Security-Policy']
     assert "default-src 'self'" in csp and 'unsafe-inline' not in csp
+
+
+def test_timed_out_reveals_answer_for_no_points(client):
+    q = next(q for q in app_module.QUESTIONS if q['area'])
+    body = client.post('/api/answer', json={'id': q['id'], 'timed_out': True}).get_json()
+    assert body['points'] == 0 and body['verdict'] == 'timeout'
+    assert body['correct_picture'] == q['correct']
+    assert len(body['areas']) == len(q['area'])
+
+
+@pytest.mark.parametrize('payload,status', [
+    ({'id': 'nope', 'timed_out': True}, 404),
+    ({'id': 7, 'timed_out': True}, 400),
+    ({'id': '0', 'timed_out': 'yes'}, 400),
+])
+def test_timed_out_validation(client, payload, status):
+    assert client.post('/api/answer', json=payload).status_code == status

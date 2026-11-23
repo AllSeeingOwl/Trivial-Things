@@ -14,6 +14,22 @@ Open <http://127.0.0.1:5010>. Click (or tap) to drop a pin, move it as often as
 you like, then press **Lock it in**. Keyboard players can Tab to a picture,
 press Enter to drop a pin and move it with the arrow keys (Shift for big steps).
 
+### Quiz nights
+
+Choose **Quiz night** on the start screen and add your teams (2 to 8; the
+names are remembered next time). Teams take turns: each question goes to the
+next team, and only that team can score. Pick how many questions each team
+gets and a timer (off, or 15 seconds to 1½ minutes per question).
+
+- The screen shows whose turn it is. The timer turns red for the last five
+  seconds. When it runs out, a pin that's been placed is locked in; with no
+  pin, the team scores nothing and the answer is shown. The host can pause it.
+- The scoreboard beside the pictures keeps teams in order, highlights whose
+  turn it is, and has −5 and +5 buttons for the host to settle disputes.
+- The end screen shows the final standings and the winner, or who tied.
+
+The timer also works when playing on your own.
+
 Scoring:
 
 | Result | Points |
