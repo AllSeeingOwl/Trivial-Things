@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Point It Out: Question Maker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     {% set portal_app_name = "Point It Out" %}
     {% include '_portal_nav.html' %}
 
@@ -39,7 +40,7 @@
                 <div class="inline">
                     <label for="ed-image-select" class="sr-only">Picture file</label>
                     <select id="ed-image-select"></select>
-                    <button id="ed-add" class="btn secondary" type="button">Add picture</button>
+                    <button id="ed-add" class="btn secondary qn-skip" type="button">Add picture</button>
                 </div>
                 <p class="small">Click a picture to make it the correct one. To mark an exact spot, drag a box on it (or type the numbers below). Leave the box empty if any click on the right picture counts.</p>
                 <div id="ed-pictures" class="pictures editor-pictures"></div>
@@ -52,7 +53,7 @@
                     <label>Top <input id="ed-top" type="number" min="0" max="100" step="0.1"></label>
                     <label>Width <input id="ed-width" type="number" min="0" max="100" step="0.1"></label>
                     <label>Height <input id="ed-height" type="number" min="0" max="100" step="0.1"></label>
-                    <button id="ed-clear-area" class="btn secondary" type="button">Clear area</button>
+                    <button id="ed-clear-area" class="btn qn-reset" type="button">Clear area</button>
                 </div>
             </fieldset>
 
@@ -65,8 +66,8 @@
                 <label for="ed-output">CSV line</label>
                 <textarea id="ed-output" rows="3" readonly></textarea>
                 <div class="inline">
-                    <button id="ed-copy" class="btn primary" type="button">Copy line</button>
-                    <button id="ed-next" class="btn secondary" type="button">Save and write the next question on these pictures</button>
+                    <button id="ed-copy" class="btn primary qn-go" type="button">Copy line</button>
+                    <button id="ed-next" class="btn secondary qn-skip" type="button">Save and write the next question on these pictures</button>
                     <span id="ed-status" role="status" aria-live="polite" class="small"></span>
                 </div>
             </div>
@@ -75,8 +76,8 @@
                 <label for="ed-list">Saved lines</label>
                 <textarea id="ed-list" rows="5" readonly></textarea>
                 <div class="inline">
-                    <button id="ed-copy-all" class="btn primary" type="button">Copy all saved lines</button>
-                    <button id="ed-clear-list" class="btn secondary" type="button">Clear saved lines</button>
+                    <button id="ed-copy-all" class="btn primary qn-go" type="button">Copy all saved lines</button>
+                    <button id="ed-clear-list" class="btn qn-reset" type="button">Clear saved lines</button>
                 </div>
             </div>
         </section>

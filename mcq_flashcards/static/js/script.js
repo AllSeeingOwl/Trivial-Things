@@ -60,8 +60,7 @@ function handleChoice(choiceStr, btnEl) {
 
     // Mark correct/incorrect styling directly
     const isCorrect = choiceStr === currentQuestion.answer;
-    btnEl.style.backgroundColor = isCorrect ? 'var(--btn-success)' : 'var(--btn-danger)';
-    btnEl.style.color = '#fff';
+    btnEl.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
 
     // Append icon to innerText to avoid relying on color alone (WCAG 1.4.1)
     btnEl.textContent = choiceStr + (isCorrect ? ' ✓' : ' ✗');
@@ -70,8 +69,6 @@ function handleChoice(choiceStr, btnEl) {
     const allBtns = choicesContainerEl.querySelectorAll('button');
     allBtns.forEach(b => {
         b.disabled = true;
-        b.style.cursor = 'not-allowed';
-        b.style.opacity = '0.7';
     });
 
     // Announce choice outcome via ARIA live

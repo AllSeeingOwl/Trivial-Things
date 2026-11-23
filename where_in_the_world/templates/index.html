@@ -11,10 +11,11 @@
     <!-- Geohash -->
     <script src="{{ url_for('static', filename='vendor/ngeohash/main.min.js') }}"></script>
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     {% set portal_app_name = "Where In The World" %}
     {% include '_portal_nav.html' %}
 
@@ -38,7 +39,7 @@
                     <option value="7">Best of 7</option>
                 </select>
             </div>
-            <button id="start-btn" class="btn primary">Start Game</button>
+            <button id="start-btn" class="btn primary qn-go">Start Game</button>
         </div>
 
         <div id="game-screen" class="screen">
@@ -50,14 +51,14 @@
             <div class="input-container">
                 <label for="location-input" class="sr-only">Enter a location</label>
                 <input type="text" id="location-input" autocomplete="off" placeholder="Type a place name, coordinates (lat, lng), Plus Code, or Geohash...">
-                <button id="search-btn" class="btn secondary">Locate</button>
+                <button id="search-btn" class="btn secondary qn-skip">Locate</button>
             </div>
             <div id="search-feedback" role="status" aria-live="polite" class="feedback-msg"></div>
 
             <div id="map"></div>
 
             <div class="controls">
-                <button id="submit-guess-btn" class="btn primary" disabled>Submit Guess</button>
+                <button id="submit-guess-btn" class="btn primary qn-go" disabled>Submit Guess</button>
             </div>
         </div>
 
@@ -67,13 +68,13 @@
                 <p>Distance: <strong id="result-distance"></strong> miles</p>
                 <p>Points Earned: <strong id="result-points"></strong></p>
             </div>
-            <button id="next-round-btn" class="btn primary">Next Round</button>
+            <button id="next-round-btn" class="btn primary qn-go">Next Round</button>
         </div>
 
         <div id="end-screen" class="screen">
             <h2>Game Over!</h2>
             <p>Final Score: <strong id="final-score"></strong></p>
-            <button id="play-again-btn" class="btn primary">Play Again</button>
+            <button id="play-again-btn" class="btn primary qn-go">Play Again</button>
         </div>
     </div>
 

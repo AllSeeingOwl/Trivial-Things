@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What The Spell</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
-<body>
+<body class="quiz-night">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     {% set portal_app_name = "What The Spell" %}
     {% include '_portal_nav.html' %}
@@ -24,8 +25,8 @@
                 <option value="{{ i }}">Grid {{ i + 1 }}</option>
                 {% endfor %}
             </select>
-            <button id="load-btn">Load Grid</button>
-            <button id="reset-btn">Reset Board</button>
+            <button id="load-btn" class="qn-go">Load Grid</button>
+            <button id="reset-btn" class="qn-reset">Reset Board</button>
         </section>
 
         <section class="grid-container" id="grid" aria-label="Word Grid">

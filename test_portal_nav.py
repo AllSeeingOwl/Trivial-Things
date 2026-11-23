@@ -6,19 +6,19 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tools"))
-import sync_portal_nav  # noqa: E402
+import sync_shared  # noqa: E402
 
 
 def test_copies_match_shared_source():
     result = subprocess.run(
-        [sys.executable, str(ROOT / "tools" / "sync_portal_nav.py"), "--check"],
+        [sys.executable, str(ROOT / "tools" / "sync_shared.py"), "--check"],
         capture_output=True, text=True,
     )
     assert result.returncode == 0, result.stdout
 
 
 def test_every_page_uses_the_shared_bar():
-    for app in sync_portal_nav.APPS:
+    for app in sync_shared.APPS:
         for page in (ROOT / app / "templates").glob("*.html"):
             if page.name.startswith("_"):
                 continue

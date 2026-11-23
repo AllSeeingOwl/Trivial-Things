@@ -1,0 +1,142 @@
+/* Interactive Scoreboard. Shared look and action colours come from quiz-night.css. */
+body {
+    --qn-accent: #8b9cff; /* periwinkle */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 72rem;
+    margin: 1.2em auto;
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    padding: 1.2em 2em 1.6em;
+    border-radius: var(--qn-radius);
+}
+
+@media (max-width: 600px) {
+    .container { margin: 0.8em; padding: 1em; }
+}
+
+.quiz-night h2 { text-align: center; margin: 0.4em 0 0.6em; }
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6em 1.2em;
+    margin-bottom: 1.2em;
+}
+.quiz-night .header-actions h1 { margin: 0.2em 0; }
+.quiz-night .header-actions h1::after { margin-left: 0; }
+
+/* Tabs */
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3em;
+    margin-bottom: 1.2em;
+    border-bottom: 2px solid var(--qn-line);
+}
+.quiz-night .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 4px solid transparent;
+    border-radius: var(--qn-radius-sm) var(--qn-radius-sm) 0 0;
+    color: var(--qn-muted);
+    margin-bottom: -2px;
+}
+.quiz-night .tab-btn:hover { color: var(--qn-text); filter: none; }
+.quiz-night .tab-btn.active {
+    border-bottom-color: var(--qn-accent);
+    color: var(--qn-text);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; overflow-x: auto; }
+
+/* Tables: big, roomy rows that read from across a room. */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.2em;
+    font-size: var(--qn-step-1);
+}
+th, td {
+    padding: 0.55em 0.7em;
+    text-align: left;
+    border-bottom: 1px solid var(--qn-line);
+    font-variant-numeric: tabular-nums;
+}
+th {
+    font-size: var(--qn-step-0);
+    color: var(--qn-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+tbody tr:first-child td { color: var(--qn-accent); }
+td strong { font-size: 1.1em; }
+
+/* Links styled as buttons (Export) */
+.quiz-night a.btn {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 0.6em 1.2em;
+    border-radius: var(--qn-radius-sm);
+    border: 2px solid var(--qn-line);
+}
+.quiz-night a.btn:hover { border-color: var(--qn-muted); }
+
+/* Add score form */
+form {
+    background: var(--qn-surface-2);
+    border: 1px solid var(--qn-line);
+    padding: 1.2em;
+    border-radius: var(--qn-radius);
+    max-width: 34rem;
+    margin: 0 auto;
+}
+.form-group { margin-bottom: 0.9em; }
+.form-group label { display: block; margin-bottom: 0.3em; font-weight: 700; }
+.quiz-night .form-group input { width: 100%; box-sizing: border-box; }
+.required { color: var(--qn-wrong); }
+
+.feedback {
+    display: none;
+    padding: 0.6em 0.9em;
+    margin-bottom: 0.9em;
+    border-radius: var(--qn-radius-sm);
+    font-weight: 700;
+    background: var(--qn-surface);
+    border-left: 6px solid transparent;
+}
+.feedback.is-ok { display: block; border-left-color: var(--qn-correct); }
+.feedback.is-error { display: block; border-left-color: var(--qn-wrong); }
+
+/* Avatars */
+.avatar {
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 0.5em;
+    object-fit: cover;
+}
+.default-avatar {
+    display: inline-block;
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    background: var(--qn-surface-2);
+    border: 1px solid var(--qn-line);
+    vertical-align: middle;
+    margin-right: 0.5em;
+    text-align: center;
+    line-height: 1.6em;
+    color: var(--qn-text);
+    font-size: 0.8em;
+}

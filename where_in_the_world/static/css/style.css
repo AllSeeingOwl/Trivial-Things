@@ -1,13 +1,6 @@
+/* Where In The World. Shared look and action colours come from quiz-night.css. */
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --success-color: #2ecc71;
-    --warning-color: #f1c40f;
-    --danger-color: #e74c3c;
-    --bg-color: #ecf0f1;
-    --card-bg: #ffffff;
-    --text-color: #333333;
-    --border-radius: 8px;
+    --border-radius: var(--qn-radius);
 }
 
 * {
@@ -17,14 +10,12 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
+    --qn-accent: #38bdf8; /* sky */
+    line-height: 1.5;
 }
 
 .container {
-    max-width: 900px;
+    max-width: 72rem;
     margin: 0 auto;
     padding: 20px;
 }
@@ -33,153 +24,116 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    background: var(--primary-color);
-    color: white;
-    padding: 15px 20px;
+    flex-wrap: wrap;
+    gap: 0.6em 1.2em;
+    margin-bottom: 1.2em;
+    background: var(--qn-surface);
+    color: var(--qn-text);
+    border: 1px solid var(--qn-line);
+    border-top: 6px solid var(--qn-accent);
+    padding: 0.8em 1.2em;
     border-radius: var(--border-radius);
 }
 
-header h1 {
-    font-size: 1.5rem;
-}
+.quiz-night header h1 { font-size: var(--qn-step-2); margin: 0; }
+.quiz-night header h1::after { display: none; }
 
 #game-stats {
-    font-weight: bold;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: var(--qn-step-1);
     display: flex;
-    gap: 20px;
+    gap: 1.2em;
+    font-variant-numeric: tabular-nums;
 }
 
 .screen {
     display: none;
-    background: var(--card-bg);
-    padding: 30px;
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    padding: 1.6em;
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     text-align: center;
 }
 
-.screen.active {
-    display: block;
-}
+.screen.active { display: block; }
+.screen > h2 { margin-bottom: 0.4em; }
+.screen > p { margin-bottom: 0.8em; }
 
 .prompt-card {
-    background: #f8f9fa;
-    padding: 20px;
+    background: var(--qn-surface-2);
+    padding: 1em 1.2em;
     border-radius: var(--border-radius);
-    margin-bottom: 20px;
-    border-left: 5px solid var(--secondary-color);
+    margin-bottom: 1.1em;
+    border-left: 6px solid var(--qn-accent);
     text-align: left;
 }
 
-.place-hint {
-    color: #7f8c8d;
-    font-size: 0.9rem;
+.quiz-night .place-hint {
+    color: var(--qn-muted);
+    font-size: 0.85em;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.08em;
 }
 
-.prompt-text {
-    font-size: 1.4rem;
-    color: var(--primary-color);
-    margin-top: 5px;
+.quiz-night .prompt-text {
+    font-size: var(--qn-step-2);
+    line-height: 1.25;
+    color: var(--qn-text);
+    margin-top: 0.2em;
 }
 
 .input-container {
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 0.6em;
+    margin-bottom: 0.9em;
 }
 
-input[type="text"] {
+.quiz-night input[type="text"] {
     flex: 1;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
+    min-width: 0;
 }
 
-input[type="text"]:focus {
+.quiz-night input[type="text"]:focus {
     outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
+    border-color: var(--qn-accent);
+    box-shadow: 0 0 0 3px var(--qn-accent);
 }
 
 #map {
     position: relative;
-    height: 400px;
+    height: clamp(320px, 52vh, 680px);
     width: 100%;
     border-radius: var(--border-radius);
-    margin-bottom: 20px;
+    border: 2px solid var(--qn-line);
+    margin-bottom: 1.2em;
     z-index: 0; /* Creates a stacking context to properly contain Leaflet controls */
 }
+
+/* Leaflet's own controls stay light, like the map; give them dark text. */
+#map .leaflet-control a { color: #1f2937; }
 
 .controls {
     display: flex;
     justify-content: flex-end;
 }
 
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-.btn:active {
-    transform: translateY(2px);
-}
-
-.btn:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.btn:focus-visible {
-    outline: 3px solid var(--secondary-color);
-    outline-offset: 2px;
-}
-
-.btn.primary {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.btn.primary:hover:not(:disabled) {
-    background-color: #2980b9;
-}
-
-.btn.secondary {
-    background-color: #95a5a6;
-    color: white;
-}
-
-.btn.secondary:hover:not(:disabled) {
-    background-color: #7f8c8d;
-}
+.controls .btn { font-size: var(--qn-step-1); }
 
 .result-stats {
-    margin: 20px 0;
-    font-size: 1.2rem;
-    background: #f8f9fa;
-    padding: 15px;
+    margin: 1.2em auto;
+    max-width: 32rem;
+    font-size: var(--qn-step-1);
+    background: var(--qn-surface-2);
+    padding: 0.9em;
     border-radius: var(--border-radius);
 }
 
-.settings {
-    margin: 20px 0;
-}
+.result-stats strong { color: var(--qn-accent); font-variant-numeric: tabular-nums; }
+#final-score { color: var(--qn-accent); font-size: var(--qn-step-2); }
+#result-title { font-size: var(--qn-step-3); }
 
-.settings select {
-    padding: 8px;
-    font-size: 1rem;
-    border-radius: 4px;
-}
+.settings { margin: 1.2em 0; }
 
 /* Screen reader only */
 .sr-only {
@@ -196,24 +150,23 @@ input[type="text"]:focus {
 
 /* Feedback message banner */
 .feedback-msg {
-    margin-bottom: 15px;
-    padding: 10px 15px;
+    margin-bottom: 0.9em;
+    padding: 0.6em 0.9em;
     border-radius: var(--border-radius);
-    font-size: 0.95rem;
     text-align: left;
     display: none;
+    background: var(--qn-surface-2);
+    border-left: 6px solid transparent;
 }
 
 .feedback-msg.error {
     display: block;
-    background-color: #fde8e8;
-    color: #9b1c1c;
-    border: 1px solid #f8b4b4;
+    border-left-color: var(--qn-wrong);
+    color: var(--qn-text);
 }
 
 .feedback-msg.info {
     display: block;
-    background-color: #e1effe;
-    color: #1e429f;
-    border: 1px solid #a4cafe;
+    border-left-color: var(--qn-accent);
+    color: var(--qn-text);
 }

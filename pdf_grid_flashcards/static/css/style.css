@@ -1,21 +1,6 @@
-:root {
-    --bg-color: #f0f2f5;
-    --text-color: #333;
-    --bg-white: white;
-    --btn-primary: #007bff;
-    --btn-primary-hover: #0056b3;
-    --cell-bg: #e9ecef;
-    --cell-hover-bg: #dee2e6;
-    --cell-correct-bg: #28a745;
-    --cell-incorrect-bg: #dc3545;
-    --border-color: #ccc;
-    --text-muted: #666;
-    --shadow-color: rgba(0,0,0,0.1);
-}
-
+/* PDF Grid Flashcards. Shared look and action colours come from quiz-night.css. */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
+    --qn-accent: #a3e635; /* lime */
     margin: 0;
     padding: 20px;
     display: flex;
@@ -24,110 +9,116 @@ body {
     --portal-nav-inset: 20px; /* matches the padding, so the portal bar spans the page */
 }
 
-h1 {
-    color: var(--text-color);
-    margin-bottom: 20px;
+header { text-align: center; max-width: 48rem; }
+header p { color: var(--qn-muted); }
+
+main {
+    width: 100%;
+    max-width: 80rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .controls {
     display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 0.8em;
+    margin-bottom: 1.2em;
     align-items: center;
     flex-direction: column;
-    background: var(--bg-white);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px var(--shadow-color);
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    padding: 1.2em;
+    border-radius: var(--qn-radius);
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .controls form {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 0.8em;
 }
 
-input[type="file"] {
-    padding: 5px;
+.quiz-night input[type="file"] {
+    padding: 0.3em;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
-button {
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    background-color: var(--btn-primary);
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.2s, opacity 0.2s;
-}
-
-button:hover:not(:disabled) {
-    background-color: var(--btn-primary-hover);
-}
-
-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
+/* The grid scrolls sideways on a narrow screen rather than squashing the cells. */
 .grid-container {
     display: grid;
-    gap: 10px;
-    background-color: var(--bg-white);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px var(--shadow-color);
-    margin-bottom: 30px;
-    max-width: 1200px;
+    gap: 0.5em;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    padding: 0.9em;
+    border-radius: var(--qn-radius);
+    margin-bottom: 1.6em;
+    overflow-x: auto;
     display: none; /* hidden until grid is loaded */
 }
 
 .cell {
-    min-width: 160px;
-    min-height: 120px;
+    min-width: 8rem;
+    min-height: 5.5em;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--cell-bg);
-    border-radius: 5px;
-    font-weight: 500;
-    font-size: 14px;
+    background: var(--qn-surface-2);
+    border: 2px solid var(--qn-line);
+    border-radius: var(--qn-radius-sm);
+    font-weight: 700;
+    font-size: var(--qn-step-0);
+    line-height: 1.2;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
     user-select: none;
-    padding: 10px;
+    padding: 0.5em;
     box-sizing: border-box;
-    word-wrap: break-word;
-    box-shadow: inset 0 0 0 2px transparent;
+    overflow-wrap: anywhere;
 }
 
 .cell:hover,
 .cell:focus-visible {
-    background-color: var(--cell-hover-bg);
+    border-color: var(--qn-accent);
     transform: scale(1.02);
     outline: none;
 }
 
 .cell:focus-visible {
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 0 3px var(--qn-text);
 }
 
+/* Right and wrong; the ✓ or ✗ added to the text means colour isn't the only signal. */
 .cell.correct {
-    background-color: var(--cell-correct-bg) !important;
-    color: white;
+    background: var(--qn-correct) !important;
+    border-color: var(--qn-correct);
+    color: var(--qn-ink);
 }
 
 .cell.incorrect {
-    background-color: var(--cell-incorrect-bg) !important;
-    color: white;
+    background: var(--qn-wrong) !important;
+    border-color: var(--qn-wrong);
+    color: var(--qn-ink);
+}
+
+.grid-error {
+    color: var(--qn-wrong);
+    font-weight: 700;
+    margin: 0;
 }
 
 #loading {
     display: none;
-    margin-top: 20px;
-    color: var(--text-muted);
+    margin-top: 1.2em;
+    color: var(--qn-muted);
 }
 
 .sr-only {
@@ -145,5 +136,5 @@ button:disabled {
 /* Hidden until a PDF has been loaded; script.js shows it. */
 #reset-btn {
     display: none;
-    margin-top: 10px;
+    margin-top: 0.3em;
 }
