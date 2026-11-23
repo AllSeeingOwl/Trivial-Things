@@ -12,7 +12,7 @@
     <main class="container">
         <header class="app-header">
             <h1>Point It Out</h1>
-            <div id="game-stats" aria-live="polite">
+            <div id="game-stats">
                 <span id="round-counter"></span>
                 <span id="score-counter"></span>
             </div>
@@ -22,37 +22,86 @@
             <h2 id="start-title">Look closely, then point.</h2>
             <p>Each round asks a question about one or more pictures. Answer by clicking the right picture, or the right part of it. You can move your pin as often as you like before you lock it in.</p>
             <p class="small">Keyboard: Tab to a picture, press Enter to drop a pin, move it with the arrow keys (hold Shift for big steps).</p>
+
+            <fieldset class="mode-picker">
+                <legend>How are you playing?</legend>
+                <label><input type="radio" name="mode" value="solo" checked> On my own</label>
+                <label><input type="radio" name="mode" value="teams"> Quiz night (teams take turns)</label>
+            </fieldset>
+
+            <div id="team-setup" class="team-setup" hidden>
+                <h3>Teams</h3>
+                <ol id="team-list" class="team-list"></ol>
+                <form id="team-form" class="inline team-form">
+                    <label for="team-name" class="sr-only">Team name</label>
+                    <input id="team-name" type="text" maxlength="40" placeholder="Team name" autocomplete="off">
+                    <button class="btn secondary" type="submit">Add team</button>
+                </form>
+                <p id="team-message" class="small" role="status" aria-live="polite"></p>
+            </div>
+
             <div class="settings">
-                <label for="round-select">Number of rounds:</label>
+                <label for="round-select" id="round-label">Number of rounds:</label>
                 <select id="round-select">
                     <option value="3">3</option>
                     <option value="5" selected>5</option>
                     <option value="10">10</option>
                     <option value="1000">All of them</option>
                 </select>
+                <label for="timer-select">Timer:</label>
+                <select id="timer-select">
+                    <option value="0">Off</option>
+                    <option value="15">15 seconds</option>
+                    <option value="30" selected>30 seconds</option>
+                    <option value="45">45 seconds</option>
+                    <option value="60">1 minute</option>
+                    <option value="90">1½ minutes</option>
+                </select>
             </div>
             <button id="start-btn" class="btn primary">Start</button>
+            <p id="start-message" class="small" role="status" aria-live="polite"></p>
             <p class="small"><a href="{{ url_for('editor') }}">Make your own questions</a></p>
         </section>
 
         <section id="game-screen" class="screen" aria-labelledby="current-question">
-            <div class="prompt-card">
-                <p id="current-category" class="category"></p>
-                <h2 id="current-question" class="question" tabindex="-1"></h2>
-                <p id="current-hint" class="small"></p>
+            <div id="turn-banner" class="turn-banner" hidden></div>
+            <div class="game-layout">
+                <div class="game-main">
+                    <div class="prompt-card">
+                        <div class="prompt-top">
+                            <p id="current-category" class="category"></p>
+                            <div id="timer" class="timer" hidden>
+                                <span id="timer-display" class="timer-display" aria-hidden="true"></span>
+                                <button id="pause-btn" class="link-btn" type="button">Pause</button>
+                            </div>
+                        </div>
+                        <h2 id="current-question" class="question" tabindex="-1"></h2>
+                        <p id="current-hint" class="small"></p>
+                    </div>
+                    <div id="pictures" class="pictures"></div>
+                    <div id="result" class="result" role="status" aria-live="polite"></div>
+                    <div class="controls">
+                        <button id="lock-btn" class="btn primary" disabled>Lock it in</button>
+                        <button id="next-btn" class="btn primary" hidden>Next round</button>
+                    </div>
+                </div>
+                <aside id="scoreboard" class="scoreboard" aria-labelledby="scoreboard-title" hidden>
+                    <h3 id="scoreboard-title">Scoreboard</h3>
+                    <ol id="scoreboard-list" class="scoreboard-list"></ol>
+                    <p class="small">Host: use −5 and +5 to settle disputes.</p>
+                </aside>
             </div>
-            <div id="pictures" class="pictures"></div>
-            <div id="result" class="result" role="status" aria-live="polite"></div>
-            <div class="controls">
-                <button id="lock-btn" class="btn primary" disabled>Lock it in</button>
-                <button id="next-btn" class="btn primary" hidden>Next round</button>
-            </div>
+            <p id="timer-announce" class="sr-only" aria-live="assertive"></p>
         </section>
 
         <section id="end-screen" class="screen" aria-labelledby="end-title">
             <h2 id="end-title" tabindex="-1">That's the lot!</h2>
-            <p class="final">Final score: <strong id="final-score"></strong></p>
-            <ol id="summary" class="summary"></ol>
+            <p id="final-line" class="final"></p>
+            <ol id="standings" class="standings" hidden></ol>
+            <details id="summary-details">
+                <summary>Round by round</summary>
+                <ol id="summary" class="summary"></ol>
+            </details>
             <button id="play-again-btn" class="btn primary">Play again</button>
         </section>
     </main>

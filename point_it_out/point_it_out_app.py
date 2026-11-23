@@ -249,23 +249,29 @@ def answer():
         return jsonify({'error': 'Invalid or missing request body'}), 400
 
     q_id = data.get('id')
-    picture = data.get('picture')
-    x = data.get('x')
-    y = data.get('y')
     if not isinstance(q_id, str) or len(q_id) > 100:
         return jsonify({'error': 'Invalid question ID'}), 400
-    if isinstance(picture, bool) or not isinstance(picture, int):
-        return jsonify({'error': 'Picture must be a whole number'}), 400
-    if not is_fraction(x) or not is_fraction(y):
-        return jsonify({'error': 'x and y must be numbers from 0 to 1'}), 400
+
+    # The timer ran out with no pin placed: no points, but reveal the answer.
+    timed_out = data.get('timed_out') is True
+    if not timed_out:
+        picture = data.get('picture')
+        x = data.get('x')
+        y = data.get('y')
+        if isinstance(picture, bool) or not isinstance(picture, int):
+            return jsonify({'error': 'Picture must be a whole number'}), 400
+        if not is_fraction(x) or not is_fraction(y):
+            return jsonify({'error': 'x and y must be numbers from 0 to 1'}), 400
 
     question = QUESTIONS_BY_ID.get(q_id)
     if not question:
         return jsonify({'error': 'Question not found'}), 404
-    if not 0 <= picture < len(question['pictures']):
-        return jsonify({'error': 'Picture out of range'}), 400
-
-    points, verdict = score_answer(question, picture, x, y)
+    if timed_out:
+        points, verdict = 0, 'timeout'
+    else:
+        if not 0 <= picture < len(question['pictures']):
+            return jsonify({'error': 'Picture out of range'}), 400
+        points, verdict = score_answer(question, picture, x, y)
     boxes = question['area'] or []
     return jsonify({
         'points': points,
