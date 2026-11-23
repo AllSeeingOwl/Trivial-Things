@@ -141,3 +141,9 @@ button:disabled {
     white-space: nowrap;
     border-width: 0;
 }
+
+/* Hidden until a PDF has been loaded; script.js shows it. */
+#reset-btn {
+    display: none;
+    margin-top: 10px;
+}
