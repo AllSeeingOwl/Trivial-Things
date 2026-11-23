@@ -1,5 +1,5 @@
 (function () {
-    var IMAGE_BASE = '/static/images/';
+    var IMAGE_BASE = '/pictures/';
     var $ = function (id) { return document.getElementById(id); };
 
     var state = { pictures: [], correct: 0, area: null };  // area in percent

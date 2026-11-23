@@ -1,5 +1,5 @@
 (function () {
-    var IMAGE_BASE = '/static/images/';
+    var IMAGE_BASE = '/pictures/';
     var VERDICT_TEXT = { correct: 'Spot on!', close: 'So close!', wrong: 'Not quite.' };
 
     var els = {};

@@ -2,14 +2,16 @@
 
 Each question shows one or more pictures. You answer by clicking the right
 picture or, when the question has an answer area, the right part of it.
-Questions come from a CSV file; pictures live in static/images.
+Questions come from a CSV file. Pictures live in static/images, or in any
+folder named by the PICTURES_DIR environment variable (for example a private
+folder synced from Google Drive), so private pictures never enter the repo.
 """
 import os
 import csv
 import math
 import random
 import re
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, abort, jsonify, request, render_template, send_from_directory
 
 try:
     from sentry_setup import init_sentry
@@ -24,10 +26,11 @@ app.config['DEBUG'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-IMAGE_DIR = os.path.join(BASE_DIR, 'static', 'images')
+IMAGE_DIR = os.path.abspath(os.path.expanduser(
+    os.environ.get('PICTURES_DIR') or os.path.join(BASE_DIR, 'static', 'images')))
 IMAGE_EXTENSIONS = ('.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp')
 # Picture file names: letters, digits, dot, dash, underscore and spaces only, so
-# nothing in the CSV can point outside static/images.
+# nothing in the CSV or a URL can point outside the pictures folder.
 SAFE_FILENAME = re.compile(r'^[A-Za-z0-9][A-Za-z0-9 ._-]*$')
 
 # Scoring: inside the answer area (or the right picture when the question has
@@ -206,6 +209,13 @@ def answer():
         'area': None if area is None else dict(zip(('left', 'top', 'width', 'height'), area)),
         'explanation': question['explanation'],
     })
+
+
+@app.route('/pictures/<name>')
+def picture(name):
+    if not SAFE_FILENAME.match(name) or not name.lower().endswith(IMAGE_EXTENSIONS):
+        abort(404)
+    return send_from_directory(IMAGE_DIR, name)
 
 
 @app.route('/api/images')

@@ -168,7 +168,33 @@ def test_images_listing(client):
 def test_every_question_picture_is_served(client):
     for q in app_module.QUESTIONS:
         for name in q['pictures']:
-            assert client.get('/static/images/' + name).status_code == 200
+            assert client.get('/pictures/' + name).status_code == 200
+
+
+@pytest.mark.parametrize('name', ['..%2Fpoint_it_out_app.py', 'point_it_out_app.py', '.hidden.png', 'nope.png'])
+def test_pictures_route_refuses_anything_else(client, name):
+    assert client.get('/pictures/' + name).status_code == 404
+
+
+def test_pictures_dir_setting_uses_a_private_folder(tmp_path, monkeypatch):
+    import importlib
+    (tmp_path / 'chaplin.png').write_bytes(b'\x89PNG fake')
+    (tmp_path / 'questions.csv').write_text(
+        'Category,Question,Pictures,Correct Picture,Answer Area,Explanation\n'
+        'Film,Which one is Charlie Chaplin?,chaplin.png,1,,\n', encoding='utf-8')
+    monkeypatch.setenv('PICTURES_DIR', str(tmp_path))
+    monkeypatch.setenv('CSV_FILE', str(tmp_path / 'questions.csv'))
+    try:
+        mod = importlib.reload(app_module)
+        assert [q['question'] for q in mod.QUESTIONS] == ['Which one is Charlie Chaplin?']
+        c = mod.app.test_client()
+        assert c.get('/api/images').get_json() == ['chaplin.png']
+        assert c.get('/pictures/chaplin.png').status_code == 200
+        assert c.get('/pictures/piano.svg').status_code == 404
+    finally:
+        monkeypatch.delenv('PICTURES_DIR')
+        monkeypatch.delenv('CSV_FILE')
+        importlib.reload(app_module)
 
 
 # --- Pages and headers ---------------------------------------------------

@@ -30,7 +30,7 @@ Questions live in `Point It Out.csv` (set `CSV_FILE` to use another file):
 | --- | --- |
 | Category | Shown above the question. |
 | Question | What the player is asked. |
-| Pictures | File names in `static/images`, separated by `\|`. Shown in random order. |
+| Pictures | File names in the pictures folder, separated by `\|`. Shown in random order. |
 | Correct Picture | Which picture is right, counting from 1. Defaults to 1. |
 | Answer Area | Optional `left, top, width, height` in percent of the correct picture. Blank means any click on the right picture counts. |
 | Explanation | Shown after the player answers. |
@@ -41,6 +41,22 @@ over the answer, and copy the finished CSV line.
 
 Rows with a missing picture or a bad answer area are skipped, and the server
 prints which CSV line was skipped and why.
+
+### Using your own private pictures
+
+Pictures you can't share (photos found online, for example) don't belong in
+this repository. Keep them in a private folder, such as a Google Drive folder
+synced to your computer with Google Drive for desktop, and point the app at
+that folder and at your own question file:
+
+```bash
+PICTURES_DIR="~/Google Drive/My Drive/Point It Out Pictures" \
+CSV_FILE="~/Google Drive/My Drive/Point It Out Pictures/questions.csv" \
+python3 point_it_out_app.py
+```
+
+The app then shows only those pictures and questions, and the question maker
+lists the files in that folder. Nothing from the folder is copied into the repo.
 
 Pictures can be SVG, PNG, JPEG, GIF or WebP. The starter pictures are simple
 SVG drawings made for this app; if you add photos, check you're allowed to use
