@@ -268,5 +268,12 @@ async function resetAll() {
     }
 }
 
+// Buttons are wired up here rather than with onclick="" attributes, because the
+// page's Content-Security-Policy (script-src 'self') blocks inline handlers.
+nextBtnEl.addEventListener('click', loadNextQuestion);
+eliminateBtnEl.addEventListener('click', eliminateAndNext);
+document.getElementById('admin-reset-btn').addEventListener('click', resetAll);
+document.getElementById('practice-again-btn').addEventListener('click', resetAll);
+
 // Initialize
 loadNextQuestion();

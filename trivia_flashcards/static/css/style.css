@@ -176,3 +176,8 @@ button:active:not(:disabled) {
     font-weight: bold;
     margin-top: 20px;
 }
+
+#empty-state {
+    text-align: center;
+    margin-top: 20px;
+}
