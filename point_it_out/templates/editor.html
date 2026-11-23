@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Point It Out: Question Maker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
 <body>
-    {% include '_nav.html' %}
+    {% set portal_app_name = "Point It Out" %}
+    {% include '_portal_nav.html' %}
 
     <main class="container">
         <header class="app-header">
@@ -79,8 +81,6 @@
             </div>
         </section>
     </main>
-
-    <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
     <script src="{{ url_for('static', filename='js/pointer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
 </body>

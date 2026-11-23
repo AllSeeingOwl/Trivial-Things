@@ -1,0 +1,11 @@
+{#- Shared portal bar. Canonical copy: shared/portal_nav/. Do not edit the copies in each app;
+    edit this one and run `python3 tools/sync_portal_nav.py`.
+    Set `portal_app_name` before including it, and link css/portal-nav.css in <head>. -#}
+<nav class="portal-nav" aria-label="Portal Navigation">
+    <div class="portal-nav-title">
+        <span class="portal-name">{{ portal_app_name }} Portal</span>
+        <span class="portal-badge">Standalone Service</span>
+    </div>
+    <a id="portal-back-link" class="portal-back" href="https://trivial-things.onrender.com" aria-label="Back to Central Portal"><span aria-hidden="true">← </span>Back to Central Portal</a>
+</nav>
+<script src="{{ url_for('static', filename='js/portal-nav.js') }}"></script>

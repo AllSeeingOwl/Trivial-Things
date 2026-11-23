@@ -30,6 +30,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 20px;
+    --portal-nav-inset: 20px; /* matches the padding, so the portal bar spans the page */
 }
 
 h1 {

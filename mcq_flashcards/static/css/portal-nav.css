@@ -1,0 +1,29 @@
+/* Shared portal bar. Canonical copy: shared/portal_nav/portal-nav.css.
+   Edit that file and run `python3 tools/sync_portal_nav.py`; do not edit the copies in each app.
+   Kept in its own file (not inline styles) so it works under a `style-src 'self'` CSP.
+   If the app's <body> has padding, set `--portal-nav-inset` to that padding so the bar
+   still spans the full width of the page. */
+.portal-nav {
+    --inset: var(--portal-nav-inset, 0px);
+    box-sizing: border-box; width: calc(100% + 2 * var(--inset)); flex: 0 0 auto; align-self: stretch;
+    margin: calc(-1 * var(--inset)) calc(-1 * var(--inset)) var(--inset);
+    background: #1f2937; color: #fff; padding: 10px 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.4;
+    text-align: left; border-bottom: 1px solid #374151;
+}
+.portal-nav-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.portal-name { font-weight: 700; color: #f3f4f6; }
+.portal-badge {
+    background: #374151; color: #d1d5db; padding: 2px 8px; border-radius: 9999px; font-size: 12px;
+}
+.portal-nav .portal-back {
+    background: #2563eb; color: #fff; text-decoration: none; padding: 6px 14px;
+    border-radius: 6px; font-weight: 600; transition: background-color 0.2s;
+}
+.portal-nav .portal-back:hover,
+.portal-nav .portal-back:focus-visible { background: #1d4ed8; color: #fff; }
+.portal-nav .portal-back:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+    .portal-nav .portal-back { transition: none; }
+}

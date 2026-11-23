@@ -29,21 +29,6 @@ body {
     overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
-/* Portal bar, shared with the other apps */
-.portal-nav {
-    background: #1f2937; color: #fff; padding: 10px 20px; display: flex;
-    justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
-    font-family: sans-serif; font-size: 14px; border-bottom: 1px solid #374151;
-}
-.portal-nav-title { display: flex; align-items: center; gap: 10px; }
-.portal-name { font-weight: 700; color: #f3f4f6; }
-.portal-badge { background: #374151; color: #d1d5db; padding: 2px 8px; border-radius: 9999px; font-size: 12px; }
-.portal-back {
-    background: #2563eb; color: #fff; text-decoration: none; padding: 6px 14px;
-    border-radius: 6px; font-weight: 600; transition: background-color 0.2s;
-}
-.portal-back:hover, .portal-back:focus-visible { background: #1d4ed8; }
-
 .container { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
 
 .app-header {
