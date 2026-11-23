@@ -142,7 +142,7 @@
         game.frames.forEach(function (f) {
             f.disable();
             if (f.realIndex === res.correct_picture) {
-                if (res.area) f.showArea(res.area);
+                (res.areas || []).forEach(function (box) { f.showArea(box); });
                 f.mark('correct', q.pictures.length > 1 ? 'Answer' : '');
             } else if (f.realIndex === game.choice.picture) {
                 f.mark('wrong', 'Your pick');

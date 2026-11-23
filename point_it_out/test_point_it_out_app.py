@@ -36,12 +36,13 @@ def test_bundled_csv_loads_every_row():
 
 
 def test_parse_area_converts_percent_to_fractions():
-    assert parse_area('40, 30, 10, 20') == pytest.approx((0.4, 0.3, 0.1, 0.2))
+    assert parse_area('40, 30, 10, 20') == [pytest.approx((0.4, 0.3, 0.1, 0.2))]
+    assert parse_area('0, 0, 10, 10; 90, 0, 10, 10;') == [pytest.approx((0, 0, 0.1, 0.1)), pytest.approx((0.9, 0, 0.1, 0.1))]
     assert parse_area('') is None
     assert parse_area(None) is None
 
 
-@pytest.mark.parametrize('text', ['1, 2, 3', 'a, b, c, d', '90, 0, 20, 10', '-1, 0, 5, 5', '0, 0, 0, 5', 'nan, 0, 5, 5'])
+@pytest.mark.parametrize('text', ['0, 0, 10, 10; 1, 2, 3', '1, 2, 3', 'a, b, c, d', '90, 0, 20, 10', '-1, 0, 5, 5', '0, 0, 0, 5', 'nan, 0, 5, 5'])
 def test_parse_area_rejects_bad_values(text):
     with pytest.raises(ValueError):
         parse_area(text)
@@ -123,6 +124,29 @@ def test_pick_questions_keeps_each_set_together():
         assert positions == list(range(positions[0], positions[0] + 3))
 
 
+def test_score_question_with_two_boxes():
+    q = parse_row(make_row(**{'Answer Area': '0, 0, 10, 10; 90, 90, 10, 10'}), 0)
+    assert score_answer(q, 0, 0.05, 0.05) == (10, 'correct')
+    assert score_answer(q, 0, 0.95, 0.95) == (10, 'correct')
+    assert score_answer(q, 0, 0.88, 0.95) == (5, 'close')
+    assert score_answer(q, 0, 0.5, 0.5) == (0, 'wrong')
+
+
+def test_pick_questions_caps_each_set():
+    questions = [fake(f'a{i}', 'A') for i in range(30)] + [fake(f'b{i}', 'B') for i in range(30)] + [fake('s1')]
+    for _ in range(20):
+        picked = pick_questions(questions, 11, per_set=5)
+        assert len(picked) == 11
+        assert sum(q['set'] == 'A' for q in picked) == 5
+        assert sum(q['set'] == 'B' for q in picked) == 5
+
+
+def test_pick_questions_goes_past_the_cap_when_short():
+    questions = [fake(f'a{i}', 'A') for i in range(30)]
+    assert len(pick_questions(questions, 12, per_set=5)) == 12
+    assert len(pick_questions(questions, 1000, per_set=5)) == 30
+
+
 def test_pick_questions_respects_count():
     questions = [fake('a1', 'A'), fake('a2', 'A'), fake('a3', 'A'), fake('s1')]
     for _ in range(20):
@@ -163,7 +187,7 @@ def test_score_picture_question():
 # --- API -----------------------------------------------------------------
 
 def test_questions_hide_answers(client):
-    data = client.get('/api/questions?count=100').get_json()
+    data = client.get('/api/questions?count=10000').get_json()
     assert len(data) == len(app_module.QUESTIONS)
     for q in data:
         assert set(q) == {'id', 'set', 'category', 'question', 'pictures', 'mode'}
@@ -177,13 +201,14 @@ def test_questions_bad_count_falls_back(client, count):
 
 def test_answer_correct_and_reveals_area(client):
     q = next(q for q in app_module.QUESTIONS if q['area'])
-    left, top, width, height = q['area']
+    left, top, width, height = q['area'][0]
     res = client.post('/api/answer', json={
         'id': q['id'], 'picture': q['correct'], 'x': left + width / 2, 'y': top + height / 2})
     body = res.get_json()
     assert res.status_code == 200
     assert body['points'] == 10 and body['verdict'] == 'correct'
-    assert body['area']['left'] == pytest.approx(left)
+    assert body['areas'][0]['left'] == pytest.approx(left)
+    assert len(body['areas']) == len(q['area'])
     assert body['correct_picture'] == q['correct']
 
 
@@ -192,7 +217,7 @@ def test_answer_wrong_picture(client):
     wrong = (q['correct'] + 1) % len(q['pictures'])
     body = client.post('/api/answer', json={'id': q['id'], 'picture': wrong, 'x': 0.5, 'y': 0.5}).get_json()
     assert body['points'] == 0 and body['verdict'] == 'wrong'
-    assert body['area'] is None
+    assert body['areas'] == []
 
 
 @pytest.mark.parametrize('payload,status', [

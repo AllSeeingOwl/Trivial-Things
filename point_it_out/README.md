@@ -32,9 +32,9 @@ Questions live in `Point It Out.csv` (set `CSV_FILE` to use another file):
 | Question | What the player is asked. |
 | Pictures | File names in the pictures folder, separated by `\|`. Shown in random order. |
 | Correct Picture | Which picture is right, counting from 1. Defaults to 1. |
-| Answer Area | Optional `left, top, width, height` in percent of the correct picture. Blank means any click on the right picture counts. |
+| Answer Area | Optional `left, top, width, height` in percent of the correct picture. Blank means any click on the right picture counts. For an answer in more than one place, or an awkward shape, list several boxes separated by `;`: any of them counts. |
 | Explanation | Shown after the player answers. |
-| Set | Optional. Questions with the same set name share their pictures (later rows can leave Pictures blank) and are played one after another, with the pictures kept in the same order. |
+| Set | Optional. Questions with the same set name share their pictures (later rows can leave Pictures blank) and are played one after another, with the pictures kept in the same order. A game takes at most 5 questions from any one set, so big sets don't take over. |
 
 ### Sets: several questions on the same pictures
 
