@@ -3,7 +3,7 @@ import os
 import pytest
 
 import point_it_out_app as app_module
-from point_it_out_app import app as flask_app, parse_area, parse_row, score_answer, distance_to_area
+from point_it_out_app import app as flask_app, parse_area, parse_row, pick_questions, score_answer, distance_to_area
 
 
 @pytest.fixture
@@ -84,6 +84,60 @@ def test_load_data_skips_bad_rows(tmp_path):
     assert [q['question'] for q in data] == ['Good']
 
 
+# --- Sets ----------------------------------------------------------------
+
+def test_set_rows_can_reuse_pictures(tmp_path):
+    csv_file = tmp_path / 'q.csv'
+    csv_file.write_text(
+        'Category,Question,Pictures,Correct Picture,Answer Area,Explanation,Set\n'
+        'Music,Point to E,piano.svg,1,"28.75, 0, 8.75, 100",,Piano\n'
+        'Music,Point to B,,1,"78.75, 0, 8.75, 100",,Piano\n'
+        'Music,Odd one,clock.svg,1,,,Piano\n'
+        'Music,No set and no pictures,,1,,,\n',
+        encoding='utf-8')
+    data = app_module.load_data(str(csv_file))
+    assert [q['question'] for q in data] == ['Point to E', 'Point to B']
+    assert data[1]['pictures'] == ['piano.svg'] and data[1]['set'] == 'Piano'
+
+
+def test_csv_without_set_column_still_loads(tmp_path):
+    csv_file = tmp_path / 'q.csv'
+    csv_file.write_text('Category,Question,Pictures,Correct Picture,Answer Area,Explanation\nA,Q,piano.svg,1,,\n', encoding='utf-8')
+    assert app_module.load_data(str(csv_file))[0]['set'] == ''
+
+
+def fake(qid, set_name=''):
+    return {'id': qid, 'set': set_name}
+
+
+def test_pick_questions_keeps_each_set_together():
+    questions = [fake('a1', 'A'), fake('s1'), fake('a2', 'A'), fake('b1', 'B'), fake('s2'), fake('a3', 'A'), fake('b2', 'B')]
+    for _ in range(50):
+        picked = pick_questions(questions, 100)
+        assert sorted(q['id'] for q in picked) == sorted(q['id'] for q in questions)
+        sets = [q['set'] for q in picked if q['set']]
+        # Each set appears as one unbroken run.
+        runs = [s for i, s in enumerate(sets) if i == 0 or sets[i - 1] != s]
+        assert sorted(runs) == ['A', 'B']
+        positions = [i for i, q in enumerate(picked) if q['set'] == 'A']
+        assert positions == list(range(positions[0], positions[0] + 3))
+
+
+def test_pick_questions_respects_count():
+    questions = [fake('a1', 'A'), fake('a2', 'A'), fake('a3', 'A'), fake('s1')]
+    for _ in range(20):
+        assert len(pick_questions(questions, 2)) == 2
+
+
+def test_bundled_sets_share_pictures():
+    by_set = {}
+    for q in app_module.QUESTIONS:
+        if q['set']:
+            by_set.setdefault(q['set'], set()).add(tuple(q['pictures']))
+    assert len(by_set) >= 3
+    assert all(len(p) == 1 for p in by_set.values())
+
+
 # --- Scoring -------------------------------------------------------------
 
 def test_distance_to_area():
@@ -112,7 +166,7 @@ def test_questions_hide_answers(client):
     data = client.get('/api/questions?count=100').get_json()
     assert len(data) == len(app_module.QUESTIONS)
     for q in data:
-        assert set(q) == {'id', 'category', 'question', 'pictures', 'mode'}
+        assert set(q) == {'id', 'set', 'category', 'question', 'pictures', 'mode'}
 
 
 @pytest.mark.parametrize('count', ['abc', '-3', '0', '9' * 20])

@@ -1,10 +1,18 @@
-Category,Question,Pictures,Correct Picture,Answer Area,Explanation
-Flags,Which of these is the flag of Ireland?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,"Ireland is green, white and orange from the flagpole out. Côte d'Ivoire uses the same colours the other way round."
-Flags,Which of these is the flag of Poland?,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,"Poland is white over red. Indonesia (and Monaco) are red over white."
-Space,Point to Jupiter.,solar_system.svg,1,"40.6, 36.7, 10, 26.7","Jupiter is the fifth planet from the Sun and the largest, with its banded clouds and Great Red Spot."
-Space,Point to the planet closest to the Sun.,solar_system.svg,1,"14.5, 45, 3.5, 10",Mercury is the closest planet to the Sun and the smallest of the eight.
-Music,Point to the F sharp key.,piano.svg,1,"46.25, 0, 7.5, 60","F sharp is the black key between F and G, the first of the group of three black keys."
-Music,Point to the E key.,piano.svg,1,"28.75, 0, 8.75, 100","E is the white key straight after the pair of two black keys."
-Colours,"Red, orange, yellow, green, blue… Point to indigo.",spectrum.svg,1,"71.43, 0, 14.29, 100",Indigo sits between blue and violet. Isaac Newton added it so the rainbow would have seven colours.
-Time,"At a quarter to the hour, where does the minute hand point?",clock.svg,1,"4.7, 43.3, 19.3, 13.3","A quarter to means 45 minutes past, so the minute hand points at the 9."
-Shapes,Which of these shapes is a rhombus?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,"A rhombus has four equal sides. A kite has two pairs of equal sides next to each other, and a parallelogram's sides differ in length."
+Category,Question,Pictures,Correct Picture,Answer Area,Explanation,Set
+Flags,Which of these is the flag of Ireland?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,1,,"Ireland is green, white and orange from the flagpole out. Côte d'Ivoire uses the same colours the other way round.",Tricolours
+Flags,Which of these is the flag of Côte d'Ivoire (Ivory Coast)?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,2,,"Côte d'Ivoire is orange, white and green: Ireland's flag flipped.",Tricolours
+Flags,Which of these is the flag of Italy?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,3,,"Italy is green, white and red, often nicknamed Il Tricolore.",Tricolours
+Flags,Which of these flags has the same colour on both outer stripes?,flag_ireland.svg | flag_ivory_coast.svg | flag_italy.svg | flag_nigeria.svg,4,,"Nigeria's flag is green, white, green.",Tricolours
+Flags,Which of these is the flag of Poland?,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,1,,Poland is white over red. Indonesia (and Monaco) are red over white.,Stripes
+Flags,Which of these is the flag of Austria?,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,3,,Austria's red-white-red is one of the oldest national flags still in use.,Stripes
+Flags,Which of these is the flag of Ukraine?,flag_poland.svg | flag_indonesia.svg | flag_austria.svg | flag_ukraine.svg,4,,Ukraine's blue over yellow is often described as a blue sky over fields of wheat.,Stripes
+Space,Point to Jupiter.,solar_system.svg,1,"40.6, 36.7, 10, 26.7","Jupiter is the fifth planet from the Sun and the largest, with its banded clouds and Great Red Spot.",Solar System
+Space,Point to the planet closest to the Sun.,solar_system.svg,1,"14.5, 45, 3.5, 10",Mercury is the closest planet to the Sun and the smallest of the eight.,Solar System
+Space,Point to Saturn.,solar_system.svg,1,"54, 39.3, 14.5, 21.3","Saturn's rings are mostly ice, and some are only about ten metres thick.",Solar System
+Space,Point to the planet we live on.,solar_system.svg,1,"26.25, 45, 3.5, 10",Earth is the third planet from the Sun.,Solar System
+Music,Point to the F sharp key.,piano.svg,1,"46.25, 0, 7.5, 60","F sharp is the black key between F and G, the first of the group of three black keys.",Piano
+Music,Point to the E key.,piano.svg,1,"28.75, 0, 8.75, 100",E is the white key straight after the pair of two black keys.,Piano
+Music,Point to the B key.,piano.svg,1,"78.75, 0, 8.75, 100",B is the white key straight after the group of three black keys.,Piano
+Colours,"Red, orange, yellow, green, blue… Point to indigo.",spectrum.svg,1,"71.43, 0, 14.29, 100",Indigo sits between blue and violet. Isaac Newton added it so the rainbow would have seven colours.,
+Time,"At a quarter to the hour, where does the minute hand point?",clock.svg,1,"4.7, 43.3, 19.3, 13.3","A quarter to means 45 minutes past, so the minute hand points at the 9.",
+Shapes,Which of these shapes is a rhombus?,shape_parallelogram.svg | shape_kite.svg | shape_rhombus.svg | shape_trapezium.svg,3,,"A rhombus has four equal sides. A kite has two pairs of equal sides next to each other, and a parallelogram's sides differ in length.",

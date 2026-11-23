@@ -22,7 +22,8 @@
             state.pictures.join(' | '),
             state.pictures.length ? state.correct + 1 : '',
             area,
-            $('ed-explanation').value.trim()
+            $('ed-explanation').value.trim(),
+            $('ed-set').value.trim()
         ];
         $('ed-output').value = fields.map(csvField).join(',');
 
@@ -192,19 +193,39 @@
     ['left', 'top', 'width', 'height'].forEach(function (k) {
         $('ed-' + k).addEventListener('change', readAreaInputs);
     });
-    ['ed-category', 'ed-question', 'ed-explanation'].forEach(function (id) {
+    ['ed-category', 'ed-set', 'ed-question', 'ed-explanation'].forEach(function (id) {
         $(id).addEventListener('input', updateOutput);
     });
-    $('ed-copy').addEventListener('click', function () {
-        var out = $('ed-output');
-        var done = function () { $('ed-status').textContent = 'Copied.'; };
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(out.value).then(done, function () { out.select(); document.execCommand('copy'); done(); });
-        } else {
-            out.select();
-            document.execCommand('copy');
-            done();
+    function copyFrom(box, message) {
+        var done = function () { $('ed-status').textContent = message; };
+        var fallback = function () { box.select(); document.execCommand('copy'); done(); };
+        if (navigator.clipboard) navigator.clipboard.writeText(box.value).then(done, fallback);
+        else fallback();
+    }
+    $('ed-copy').addEventListener('click', function () { copyFrom($('ed-output'), 'Copied.'); });
+    $('ed-copy-all').addEventListener('click', function () { copyFrom($('ed-list'), 'Copied all saved lines.'); });
+
+    // Keep the category, set and pictures; clear the rest for the next question.
+    $('ed-next').addEventListener('click', function () {
+        if (!$('ed-question').value.trim() || !state.pictures.length) {
+            $('ed-status').textContent = 'Add a question and at least one picture first.';
+            return;
         }
+        var list = $('ed-list');
+        list.value += (list.value ? '\n' : '') + $('ed-output').value;
+        $('ed-list-field').hidden = false;
+        $('ed-question').value = '';
+        $('ed-explanation').value = '';
+        state.area = null;
+        render();
+        var saved = list.value.split('\n').length;
+        $('ed-status').textContent = 'Saved. ' + saved + ' line' + (saved === 1 ? '' : 's') + ' so far.';
+        $('ed-question').focus();
+    });
+    $('ed-clear-list').addEventListener('click', function () {
+        $('ed-list').value = '';
+        $('ed-list-field').hidden = true;
+        $('ed-status').textContent = 'Saved lines cleared.';
     });
 
     render();

@@ -8,7 +8,7 @@
      'lock-btn', 'next-btn', 'final-score', 'summary', 'end-title', 'play-again-btn'
     ].forEach(function (id) { els[id] = document.getElementById(id); });
 
-    var game = { questions: [], round: 0, score: 0, frames: [], choice: null, history: [] };
+    var game = { questions: [], round: 0, score: 0, frames: [], choice: null, history: [], setOrders: {} };
 
     function show(screenId) {
         ['start-screen', 'game-screen', 'end-screen'].forEach(function (id) {
@@ -46,7 +46,7 @@
                     alert('No questions found. Check Point It Out.csv.');
                     return;
                 }
-                game = { questions: questions, round: 0, score: 0, frames: [], choice: null, history: [] };
+                game = { questions: questions, round: 0, score: 0, frames: [], choice: null, history: [], setOrders: {} };
                 show('game-screen');
                 renderRound();
             })
@@ -56,13 +56,26 @@
             });
     }
 
+    // "Consoles · Set: PlayStations, question 2 of 4"
+    function categoryLine(q) {
+        var parts = [];
+        if (q.category) parts.push(q.category);
+        if (q.set) {
+            var inSet = game.questions.filter(function (o) { return o.set === q.set; });
+            if (inSet.length > 1) {
+                parts.push(q.set + ': question ' + (inSet.indexOf(q) + 1) + ' of ' + inSet.length);
+            }
+        }
+        return parts.join(' · ');
+    }
+
     function renderRound() {
         var q = game.questions[game.round];
         game.choice = null;
         game.frames = [];
         updateStats();
 
-        els['current-category'].textContent = q.category;
+        els['current-category'].textContent = categoryLine(q);
         els['current-question'].textContent = q.question;
         els['current-hint'].textContent = q.mode === 'area'
             ? 'Point to the exact spot.'
@@ -78,7 +91,12 @@
         container.className = 'pictures count-' + Math.min(q.pictures.length, 4);
 
         // Show multiple pictures in a random order; remember each one's real index.
-        var order = q.pictures.length > 1 ? shuffled(q.pictures.length) : [0];
+        // Questions in the same set keep the same order, so players aren't re-scanning.
+        var order = q.set && game.setOrders[q.set];
+        if (!order) {
+            order = q.pictures.length > 1 ? shuffled(q.pictures.length) : [0];
+            if (q.set) game.setOrders[q.set] = order;
+        }
         order.forEach(function (realIndex, shownIndex) {
             var label = q.pictures.length > 1
                 ? 'Picture ' + (shownIndex + 1) + ' of ' + q.pictures.length

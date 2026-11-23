@@ -63,15 +63,26 @@ def parse_area(text):
     return (left / 100, top / 100, width / 100, height / 100)
 
 
-def parse_row(row, row_number, image_dir=IMAGE_DIR):
-    """Turn one CSV row into a question dict, or raise ValueError."""
+def parse_row(row, row_number, image_dir=IMAGE_DIR, set_pictures=None):
+    """Turn one CSV row into a question dict, or raise ValueError.
+
+    Rows that share a Set name share pictures. set_pictures maps each set name
+    already seen to its pictures: a row in a known set may leave Pictures blank
+    to reuse them, but may not list different ones.
+    """
     question = (row.get('Question') or '').strip()
     if not question:
         raise ValueError('missing question')
 
+    set_name = (row.get('Set') or '').strip()
+    known = (set_pictures or {}).get(set_name) if set_name else None
     pictures = [p.strip() for p in (row.get('Pictures') or '').split('|') if p.strip()]
+    if not pictures and known:
+        pictures = list(known)
     if not pictures:
         raise ValueError('no pictures')
+    if known and pictures != known:
+        raise ValueError(f'pictures differ from the rest of set {set_name!r}')
     for name in pictures:
         if not SAFE_FILENAME.match(name) or not name.lower().endswith(IMAGE_EXTENSIONS):
             raise ValueError(f'bad picture file name {name!r}')
@@ -88,6 +99,7 @@ def parse_row(row, row_number, image_dir=IMAGE_DIR):
     category = (row.get('Category') or '').strip()
     return {
         'id': q_id,
+        'set': set_name,
         'category': category,
         'question': question,
         'pictures': pictures,
@@ -97,6 +109,7 @@ def parse_row(row, row_number, image_dir=IMAGE_DIR):
         # What the player sees before answering: no answer fields.
         'public': {
             'id': q_id,
+            'set': set_name,
             'category': category,
             'question': question,
             'pictures': pictures,
@@ -108,11 +121,15 @@ def parse_row(row, row_number, image_dir=IMAGE_DIR):
 def load_data(csv_path=None, image_dir=IMAGE_DIR):
     csv_path = csv_path or os.environ.get('CSV_FILE', os.path.join(BASE_DIR, 'Point It Out.csv'))
     data = []
+    set_pictures = {}
     try:
         with open(csv_path, mode='r', encoding='utf-8') as f:
             for i, row in enumerate(csv.DictReader(f)):
                 try:
-                    data.append(parse_row(row, i, image_dir))
+                    q = parse_row(row, i, image_dir, set_pictures)
+                    if q['set']:
+                        set_pictures.setdefault(q['set'], q['pictures'])
+                    data.append(q)
                 except (ValueError, TypeError) as e:
                     # CSV row i is on line i + 2 (after the header).
                     print(f'Skipping CSV line {i + 2}: {e}')
@@ -172,9 +189,33 @@ def get_questions():
         count = 5
     if count <= 0:
         count = 5
-    count = min(count, len(QUESTIONS))
-    selected = random.sample(QUESTIONS, count)
-    return jsonify([q['public'] for q in selected])
+    return jsonify([q['public'] for q in pick_questions(QUESTIONS, count)])
+
+
+def pick_questions(questions, count):
+    """Pick up to count questions at random, keeping each set's questions together.
+
+    A set's questions are played back to back (in random order), so players
+    keep looking at the same pictures. The last set picked may be cut short to
+    hit the count.
+    """
+    groups = {}
+    order = []
+    for q in questions:
+        key = ('set', q['set']) if q['set'] else ('single', q['id'])
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(q)
+    random.shuffle(order)
+    picked = []
+    for key in order:
+        if len(picked) >= count:
+            break
+        group = groups[key][:]
+        random.shuffle(group)
+        picked.extend(group)
+    return picked[:count]
 
 
 @app.route('/api/answer', methods=['POST'])

@@ -23,6 +23,11 @@
                 <input id="ed-category" type="text" placeholder="e.g. Art">
             </div>
             <div class="field">
+                <label for="ed-set">Set (optional)</label>
+                <input id="ed-set" type="text" placeholder="e.g. PlayStations" aria-describedby="ed-set-help">
+                <p id="ed-set-help" class="small">Questions with the same set name share their pictures and are played one after another. Use it for several questions about the same four consoles, or about one busy picture.</p>
+            </div>
+            <div class="field">
                 <label for="ed-question">Question</label>
                 <input id="ed-question" type="text" placeholder="e.g. Point to the forged signature.">
             </div>
@@ -59,7 +64,17 @@
                 <textarea id="ed-output" rows="3" readonly></textarea>
                 <div class="inline">
                     <button id="ed-copy" class="btn primary" type="button">Copy line</button>
+                    <button id="ed-next" class="btn secondary" type="button">Save and write the next question on these pictures</button>
                     <span id="ed-status" role="status" aria-live="polite" class="small"></span>
+                </div>
+            </div>
+
+            <div class="field" id="ed-list-field" hidden>
+                <label for="ed-list">Saved lines</label>
+                <textarea id="ed-list" rows="5" readonly></textarea>
+                <div class="inline">
+                    <button id="ed-copy-all" class="btn primary" type="button">Copy all saved lines</button>
+                    <button id="ed-clear-list" class="btn secondary" type="button">Clear saved lines</button>
                 </div>
             </div>
         </section>

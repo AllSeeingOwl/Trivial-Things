@@ -34,6 +34,21 @@ Questions live in `Point It Out.csv` (set `CSV_FILE` to use another file):
 | Correct Picture | Which picture is right, counting from 1. Defaults to 1. |
 | Answer Area | Optional `left, top, width, height` in percent of the correct picture. Blank means any click on the right picture counts. |
 | Explanation | Shown after the player answers. |
+| Set | Optional. Questions with the same set name share their pictures (later rows can leave Pictures blank) and are played one after another, with the pictures kept in the same order. |
+
+### Sets: several questions on the same pictures
+
+Sets give a round some variety:
+
+- **A group of related pictures**, such as four games consoles: "Which is the
+  PS3?", "Which came out first?", "Which had a slot-loading disc drive?"
+- **One busy picture**, such as a cast photo or a map, with an answer area for
+  each question: "Point to Father Dougal", "Point to Mrs Doyle".
+
+In the question maker, fill in the Set name, add the pictures, then use **Save
+and write the next question on these pictures** after each question. It keeps
+the pictures and set, clears the question, and collects the lines for you to
+copy all at once.
 
 The easiest way to write a row is the question maker at
 <http://127.0.0.1:5010/editor>: add pictures, click the correct one, drag a box
