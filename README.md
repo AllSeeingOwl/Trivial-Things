@@ -115,6 +115,6 @@ pnpm dev
 ```
 
 ### Shared portal bar
-Every Flask app shows the same "Back to Central Portal" bar. Its canonical files are in `shared/portal_nav/` (a Jinja partial, a stylesheet and a small script). Each app is deployed from its own directory, so each keeps a copy: edit the files in `shared/portal_nav/`, then run `python3 tools/sync_portal_nav.py` to update the copies. A page uses it with `{% set portal_app_name = "My App" %}{% include '_portal_nav.html' %}` plus a `<link>` to `css/portal-nav.css`; if the page's `<body>` has padding, set `--portal-nav-inset` to that padding so the bar spans the page. `test_portal_nav.py` fails if a copy is out of date.
+Every Flask app shows the same "Back to Central Portal" bar. Its canonical files are in `shared/portal_nav/` (a Jinja partial, a stylesheet and a small script). Each app is deployed from its own directory, so each keeps a copy: edit the files in `shared/portal_nav/`, then run `python3 tools/sync_portal_nav.py` to update the copies. To use it, a page sets the Jinja variable `portal_app_name` to the app's name, includes `_portal_nav.html`, and links `css/portal-nav.css` in its `<head>` (see any app's `templates/index.html` for an example); if the page's `<body>` has padding, set `--portal-nav-inset` to that padding so the bar spans the page. `test_portal_nav.py` fails if a copy is out of date.
 
 *Note: Ensure you are running each application from within its respective directory so that it can locate its associated data files and dependencies correctly.*
