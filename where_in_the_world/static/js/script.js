@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Draw Target Pin and Line
             const redIcon = new L.Icon({
-                iconUrl: '/static/img/marker-icon-2x-red.png',
+                iconUrl: '/static/img/marker-icon-red.svg',
                 shadowUrl: '/static/vendor/leaflet/images/marker-shadow.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
