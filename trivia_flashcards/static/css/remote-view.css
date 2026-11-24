@@ -1,0 +1,46 @@
+/* Trivia Flashcards: the board while it follows a phone remote, usually on a TV.
+   Loaded after style.css. Kept within the older-TV baseline (tools/frontend `npm run check:tv`):
+   flexbox with margins, no grid or flex gap, sizes from vh/vw. */
+/* ---- Following a phone remote (TV) ---- */
+.remote-on header .stats,
+.remote-on main > section,
+.remote-on main > div { display: none; }
+.remote-on main > #remote-view { display: flex; }
+.remote-on header h1 { font-size: 5vh; margin: 0 0 0.2em; }
+
+.remote-view {
+    width: 100%;
+    max-width: 70rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.rv-card {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--qn-surface);
+    border: 2px solid var(--qn-line);
+    border-top: 8px solid var(--qn-accent);
+    border-radius: var(--qn-radius);
+    padding: 4vh 3vw;
+    margin: 1vh 0 3vh;
+}
+.rv-question { font-size: 6vh; font-weight: 700; line-height: 1.2; margin: 0; word-wrap: break-word; }
+.rv-answer {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: var(--qn-radius);
+    padding: 3vh 3vw;
+    font-size: 4vh;
+    font-weight: 700;
+    color: var(--qn-muted);
+    border: 2px dashed var(--qn-line);
+}
+.rv-answer.is-shown {
+    background: var(--qn-accent);
+    color: var(--qn-ink);
+    border: 2px solid var(--qn-accent);
+    font-size: 6vh;
+}
+.rv-answer.is-empty { display: none; }
+.remote-view .stats { font-size: 2.4vh; margin-bottom: 1vh; }

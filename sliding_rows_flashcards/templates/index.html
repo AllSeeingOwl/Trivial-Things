@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sliding Rows Flashcards</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/remote.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/remote-view.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
 <body class="quiz-night">
@@ -20,7 +22,16 @@
             </div>
         </header>
 
+        {% include '_remote_connect.html' %}
+
         <main id="main-content">
+            <!-- Filled by remote-tv.js while this board follows a phone remote. -->
+            <section id="remote-view" class="remote-view" hidden aria-label="Question chain">
+                <p class="rv-stats" id="rv-stats"></p>
+                <ol id="rv-rows" class="rv-rows"></ol>
+                <p id="rv-note" class="rv-note" aria-live="polite"></p>
+            </section>
+
             <div id="loading" class="hidden" aria-live="polite">Loading chain...</div>
             <div id="error-message" class="hidden error" aria-live="assertive"></div>
 
@@ -40,7 +51,8 @@
         </main>
     </div>
 
-    <!-- We'll link to our new script -->
+    <script src="{{ url_for('static', filename='js/remote-follow.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/remote-tv.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

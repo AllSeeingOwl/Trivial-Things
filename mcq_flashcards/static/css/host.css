@@ -1,0 +1,11 @@
+/* MCQ Flashcards: phone remote page (/host). Phones run current browsers. */
+.host-choices { display: grid; grid-template-columns: 1fr; gap: 0.5em; }
+.quiz-night .host-choice {
+    text-align: left;
+    background: var(--qn-surface-2);
+    border: 2px solid var(--qn-line);
+    color: var(--qn-text);
+}
+.quiz-night .host-choice.is-correct { border-color: var(--qn-correct); }
+.quiz-night .host-choice.is-picked { background: var(--qn-accent); border-color: var(--qn-accent); color: var(--qn-ink); }
+.quiz-night .host-choice:disabled { opacity: 1; cursor: default; }

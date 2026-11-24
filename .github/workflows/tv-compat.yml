@@ -1,31 +1,39 @@
-name: What The Spell TV compatibility
+name: TV compatibility
 
-# What The Spell's board is often shown on a smart TV, whose browser can be years old.
-# This checks the board's scripts and stylesheets against the TV browsers listed in
+# Pages that run on TVs (What The Spell's board, and the Trivia, MCQ and Sliding Rows boards
+# while they follow a phone remote) are checked against the older smart-TV browsers listed in
 # tools/frontend/tv-browsers.txt. Runs only when those files or their sources change.
 on:
   push:
     branches: [main]
     paths:
       - 'what_the_spell/static/**'
+      - 'trivia_flashcards/static/**'
+      - 'mcq_flashcards/static/**'
+      - 'sliding_rows_flashcards/static/**'
+      - 'shared/remote/**'
       - 'shared/quiz_night/**'
       - 'shared/portal_nav/**'
       - 'tools/frontend/**'
-      - '.github/workflows/what-the-spell-tv.yml'
+      - '.github/workflows/tv-compat.yml'
   pull_request:
     branches: [main]
     paths:
       - 'what_the_spell/static/**'
+      - 'trivia_flashcards/static/**'
+      - 'mcq_flashcards/static/**'
+      - 'sliding_rows_flashcards/static/**'
+      - 'shared/remote/**'
       - 'shared/quiz_night/**'
       - 'shared/portal_nav/**'
       - 'tools/frontend/**'
-      - '.github/workflows/what-the-spell-tv.yml'
+      - '.github/workflows/tv-compat.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: what-the-spell-tv-${{ github.ref }}
+  group: tv-compat-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -48,5 +56,5 @@ jobs:
       - name: Install tools
         run: npm ci
 
-      - name: Check the board against older smart-TV browsers
+      - name: Check TV pages against older smart-TV browsers
         run: npm run check:tv

@@ -6,8 +6,10 @@ import sqlite3
 
 try:
     from sentry_setup import init_sentry
+    from remote import RoomError, RoomStore, add_remote_routes
 except ModuleNotFoundError:
     from trivia_flashcards.sentry_setup import init_sentry
+    from trivia_flashcards.remote import RoomError, RoomStore, add_remote_routes
 
 # Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
 init_sentry("trivia_flashcards")
@@ -236,6 +238,71 @@ def mark_used():
 def reset():
     reset_all_questions()
     return jsonify({'success': True})
+
+
+# --- Phone remote --------------------------------------------------------------------------
+# The quizmaster's phone runs the board on the TV (see remote.py). The TV is sent the question,
+# but the answer only once the quizmaster shows it. Skip, Eliminate and Reset use the same
+# used/unused state as the buttons on the board.
+
+class TriviaGame:
+    def new_state(self):
+        state = {'qid': None, 'revealed': False}
+        self._next(state)
+        return state
+
+    def _stats(self):
+        questions = load_questions()
+        used = sum(1 for q in questions.values() if q['used'])
+        return {'total': len(questions), 'used': used, 'remaining': len(questions) - used}
+
+    def _current(self, state):
+        return load_questions().get(state['qid']) if state['qid'] else None
+
+    def _next(self, state, avoid=None):
+        unused = [q for q in load_questions().values() if not q['used']]
+        others = [q for q in unused if q['id'] != avoid]
+        pool = others or unused
+        state['qid'] = random.choice(pool)['id'] if pool else None
+        state['revealed'] = False
+
+    def display_view(self, state):
+        q = self._current(state)
+        return {
+            'question': q['question'] if q else None,
+            'answer': q['answer'] if q and state['revealed'] else None,
+            'revealed': bool(q and state['revealed']),
+            'empty': q is None,
+            'stats': self._stats(),
+        }
+
+    def host_view(self, state):
+        view = self.display_view(state)
+        q = self._current(state)
+        view['answer'] = q['answer'] if q else None
+        return view
+
+    def act(self, state, action, data):
+        q = self._current(state)
+        if action in ('reveal', 'hide'):
+            if q is None:
+                raise RoomError('There is no question on the board.')
+            state['revealed'] = action == 'reveal'
+        elif action == 'skip':
+            self._next(state, avoid=q['id'] if q else None)
+        elif action == 'eliminate':
+            if q is None:
+                raise RoomError('There is no question on the board.')
+            update_used_status(q['id'], True)
+            self._next(state)
+        elif action == 'reset':
+            reset_all_questions()
+            self._next(state)
+        else:
+            raise RoomError('Unknown action.')
+
+
+ROOMS = add_remote_routes(app, RoomStore(TriviaGame()))
 
 
 if __name__ == '__main__':

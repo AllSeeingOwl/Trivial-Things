@@ -15,7 +15,15 @@ def css_without_comments(path):
 QUIZ_NIGHT = css_without_comments(ROOT / "shared" / "quiz_night" / "quiz-night.css")
 PORTAL_NAV = css_without_comments(ROOT / "shared" / "portal_nav" / "portal-nav.css")
 BOARD_CSS = css_without_comments(ROOT / "what_the_spell" / "static" / "css" / "style.css")
-BOARD_JS = [(ROOT / "what_the_spell" / "static" / "js" / name) for name in ("script.js", "spelling.js")]
+BOARD_JS = [(ROOT / "what_the_spell" / "static" / "js" / name) for name in ("script.js", "spelling.js")] + [
+    ROOT / "shared" / "remote" / "remote-follow.js",
+] + [ROOT / app / "static" / "js" / "remote-tv.js" for app in ("trivia_flashcards", "mcq_flashcards", "sliding_rows_flashcards")]
+REMOTE_TV_CSS = {
+    path.relative_to(ROOT).as_posix(): css_without_comments(path)
+    for path in [ROOT / "shared" / "remote" / "remote.css"] + [
+        ROOT / app / "static" / "css" / "remote-view.css"
+        for app in ("trivia_flashcards", "mcq_flashcards", "sliding_rows_flashcards")]
+}
 
 
 def strip_supports_blocks(css, condition_pattern):
@@ -53,7 +61,7 @@ def test_board_has_grid_and_gap_fallbacks():
 def test_focus_ring_survives_old_engines():
     """Old engines drop a whole rule if any selector in it uses :focus-visible, so it may only
     appear as ':focus:not(:focus-visible)', after a plain ':focus' ring."""
-    for name, css in (("quiz-night.css", QUIZ_NIGHT), ("portal-nav.css", PORTAL_NAV), ("style.css", BOARD_CSS)):
+    for name, css in [("quiz-night.css", QUIZ_NIGHT), ("portal-nav.css", PORTAL_NAV), ("style.css", BOARD_CSS)] + list(REMOTE_TV_CSS.items()):
         for selector in re.findall(r"([^{}]+)\{", css):
             if ":focus-visible" in selector:
                 assert re.fullmatch(r"\s*[^,]*:focus:not\(:focus-visible\)\s*", selector), (name, selector.strip())
@@ -70,3 +78,14 @@ def test_board_scripts_avoid_newer_javascript():
         code = re.sub(r"'(?:\\.|[^'\\])*'", "''", code)
         for pattern in banned:
             assert not re.search(pattern, code), (path.name, pattern)
+
+
+def test_remote_tv_views_avoid_grid_and_flex_gap():
+    """The flashcard boards' TV views use flexbox with margins, so older TV browsers get the
+    same layout; shared/remote/remote.css may use flex gap only with its margin fallback."""
+    for name, css in REMOTE_TV_CSS.items():
+        assert not re.search(r"display:\s*grid|grid-template", css), name
+        if name.endswith("remote.css"):
+            assert "@supports not (inset: 0)" in css
+        else:
+            assert not re.search(r"(^|[;{\s])gap:", css), name

@@ -6,8 +6,10 @@ import sqlite3
 
 try:
     from sentry_setup import init_sentry
+    from remote import RoomError, RoomStore, add_remote_routes
 except ModuleNotFoundError:
     from mcq_flashcards.sentry_setup import init_sentry
+    from mcq_flashcards.remote import RoomError, RoomStore, add_remote_routes
 
 # Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
 init_sentry("mcq_flashcards")
@@ -229,6 +231,91 @@ def mark_used():
 def reset():
     reset_all_questions()
     return jsonify({'success': True})
+
+
+# --- Phone remote --------------------------------------------------------------------------
+# The quizmaster's phone runs the board on the TV (see remote.py). The TV is sent the question
+# and the four choices, but not which one is right. The quizmaster marks the team's pick on
+# the phone, then reveals: only then does the TV learn the correct choice. Skip, Eliminate and
+# Reset use the same used/unused state as the buttons on the board.
+
+class McqGame:
+    def new_state(self):
+        state = {'qid': None, 'choices': [], 'picked': None, 'revealed': False}
+        self._next(state)
+        return state
+
+    def _stats(self):
+        questions = load_questions()
+        used = sum(1 for q in questions.values() if q['used'])
+        return {'total': len(questions), 'used': used, 'remaining': len(questions) - used}
+
+    def _current(self, state):
+        return load_questions().get(state['qid']) if state['qid'] else None
+
+    def _next(self, state, avoid=None):
+        unused = [q for q in load_questions().values() if not q['used']]
+        pool = [q for q in unused if q['id'] != avoid] or unused
+        q = random.choice(pool) if pool else None
+        state['qid'] = q['id'] if q else None
+        choices = list(q['choices']) if q else []
+        random.shuffle(choices)
+        state['choices'] = choices
+        state['picked'] = None
+        state['revealed'] = False
+
+    def _correct(self, state, q):
+        try:
+            return state['choices'].index(q['answer'])
+        except ValueError:
+            return None
+
+    def display_view(self, state):
+        q = self._current(state)
+        revealed = bool(q and state['revealed'])
+        correct = self._correct(state, q) if revealed else None
+        return {
+            'question': q['question'] if q else None,
+            'choices': list(state['choices']) if q else [],
+            'picked': state['picked'],
+            'revealed': revealed,
+            'correct': correct,
+            'empty': q is None,
+            'stats': self._stats(),
+        }
+
+    def host_view(self, state):
+        view = self.display_view(state)
+        q = self._current(state)
+        view['correct'] = self._correct(state, q) if q else None
+        return view
+
+    def act(self, state, action, data):
+        q = self._current(state)
+        if action in ('pick', 'reveal', 'eliminate') and q is None:
+            raise RoomError('There is no question on the board.')
+        if action == 'pick':
+            choice = data.get('choice')
+            if choice is not None and not (isinstance(choice, int) and 0 <= choice < len(state['choices'])):
+                raise RoomError('No choice with that number.')
+            if state['revealed']:
+                raise RoomError('The answer is already showing.')
+            state['picked'] = choice
+        elif action == 'reveal':
+            state['revealed'] = True
+        elif action == 'skip':
+            self._next(state, avoid=q['id'] if q else None)
+        elif action == 'eliminate':
+            update_used_status(q['id'], True)
+            self._next(state)
+        elif action == 'reset':
+            reset_all_questions()
+            self._next(state)
+        else:
+            raise RoomError('Unknown action.')
+
+
+ROOMS = add_remote_routes(app, RoomStore(McqGame()))
 
 
 if __name__ == '__main__':

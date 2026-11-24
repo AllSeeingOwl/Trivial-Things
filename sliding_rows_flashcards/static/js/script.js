@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialization
     function init() {
+        // When this page follows a phone remote, remote-tv.js draws the board and no chain
+        // (with its answers) is loaded here.
+        if (window.RemoteFollow && window.RemoteFollow.wanted()) return;
         loadNextChain();
         nextChainBtn.addEventListener('click', loadNextChain);
         resetBtn.addEventListener('click', resetAll);

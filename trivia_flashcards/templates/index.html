@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Flashcards</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/remote.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/remote-view.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
 </head>
 <body class="quiz-night">
@@ -18,7 +20,18 @@
         </div>
     </header>
 
+    {% include '_remote_connect.html' %}
+
     <main>
+        <!-- Filled by remote-tv.js while this board follows a phone remote. -->
+        <section id="remote-view" class="remote-view" hidden aria-label="Question">
+            <p class="stats" id="rv-stats"></p>
+            <div class="rv-card">
+                <p id="rv-question" class="rv-question" aria-live="polite"></p>
+            </div>
+            <div id="rv-answer" class="rv-answer" aria-live="polite"></div>
+        </section>
+
         <section class="flashcard-container" id="flashcard-container" aria-label="Flashcard Area">
             <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Flashcard" aria-expanded="false">
                 <div class="flashcard-face flashcard-front" id="question-text" aria-live="polite">
@@ -49,6 +62,8 @@
         <div id="error-msg" class="hidden" role="alert" aria-live="assertive"></div>
     </main>
 
+    <script src="{{ url_for('static', filename='js/remote-follow.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/remote-tv.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

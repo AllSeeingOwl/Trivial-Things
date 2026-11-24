@@ -1,0 +1,19 @@
+/* Sliding Rows: phone remote page (/host). Phones run current browsers. */
+.host-rows { list-style: none; margin: 0 0 0.8em; padding: 0; text-align: left; }
+.host-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    padding: 0.6em 0.7em;
+    margin-bottom: 0.5em;
+    border: 2px solid var(--qn-line);
+    border-radius: var(--qn-radius-sm);
+    background: var(--qn-surface-2);
+}
+.host-row.is-question { border-color: var(--qn-accent); }
+.host-row.is-answer { opacity: 0.75; }
+.host-row-q, .host-row-a { margin: 0; }
+.host-row-q { font-weight: 700; }
+.host-row-a { color: var(--qn-accent); font-weight: 700; }
+.host-row-buttons { display: flex; gap: 0.4em; }
+.host-row-buttons > button { flex: 1; font-size: 0.95rem; min-height: 2.6rem; padding: 0.4em 0.6em; }

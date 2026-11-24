@@ -1,0 +1,60 @@
+/* Phone remote, TV side: connect form, status bar and the followed board's frame.
+   Canonical copy: shared/remote/remote.css; synced into each app. Load after quiz-night.css.
+   Shown on TVs, so it stays within the older-TV baseline (tools/frontend `npm run check:tv`):
+   flex layouts get margin fallbacks where `gap` is missing. */
+
+.remote-connect {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0 0 1.2em;
+}
+.remote-form {
+    width: 100%;
+    max-width: 48rem;
+    box-sizing: border-box;
+    padding: 1.1em 1.3em;
+    margin-top: 0.8em;
+    text-align: left;
+}
+.remote-form[hidden], .remote-status[hidden], [hidden].remote-view { display: none; }
+.remote-form h2 { margin: 0 0 0.4em; }
+.remote-form p { margin: 0 0 0.8em; color: var(--qn-muted); }
+.remote-url { color: var(--qn-text); word-wrap: break-word; overflow-wrap: anywhere; }
+.remote-form-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6em; font-weight: 700; }
+.quiz-night #remote-code {
+    width: 6ch;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: var(--qn-step-1);
+    font-weight: 700;
+    text-align: center;
+}
+.quiz-night .remote-message { min-height: 1.4em; color: var(--qn-text); }
+
+.remote-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em 1em;
+    padding: 0.4em 1em;
+    border-radius: 999px;
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-accent);
+    color: var(--qn-muted);
+    font-size: 2.2vh;
+}
+.remote-status strong { color: var(--qn-text); letter-spacing: 0.15em; }
+.quiz-night .remote-status button { font-size: 2vh; min-height: 0; padding: 0.4em 1em; }
+
+/* While following a phone: keep clear of the screen edges (many TVs crop them), hide the
+   top bar and the "use a phone" button; each app hides its own controls and shows #remote-view. */
+body.remote-on { padding: 3vh 4vw; }
+.remote-on .portal-nav, .remote-on .remote-open-btn { display: none; }
+.remote-on .remote-connect { margin-bottom: 2vh; }
+
+@supports not (inset: 0) {
+    .remote-form-row > *, .remote-status > * { margin: 0.25em; }
+}

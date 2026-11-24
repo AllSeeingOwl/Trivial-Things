@@ -1,0 +1,53 @@
+/* Sliding Rows: the board while it follows a phone remote, usually on a TV.
+   Loaded after style.css. Kept within the older-TV baseline (tools/frontend `npm run check:tv`):
+   flexbox with margins, no grid or flex gap, sizes from vh/vw. */
+/* ---- Following a phone remote (TV) ----
+   Ten single-line rows that fit one screen: number, question (once shown), answer (once shown).
+   Flexbox with margins so older smart-TV browsers lay it out the same. */
+.remote-on .stats-container,
+.remote-on main > div,
+.remote-on main > section { display: none; }
+.remote-on main > #remote-view { display: block; }
+.remote-on .container { max-width: none; }
+.remote-on header { margin-bottom: 1vh; padding-bottom: 0; border-bottom: 0; justify-content: center; }
+.remote-on header h1 { font-size: 4vh; margin: 0; }
+.remote-on .remote-connect { margin-bottom: 1vh; }
+.quiz-night.remote-on header h1::after { margin-left: auto; }
+
+.rv-stats { font-size: 2vh; line-height: 1.2; color: var(--qn-muted); font-weight: 700; margin: 0 0 0.8vh; text-align: center; }
+.rv-rows { list-style: none; margin: 0; padding: 0; }
+.rv-row {
+    display: flex;
+    align-items: center;
+    min-height: 5.2vh;
+    margin-bottom: 0.7vh;
+    padding: 0.3vh 1.2vw;
+    line-height: 1.15;
+    background: var(--qn-surface);
+    border: 2px solid var(--qn-line);
+    border-radius: var(--qn-radius-sm);
+    font-size: 2.6vh;
+    font-weight: 700;
+}
+.rv-num {
+    flex: none;
+    width: 3.8vh;
+    height: 3.8vh;
+    line-height: 3.8vh;
+    margin-right: 1.2vw;
+    border-radius: 50%;
+    text-align: center;
+    background: var(--qn-surface-2);
+    border: 2px solid var(--qn-line);
+    color: var(--qn-text);
+    font-size: 2.4vh;
+}
+.rv-q { flex: 1 1 auto; min-width: 0; word-wrap: break-word; }
+.rv-a { flex: none; max-width: 38%; margin-left: 1.2vw; text-align: right; color: var(--qn-accent); word-wrap: break-word; }
+.rv-row.is-question { border-color: var(--qn-accent); }
+.rv-row.is-question .rv-num { background: var(--qn-accent); border-color: var(--qn-accent); color: var(--qn-ink); }
+.rv-row.is-question .rv-a { color: var(--qn-muted); }
+.rv-row.is-answer .rv-num { background: transparent; border-color: var(--qn-accent); color: var(--qn-accent); }
+.rv-row.is-answer .rv-q { color: var(--qn-muted); font-weight: 400; }
+.rv-note { text-align: center; font-size: 2.6vh; line-height: 1.2; font-weight: 700; color: var(--qn-accent); margin: 0.5vh 0 0; min-height: 1.2em; }
+.rv-note:empty { display: none; }

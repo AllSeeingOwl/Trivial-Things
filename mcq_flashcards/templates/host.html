@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>MCQ Flashcards remote</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/remote-host.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/host.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
+</head>
+<body class="quiz-night host-page">
+    {% include '_portal_nav.html' %}
+
+    <header>
+        <h1>MCQ Flashcards remote</h1>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+        {% include '_remote_host_start.html' %}
+
+        <div id="host-live" hidden>
+            {% include '_remote_host_pair.html' %}
+
+            <section class="host-card qn-panel" aria-labelledby="host-q-label">
+                <p class="host-stats" id="host-stats"></p>
+                <p class="host-label" id="host-q-label">Question</p>
+                <p class="host-big" id="host-question"></p>
+                <p class="host-label">Tap the team's answer <span class="small">(✓ marks the right one; only you can see it)</span></p>
+                <div id="host-choices" class="host-choices"></div>
+            </section>
+
+            <section class="host-card qn-panel" aria-label="Question actions">
+                <p class="host-tv-state" id="host-tv-state" role="status" aria-live="polite"></p>
+                <div class="host-actions">
+                    <button type="button" id="host-reveal-btn" class="qn-go">Show answer on TV</button>
+                    <button type="button" id="host-skip-btn" class="qn-skip">Skip (keep)</button>
+                    <button type="button" id="host-eliminate-btn" class="qn-eliminate">Eliminate &amp; next</button>
+                </div>
+            </section>
+
+            <section class="host-card qn-panel host-admin" aria-label="Board settings">
+                <button type="button" id="host-reset-btn" class="qn-reset">Reset all questions</button>
+                <button type="button" id="host-end-btn" class="qn-reset">Stop using this phone</button>
+            </section>
+        </div>
+
+        <p id="host-message" class="host-message" role="alert"></p>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/remote-host.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/host-app.js') }}"></script>
+</body>
+</html>
