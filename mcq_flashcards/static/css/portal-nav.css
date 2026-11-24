@@ -17,9 +17,13 @@
     background: #2563eb; color: #fff; text-decoration: none; padding: 6px 14px;
     border-radius: 6px; font-weight: 600; transition: background-color 0.2s;
 }
-.portal-nav .portal-back:hover,
-.portal-nav .portal-back:focus-visible { background: #1d4ed8; color: #fff; }
-.portal-nav .portal-back:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.portal-nav .portal-back:focus { background: #1d4ed8; color: #fff; outline: 2px solid #fff; outline-offset: 2px; }
+.portal-nav .portal-back:focus:not(:focus-visible) { background: #2563eb; outline: none; }
+.portal-nav .portal-back:hover { background: #1d4ed8; }
+/* Older browsers (some smart TVs) ignore gap in flex layouts. */
+@supports not (inset: 0) {
+    .portal-nav > * + * { margin-left: 10px; }
+}
 @media (prefers-reduced-motion: reduce) {
     .portal-nav .portal-back { transition: none; }
 }

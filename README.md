@@ -18,7 +18,7 @@ A multiple-choice variant of the trivia flashcards.
 
 ### 3. What The Spell (`what_the_spell/`)
 A spelling-focused interactive grid application.
-*   **Features**: Parses spelling grids from `What The Spell.csv` and displays them via a slick interface. Uses in-memory caching for speedy grid loading.
+*   **Features**: Parses spelling grids from `What The Spell.csv` and displays them via a slick interface. Uses in-memory caching for speedy grid loading. A phone remote keeps words hidden from the room: the quizmaster opens `/host` on their phone, starts a remote and gets a four-letter code, then connects the board on the TV with that code. The phone shows every word; the TV only shows which word was chosen until the quizmaster taps **Show on TV**, and the server never sends the TV a word before then.
 *   **Running**: `cd what_the_spell && python3 what_the_spell_app.py` (Runs on port 5001 by default).
 
 ### 4. PDF Grid Flashcards (`pdf_grid_flashcards/`)
@@ -135,6 +135,6 @@ Periodic Name, Price Time Machine, Quarterly Calendar and Whovian Degrees use Ta
 cd tools/frontend && npm ci && ./build.sh
 ```
 
-Each of those apps has a `tailwind.config.js` listing the files to scan. `test_no_external_assets.py` fails if any app page loads a script or stylesheet from another site.
+Each of those apps has a `tailwind.config.js` listing the files to scan. The same folder also checks What The Spell's board against older smart-TV browsers with `npm run check:tv` (see `what_the_spell/README.md`). `test_no_external_assets.py` fails if any app page loads a script or stylesheet from another site.
 
 *Note: Ensure you are running each application from within its respective directory so that it can locate its associated data files and dependencies correctly.*

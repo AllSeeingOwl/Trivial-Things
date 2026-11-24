@@ -15,7 +15,7 @@ def test_every_quiz_page_uses_quiz_night():
         assert pages, app
         for page in pages:
             html = page.read_text()
-            assert '<body class="quiz-night"' in html, page
+            assert re.search(r'<body class="quiz-night(?: [^"]*)?"', html), page
             shared = html.find("css/quiz-night.css")
             own = html.find("css/style.css")
             assert shared != -1, f"{page} does not load quiz-night.css"
