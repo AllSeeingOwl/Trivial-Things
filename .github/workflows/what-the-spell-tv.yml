@@ -1,0 +1,52 @@
+name: What The Spell TV compatibility
+
+# What The Spell's board is often shown on a smart TV, whose browser can be years old.
+# This checks the board's scripts and stylesheets against the TV browsers listed in
+# tools/frontend/tv-browsers.txt. Runs only when those files or their sources change.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'what_the_spell/static/**'
+      - 'shared/quiz_night/**'
+      - 'shared/portal_nav/**'
+      - 'tools/frontend/**'
+      - '.github/workflows/what-the-spell-tv.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'what_the_spell/static/**'
+      - 'shared/quiz_night/**'
+      - 'shared/portal_nav/**'
+      - 'tools/frontend/**'
+      - '.github/workflows/what-the-spell-tv.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: what-the-spell-tv-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-tv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tools/frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: tools/frontend/package-lock.json
+
+      - name: Install tools
+        run: npm ci
+
+      - name: Check the board against older smart-TV browsers
+        run: npm run check:tv

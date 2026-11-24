@@ -7,11 +7,18 @@ the TV (or poking at its page) can see a word early.
 
 Rooms live in memory: the app runs as a single process, and a room only needs to last a
 quiz night. Idle rooms expire.
+
+The grids themselves are public (the CSV is in a public repository), so a position such
+as "row 2, column 3" must not give a word away. Each room therefore deals the grid's words
+into its own random layout, which only the host sees; the TV's positions refer to that
+layout. A new layout is dealt when the grid changes or the board is reset.
 """
 import hmac
 import secrets
 import threading
 import time
+
+_random = secrets.SystemRandom()
 
 CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"  # no I or O, which look like 1 and 0
 CODE_LENGTH = 4
@@ -36,6 +43,7 @@ class Room:
         self.mode = "normal"
         self.chosen = None  # (row, col), 0-based
         self.revealed = set()  # {(row, col)}
+        self.layout = []  # this room's shuffled copy of the current grid
         self.version = 0
         self.touched = time.time()
 
@@ -62,6 +70,7 @@ class RoomStore:
             code = self._new_code()
             room = Room(code, secrets.token_urlsafe(24))
             room.touched = self._now()
+            room.layout = self._deal(room.grid_idx)
             self._rooms[code] = room
             return room
 
@@ -81,8 +90,8 @@ class RoomStore:
 
     def display_state(self, room):
         """What the TV may know: layout, mode, which cell is chosen, and revealed words only."""
-        grid = self._grid(room.grid_idx)
         with self._lock:
+            grid = room.layout
             revealed = {f"{r}-{c}": grid[r][c] for (r, c) in sorted(room.revealed)}
             return {
                 "code": room.code,
@@ -99,20 +108,22 @@ class RoomStore:
     def host_state(self, room):
         """Everything, including every word, for the quizmaster's phone."""
         state = self.display_state(room)
-        state["words"] = self._grid(room.grid_idx)
+        with self._lock:
+            state["words"] = [list(row) for row in room.layout]
         state["num_grids"] = len(self._grids())
         return state
 
     # --- host actions -----------------------------------------------------------------
 
     def act(self, room, action, data):
-        grid = self._grid(room.grid_idx)
         with self._lock:
+            grid = room.layout
             if action == "grid":
                 idx = data.get("grid")
                 if not isinstance(idx, int) or not 0 <= idx < len(self._grids()):
                     raise RoomError("No grid with that number.")
                 room.grid_idx = idx
+                room.layout = self._deal(idx)
                 room.chosen = None
                 room.revealed = set()
             elif action == "choose":
@@ -133,6 +144,7 @@ class RoomStore:
                     raise RoomError("Unknown mode.")
                 room.mode = mode
             elif action == "reset":
+                room.layout = self._deal(room.grid_idx)
                 room.chosen = None
                 room.revealed = set()
             else:
@@ -144,6 +156,17 @@ class RoomStore:
     def _grid(self, idx):
         grids = self._grids()
         return grids[idx] if 0 <= idx < len(grids) else []
+
+    def _deal(self, idx):
+        """The grid's words in a fresh random order, in the same rows-by-columns shape."""
+        grid = self._grid(idx)
+        words = [w for row in grid for w in row]
+        _random.shuffle(words)
+        out, i = [], 0
+        for row in grid:
+            out.append(words[i:i + len(row)])
+            i += len(row)
+        return out
 
     def _expired(self, room):
         return self._now() - room.touched > ROOM_TTL_SECONDS

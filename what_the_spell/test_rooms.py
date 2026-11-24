@@ -32,9 +32,13 @@ def all_words(client):
     return [w for row in spell.load_data()[0][0] for w in row]
 
 
+def layout(client, code, host):
+    return client.get(f'/api/rooms/{code}/host', headers=host).get_json()['words']
+
+
 def test_display_never_sees_an_unrevealed_word(client):
     code, host = start(client)
-    grid = spell.load_data()[0][0]
+    grid = layout(client, code, host)
     assert act(client, code, host, action='choose', row=1, col=2).status_code == 200
 
     text = client.get(f'/api/rooms/{code}').get_data(as_text=True)
@@ -49,7 +53,7 @@ def test_display_never_sees_an_unrevealed_word(client):
 
 def test_reveal_shows_only_that_word(client):
     code, host = start(client)
-    grid = spell.load_data()[0][0]
+    grid = layout(client, code, host)
     act(client, code, host, action='choose', row=1, col=2)
     assert act(client, code, host, action='reveal').status_code == 200
 
@@ -67,7 +71,8 @@ def test_reveal_shows_only_that_word(client):
 def test_host_sees_every_word(client):
     code, host = start(client)
     state = client.get(f'/api/rooms/{code}/host', headers=host).get_json()
-    assert state['words'] == spell.load_data()[0][0]
+    flat = sorted(w for row in state['words'] for w in row)
+    assert flat == sorted(w for row in spell.load_data()[0][0] for w in row)
     assert state['num_grids'] == len(spell.load_data()[0])
 
 
@@ -139,3 +144,40 @@ def test_host_page_and_responses_are_not_cached(client):
     assert client.get('/host').status_code == 200
     code, _ = start(client)
     assert client.get(f'/api/rooms/{code}').headers['Cache-Control'] == 'no-store'
+
+
+def test_each_remote_shuffles_where_words_sit(client):
+    """The grids are public (the CSV is in a public repo), so a position like "2-3"
+    must not give the word away. Each remote deals the words into its own layout."""
+    original = spell.load_data()[0][0]
+    layouts = []
+    for _ in range(4):
+        code, host = start(client)
+        words = client.get(f'/api/rooms/{code}/host', headers=host).get_json()['words']
+        assert sorted(w for row in words for w in row) == sorted(w for row in original for w in row)
+        assert [len(r) for r in words] == [len(r) for r in original]
+        layouts.append(words)
+    # Four remotes all landing on the CSV's own order (or on one shared order) would mean no shuffle.
+    assert any(l != original for l in layouts)
+    assert len({str(l) for l in layouts}) > 1
+
+
+def test_revealed_word_matches_the_hosts_layout(client):
+    code, host = start(client)
+    words = client.get(f'/api/rooms/{code}/host', headers=host).get_json()['words']
+    act(client, code, host, action='choose', row=4, col=5)
+    act(client, code, host, action='reveal')
+    assert client.get(f'/api/rooms/{code}').get_json()['revealed'] == {'4-5': words[4][5]}
+
+
+def test_layout_holds_during_a_game_and_reshuffles_on_reset(client):
+    code, host = start(client)
+    first = client.get(f'/api/rooms/{code}/host', headers=host).get_json()['words']
+    act(client, code, host, action='choose', row=0, col=0)
+    act(client, code, host, action='mode', mode='both')
+    assert client.get(f'/api/rooms/{code}/host', headers=host).get_json()['words'] == first
+    seen = set()
+    for _ in range(4):
+        act(client, code, host, action='reset')
+        seen.add(str(client.get(f'/api/rooms/{code}/host', headers=host).get_json()['words']))
+    assert len(seen | {str(first)}) > 1

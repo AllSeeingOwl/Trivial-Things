@@ -1,0 +1,3 @@
+Chrome >= 53
+Samsung >= 6.2
+Safari >= 10

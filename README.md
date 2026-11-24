@@ -135,6 +135,6 @@ Periodic Name, Price Time Machine, Quarterly Calendar and Whovian Degrees use Ta
 cd tools/frontend && npm ci && ./build.sh
 ```
 
-Each of those apps has a `tailwind.config.js` listing the files to scan. `test_no_external_assets.py` fails if any app page loads a script or stylesheet from another site.
+Each of those apps has a `tailwind.config.js` listing the files to scan. The same folder also checks What The Spell's board against older smart-TV browsers with `npm run check:tv` (see `what_the_spell/README.md`). `test_no_external_assets.py` fails if any app page loads a script or stylesheet from another site.
 
 *Note: Ensure you are running each application from within its respective directory so that it can locate its associated data files and dependencies correctly.*

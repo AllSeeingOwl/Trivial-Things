@@ -1,13 +1,23 @@
 {
   "name": "trivial-things-frontend-build",
   "private": true,
-  "description": "Builds the front-end files that four apps used to load from CDNs at runtime. Run ./build.sh after changing their classes or Whovian's JSX.",
+  "description": "Builds the front-end files that four apps used to load from CDNs, and checks What The Spell's board (the page shown on a TV) against older smart-TV browsers. See README.md in the repo root.",
   "devDependencies": {
     "@babel/cli": "7.25.9",
     "@babel/core": "7.26.0",
     "@babel/preset-react": "7.25.9",
+    "doiuse": "6.0.5",
+    "es-check": "8.0.2",
+    "eslint": "9.17.0",
+    "eslint-plugin-compat": "6.0.2",
+    "globals": "15.14.0",
+    "postcss": "8.4.49",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tailwindcss": "3.4.17"
+  },
+  "scripts": {
+    "build": "./build.sh",
+    "check:tv": "es-check es5 ../../what_the_spell/static/js/script.js ../../what_the_spell/static/js/spelling.js && node lint-tv-apis.mjs what_the_spell/static/js/script.js what_the_spell/static/js/spelling.js && node doiuse-check.mjs ../../what_the_spell/static/css/quiz-night.css ../../what_the_spell/static/css/style.css ../../what_the_spell/static/css/portal-nav.css"
   }
 }
