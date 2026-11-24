@@ -6,7 +6,8 @@ The canonical files live in shared/; run this after editing them.
 `--check` exits non-zero if any copy is out of date (used by the tests).
 
 - shared/portal_nav/: the "Back to Central Portal" bar, used by every Flask app.
-- shared/quiz_night/: the Quiz Night look (stylesheet and font), used by the quiz apps.
+- shared/quiz_night/: the Quiz Night look (stylesheet and font), used by the quiz apps;
+  the portal uses the font too.
 """
 import filecmp
 import shutil
@@ -55,6 +56,12 @@ GROUPS = [
     (QUIZ_NIGHT_APPS, "quiz_night/fonts/atkinson-700-latin.woff2", "static/fonts/atkinson-700-latin.woff2"),
     (QUIZ_NIGHT_APPS, "quiz_night/fonts/atkinson-700-latin-ext.woff2", "static/fonts/atkinson-700-latin-ext.woff2"),
     (QUIZ_NIGHT_APPS, "quiz_night/fonts/OFL-atkinsonhyperlegible.txt", "static/fonts/OFL-atkinsonhyperlegible.txt"),
+    # The portal (a static site) uses the same font.
+    (["portal"], "quiz_night/fonts/atkinson-400-latin.woff2", "fonts/atkinson-400-latin.woff2"),
+    (["portal"], "quiz_night/fonts/atkinson-400-latin-ext.woff2", "fonts/atkinson-400-latin-ext.woff2"),
+    (["portal"], "quiz_night/fonts/atkinson-700-latin.woff2", "fonts/atkinson-700-latin.woff2"),
+    (["portal"], "quiz_night/fonts/atkinson-700-latin-ext.woff2", "fonts/atkinson-700-latin-ext.woff2"),
+    (["portal"], "quiz_night/fonts/OFL-atkinsonhyperlegible.txt", "fonts/OFL-atkinsonhyperlegible.txt"),
 ]
 
 
