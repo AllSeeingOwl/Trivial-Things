@@ -1,0 +1,13 @@
+{
+  "name": "trivial-things-frontend-build",
+  "private": true,
+  "description": "Builds the front-end files that four apps used to load from CDNs at runtime. Run ./build.sh after changing their classes or Whovian's JSX.",
+  "devDependencies": {
+    "@babel/cli": "7.25.9",
+    "@babel/core": "7.26.0",
+    "@babel/preset-react": "7.25.9",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tailwindcss": "3.4.17"
+  }
+}
