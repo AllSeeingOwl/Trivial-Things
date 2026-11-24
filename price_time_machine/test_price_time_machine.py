@@ -70,11 +70,17 @@ def test_calculate_inflation_fallback_year():
 
     assert mult_1981 == mult_1980
 
-def test_csp_header_allows_inline_scripts(client):
-    """Test that Content-Security-Policy allows unsafe-inline in script-src for Tailwind and event handlers."""
+def test_csp_header_only_allows_own_scripts(client):
+    """Tailwind is prebuilt and the region auto-submit lives in static/js/region.js,
+    so scripts come only from this app: no CDN and no inline scripts or handlers."""
     response = client.get('/')
     csp = response.headers.get('Content-Security-Policy', '')
-    assert "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com" in csp
+    script_src = csp.split('script-src', 1)[1].split(';', 1)[0]
+    assert script_src.strip() == "'self'"
+    html = response.data.decode('utf-8')
+    assert 'onchange=' not in html
+    assert 'js/region.js' in html
+    assert 'css/tailwind.css' in html
 
 def test_region_selector_form_has_submit_button(client):
     """Test that the region selector form contains action and submit button."""

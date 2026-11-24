@@ -128,4 +128,13 @@ Buttons mean the same thing in every app:
 
 Green and red are kept for right and wrong answers. `test_quiz_night.py` checks every quiz page uses the shared look and that no two apps share a colour.
 
+### Prebuilt front-end files
+Periodic Name, Price Time Machine, Quarterly Calendar and Whovian Degrees use Tailwind CSS, and Whovian Degrees is a small React app. Their CSS, React and compiled JSX are built ahead of time and committed, so no app loads anything from a CDN when it runs. After changing Tailwind classes in those apps, or Whovian's `src/*.jsx`, rebuild with:
+
+```bash
+cd tools/frontend && npm ci && ./build.sh
+```
+
+Each of those apps has a `tailwind.config.js` listing the files to scan. `test_no_external_assets.py` fails if any app page loads a script or stylesheet from another site.
+
 *Note: Ensure you are running each application from within its respective directory so that it can locate its associated data files and dependencies correctly.*
