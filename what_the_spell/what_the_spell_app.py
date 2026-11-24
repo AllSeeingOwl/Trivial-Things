@@ -1,11 +1,13 @@
 import csv
 import os
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 
 try:
     from sentry_setup import init_sentry
+    from rooms import RoomError, RoomStore, RoomsFull
 except ModuleNotFoundError:
     from what_the_spell.sentry_setup import init_sentry
+    from what_the_spell.rooms import RoomError, RoomStore, RoomsFull
 
 # Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
 init_sentry("what_the_spell")
@@ -99,6 +101,72 @@ def get_grid(grid_idx):
     if 0 <= grid_idx < len(grids):
         return jsonify({'grid': grids[grid_idx]})
     return jsonify({'error': 'Grid not found'}), 404
+
+
+# --- Phone remote ------------------------------------------------------------------------
+# The quizmaster's phone starts a room and controls it; the TV joins by code and is only
+# ever sent words that have been revealed. See rooms.py.
+
+ROOMS = RoomStore(lambda: load_data()[0])
+
+
+def _no_store(response):
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.route('/host')
+def host_page():
+    return render_template('host.html')
+
+
+@app.route('/api/rooms', methods=['POST'])
+def create_room():
+    try:
+        room = ROOMS.create()
+    except RoomsFull:
+        return jsonify({'error': 'Too many remotes are running. Try again later.'}), 503
+    return _no_store(jsonify({'code': room.code, 'token': room.token, 'state': ROOMS.host_state(room)})), 201
+
+
+@app.route('/api/rooms/<code>')
+def room_display_state(code):
+    room = ROOMS.get(code)
+    if room is None:
+        return jsonify({'error': 'No remote with that code.'}), 404
+    return _no_store(jsonify(ROOMS.display_state(room)))
+
+
+def _host_room(code):
+    room = ROOMS.get(code)
+    if room is None:
+        return None, (jsonify({'error': 'No remote with that code.'}), 404)
+    if not ROOMS.is_host(room, request.headers.get('X-Host-Token', '')):
+        return None, (jsonify({'error': 'This phone is not the remote for that code.'}), 403)
+    return room, None
+
+
+@app.route('/api/rooms/<code>/host')
+def room_host_state(code):
+    room, err = _host_room(code)
+    if err:
+        return err
+    return _no_store(jsonify(ROOMS.host_state(room)))
+
+
+@app.route('/api/rooms/<code>/actions', methods=['POST'])
+def room_action(code):
+    room, err = _host_room(code)
+    if err:
+        return err
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'error': 'Send a JSON object.'}), 400
+    try:
+        ROOMS.act(room, data.get('action'), data)
+    except RoomError as e:
+        return jsonify({'error': str(e)}), 400
+    return _no_store(jsonify(ROOMS.host_state(room)))
 
 
 if __name__ == '__main__':

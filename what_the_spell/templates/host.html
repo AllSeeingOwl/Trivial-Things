@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>What The Spell remote</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
+</head>
+<body class="quiz-night host-page">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    {% include '_portal_nav.html' %}
+
+    <header>
+        <h1>What The Spell remote</h1>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+        <section id="host-start" class="host-card qn-panel">
+            <p>Run the board from this phone. Words you pick stay hidden on the TV until you show them.</p>
+            <button type="button" id="host-start-btn" class="qn-go">Start a remote</button>
+        </section>
+
+        <div id="host-live" hidden>
+            <section class="host-card qn-panel host-pair" aria-labelledby="host-code-label">
+                <p id="host-code-label">On the board, choose <strong>Use a phone as the remote</strong> and enter</p>
+                <p class="host-code" id="host-code" aria-live="polite"></p>
+                <p class="small">or open <a id="host-tv-link" href="#" target="_blank" rel="noopener"></a> on the TV.</p>
+            </section>
+
+            <section class="host-card qn-panel" aria-label="Spelling mode">
+                <div class="modes host-modes" role="group" aria-label="Spelling mode">
+                    <button class="mode-btn" data-mode="normal" aria-pressed="true">Normal</button>
+                    <button class="mode-btn" data-mode="no-vowels" aria-pressed="false">No Vowels</button>
+                    <button class="mode-btn" data-mode="backwards" aria-pressed="false">Backwards</button>
+                    <button class="mode-btn" data-mode="both" aria-pressed="false">No Vowels + Backwards</button>
+                </div>
+            </section>
+
+            <section aria-labelledby="host-words-heading">
+                <h2 id="host-words-heading" class="host-words-heading">Tap a word to choose it <span class="small">(only you can see these)</span></h2>
+                <div id="host-words" class="host-words"></div>
+            </section>
+
+            <section class="host-card qn-panel host-chosen" aria-labelledby="host-chosen-heading">
+                <h2 id="host-chosen-heading" class="sr-only">Chosen word</h2>
+                <p class="host-chosen-label">Chosen word</p>
+                <p class="host-chosen-word" id="host-chosen-word" aria-live="polite">Nothing chosen yet</p>
+                <p class="host-spelling">Spelling (<span id="host-mode-name">Normal</span>): <strong id="host-spelling">---</strong></p>
+                <p class="host-tv-state" id="host-tv-state" role="status" aria-live="polite"></p>
+                <div class="host-actions">
+                    <button type="button" id="host-reveal-btn" class="qn-go" disabled>Show on TV</button>
+                    <button type="button" id="host-clear-btn" class="qn-skip" disabled>Unchoose</button>
+                </div>
+            </section>
+
+            <section class="host-card qn-panel host-admin" aria-label="Board settings">
+                <label for="host-grid-select">Grid</label>
+                <select id="host-grid-select"></select>
+                <button type="button" id="host-reset-btn" class="qn-reset">Hide all words again</button>
+                <button type="button" id="host-end-btn" class="qn-reset">Stop using this phone</button>
+            </section>
+        </div>
+
+        <p id="host-message" class="host-message" role="alert"></p>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/spelling.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/host.js') }}"></script>
+</body>
+</html>
