@@ -1,7 +1,7 @@
 {
   "name": "trivial-things-frontend-build",
   "private": true,
-  "description": "Builds the front-end files that four apps used to load from CDNs, and checks What The Spell's board (the page shown on a TV) against older smart-TV browsers. See README.md in the repo root.",
+  "description": "Builds the front-end files that four apps used to load from CDNs, and checks the pages that run on TVs (What The Spell's board, and the flashcard boards following a phone remote) against older smart-TV browsers.",
   "devDependencies": {
     "@babel/cli": "7.25.9",
     "@babel/core": "7.26.0",
@@ -18,6 +18,6 @@
   },
   "scripts": {
     "build": "./build.sh",
-    "check:tv": "es-check es5 ../../what_the_spell/static/js/script.js ../../what_the_spell/static/js/spelling.js && node lint-tv-apis.mjs what_the_spell/static/js/script.js what_the_spell/static/js/spelling.js && node doiuse-check.mjs ../../what_the_spell/static/css/quiz-night.css ../../what_the_spell/static/css/style.css ../../what_the_spell/static/css/portal-nav.css"
+    "check:tv": "./check-tv.sh"
   }
 }

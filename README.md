@@ -9,11 +9,13 @@ The repository is organized into thirteen distinct applications (ten Flask, one 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
 *   **Features**: Randomizes questions from a CSV file (`Questions & All That.csv`), presenting a "front" (question) and a "back" (answer). You can eliminate questions as they are asked, ensuring they won't repeat, with state tracked via an SQLite database.
+*   **Phone remote**: run the board on a TV from your phone, with each answer hidden until you show it. See [Phone remote](#phone-remote) below.
 *   **Running**: `cd trivia_flashcards && python3 trivia_flashcards_app.py` (Runs on port 5000 by default).
 
 ### 2. MCQ Flashcards (`mcq_flashcards/`)
 A multiple-choice variant of the trivia flashcards.
 *   **Features**: Reads from `MCQ Questions.csv` and presents four randomized choices per question. Includes visual feedback for correct/incorrect choices before revealing the back of the card. State is also saved via an SQLite database to prevent repeats.
+*   **Phone remote**: run the board on a TV from your phone; mark the team's answer on the phone, then reveal whether it's right. See [Phone remote](#phone-remote) below.
 *   **Running**: `cd mcq_flashcards && python3 mcq_flashcards_app.py` (Runs on port 5000 by default).
 
 ### 3. What The Spell (`what_the_spell/`)
@@ -29,6 +31,7 @@ An application that generates interactive grid views by parsing structured PDFs.
 ### 5. Sliding Rows Flashcards (`sliding_rows_flashcards/`)
 An application that presents sliding rows of flashcards and segues.
 *   **Features**: Reads data from `Questions_And_Segues.csv` to provide a unique flashcard learning experience. State is tracked via an SQLite database.
+*   **Phone remote**: run the board on a TV from your phone, showing each row's question and then its answer. See [Phone remote](#phone-remote) below.
 *   **Running**: `cd sliding_rows_flashcards && python3 sliding_rows_flashcards_app.py` (Runs on port 5003 by default).
 
 ### 6. Where In The World (`where_in_the_world/`)
@@ -136,5 +139,24 @@ cd tools/frontend && npm ci && ./build.sh
 ```
 
 Each of those apps has a `tailwind.config.js` listing the files to scan. The same folder also checks What The Spell's board against older smart-TV browsers with `npm run check:tv` (see `what_the_spell/README.md`). `test_no_external_assets.py` fails if any app page loads a script or stylesheet from another site.
+
+### Phone remote
+
+Trivia Flashcards, MCQ Flashcards, Sliding Rows and What The Spell can be run from the quizmaster's phone while the board is on a TV, so the room doesn't see answers early:
+
+1. On your phone, open the app's `/host` page and tap **Start a remote**. It shows a four-letter code.
+2. On the TV, open the app and choose **Use a phone as the remote**, then type the code (or open the `/?remote=CODE` link the phone shows).
+3. The phone shows the answers and has the buttons; the TV shows only what you've revealed.
+
+| App | The TV shows | The phone adds |
+| --- | --- | --- |
+| Trivia Flashcards | the question | the answer; Show answer on TV, Skip, Eliminate, Reset |
+| MCQ Flashcards | the question and its choices | which choice is right; tap the team's pick, then Show answer on TV |
+| Sliding Rows | each row once you show it | every question and answer; Show question / Show answer per row, Next chain |
+| What The Spell | which tile is chosen | the word and its spelling; Show on TV (each remote also shuffles the grid) |
+
+The server never sends the TV an answer before it's shown, so it can't be read from the TV's page either, and only the phone that started the remote can control it. Skip, Eliminate, Reset and finished chains update the same used/unused state as the board's own buttons. Remotes live in each app's memory and end after 12 idle hours or a restart.
+
+The shared code is in `shared/remote/` (server, TV and phone scripts, styles and template partials) and is copied into the flashcard apps by `python3 tools/sync_shared.py`; What The Spell keeps its own earlier version. Each app adds a small *game* class that decides what the TV may see. On the TV the boards are written for older smart-TV browsers and checked with `npm run check:tv` in `tools/frontend` (see "Smart TVs" in `what_the_spell/README.md` for TVs without a browser).
 
 *Note: Ensure you are running each application from within its respective directory so that it can locate its associated data files and dependencies correctly.*

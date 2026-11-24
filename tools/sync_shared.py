@@ -8,6 +8,8 @@ The canonical files live in shared/; run this after editing them.
 - shared/portal_nav/: the "Trivial Things · All apps" bar, used by every Flask app.
 - shared/quiz_night/: the Quiz Night look (stylesheet and font), used by the quiz apps;
   the portal uses the font too.
+- shared/remote/: the phone remote (server, TV and phone scripts, styles, partials), used by
+  the flashcard apps. What The Spell has its own older copy (rooms.py).
 """
 import filecmp
 import shutil
@@ -42,6 +44,12 @@ QUIZ_NIGHT_APPS = [
     "where_in_the_world",
 ]
 
+REMOTE_APPS = [
+    "mcq_flashcards",
+    "sliding_rows_flashcards",
+    "trivia_flashcards",
+]
+
 # Kept for anything that imported the old name.
 APPS = PORTAL_NAV_APPS
 
@@ -56,6 +64,14 @@ GROUPS = [
     (QUIZ_NIGHT_APPS, "quiz_night/fonts/atkinson-700-latin.woff2", "static/fonts/atkinson-700-latin.woff2"),
     (QUIZ_NIGHT_APPS, "quiz_night/fonts/atkinson-700-latin-ext.woff2", "static/fonts/atkinson-700-latin-ext.woff2"),
     (QUIZ_NIGHT_APPS, "quiz_night/fonts/OFL-atkinsonhyperlegible.txt", "static/fonts/OFL-atkinsonhyperlegible.txt"),
+    (REMOTE_APPS, "remote/remote.py", "remote.py"),
+    (REMOTE_APPS, "remote/remote-follow.js", "static/js/remote-follow.js"),
+    (REMOTE_APPS, "remote/remote-host.js", "static/js/remote-host.js"),
+    (REMOTE_APPS, "remote/remote.css", "static/css/remote.css"),
+    (REMOTE_APPS, "remote/remote-host.css", "static/css/remote-host.css"),
+    (REMOTE_APPS, "remote/_remote_connect.html", "templates/_remote_connect.html"),
+    (REMOTE_APPS, "remote/_remote_host_start.html", "templates/_remote_host_start.html"),
+    (REMOTE_APPS, "remote/_remote_host_pair.html", "templates/_remote_host_pair.html"),
     # The portal (a static site) uses the same font.
     (["portal"], "quiz_night/fonts/atkinson-400-latin.woff2", "fonts/atkinson-400-latin.woff2"),
     (["portal"], "quiz_night/fonts/atkinson-400-latin-ext.woff2", "fonts/atkinson-400-latin-ext.woff2"),

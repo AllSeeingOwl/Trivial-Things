@@ -272,5 +272,8 @@ eliminateBtnEl.addEventListener('click', eliminateAndNext);
 document.getElementById('admin-reset-btn').addEventListener('click', resetAll);
 document.getElementById('practice-again-btn').addEventListener('click', resetAll);
 
-// Initialize
-loadNextQuestion();
+// Initialize, unless this page follows a phone remote: then remote-tv.js draws the board and
+// no question (or answer) is loaded here.
+if (!(window.RemoteFollow && window.RemoteFollow.wanted())) {
+    loadNextQuestion();
+}

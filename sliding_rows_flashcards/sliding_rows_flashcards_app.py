@@ -6,8 +6,10 @@ import sqlite3
 
 try:
     from sentry_setup import init_sentry
+    from remote import RoomError, RoomStore, add_remote_routes
 except ModuleNotFoundError:
     from sliding_rows_flashcards.sentry_setup import init_sentry
+    from sliding_rows_flashcards.remote import RoomError, RoomStore, add_remote_routes
 
 # Start Sentry (if SENTRY_DSN is set) before the Flask app is created.
 init_sentry("sliding_rows_flashcards")
@@ -284,6 +286,86 @@ def get_stats():
     # for len() to count used chains, significantly reducing memory overhead.
     used = sum(1 for c in chains.values() if c['used'])
     return jsonify({'total': total, 'used': used, 'remaining': total - used})
+
+
+# --- Phone remote --------------------------------------------------------------------------
+# The quizmaster's phone runs the board on the TV (see remote.py). Each row of the chain is
+# hidden, then shows its question, then its answer; the TV is only sent what is showing.
+# Once every answer in the chain has been shown the chain is marked used, as on the board.
+
+HIDDEN, QUESTION, ANSWER = 0, 1, 2
+
+
+class SlidingRowsGame:
+    def new_state(self):
+        state = {'chain_id': None, 'rows': [], 'counted': False}
+        self._next(state)
+        return state
+
+    def _stats(self):
+        chains = load_chains()
+        used = sum(1 for c in chains.values() if c['used'])
+        return {'total': len(chains), 'used': used, 'remaining': len(chains) - used}
+
+    def _chain(self, state):
+        return load_chains().get(state['chain_id']) if state['chain_id'] else None
+
+    def _next(self, state, avoid=None):
+        unused = [c for c in load_chains().values() if not c['used']]
+        pool = [c for c in unused if c['chain_id'] != avoid] or unused
+        chain = random.choice(pool) if pool else None
+        state['chain_id'] = chain['chain_id'] if chain else None
+        state['rows'] = [HIDDEN] * (len(chain['questions']) if chain else 0)
+        state['counted'] = False
+
+    def _view(self, state, everything):
+        chain = self._chain(state)
+        rows = []
+        for i, q in enumerate(chain['questions'] if chain else []):
+            shown = state['rows'][i]
+            rows.append({
+                'state': shown,
+                'question': q['question'] if everything or shown >= QUESTION else None,
+                'answer': q['answer'] if everything or shown >= ANSWER else None,
+            })
+        return {
+            'rows': rows,
+            'complete': bool(rows) and all(r == ANSWER for r in state['rows']),
+            'empty': chain is None,
+            'stats': self._stats(),
+        }
+
+    def display_view(self, state):
+        return self._view(state, everything=False)
+
+    def host_view(self, state):
+        return self._view(state, everything=True)
+
+    def act(self, state, action, data):
+        chain = self._chain(state)
+        if action == 'show':
+            row, part = data.get('row'), data.get('part')
+            if chain is None:
+                raise RoomError('There is no chain on the board.')
+            if not (isinstance(row, int) and 0 <= row < len(state['rows'])):
+                raise RoomError('No row with that number.')
+            if part not in ('question', 'answer'):
+                raise RoomError('Show the question or the answer.')
+            level = QUESTION if part == 'question' else ANSWER
+            state['rows'][row] = max(state['rows'][row], level)
+            if not state['counted'] and all(r == ANSWER for r in state['rows']):
+                update_chain_used_status(chain['chain_id'], True)
+                state['counted'] = True
+        elif action == 'next':
+            self._next(state, avoid=chain['chain_id'] if chain else None)
+        elif action == 'reset':
+            reset_all_chains()
+            self._next(state)
+        else:
+            raise RoomError('Unknown action.')
+
+
+ROOMS = add_remote_routes(app, RoomStore(SlidingRowsGame()))
 
 
 if __name__ == '__main__':

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Sliding Rows remote</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/remote-host.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/host.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
+</head>
+<body class="quiz-night host-page">
+    {% include '_portal_nav.html' %}
+
+    <header>
+        <h1>Sliding Rows remote</h1>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+        {% include '_remote_host_start.html' %}
+
+        <div id="host-live" hidden>
+            {% include '_remote_host_pair.html' %}
+
+            <section class="host-card qn-panel" aria-labelledby="host-rows-label">
+                <p class="host-stats" id="host-stats"></p>
+                <p class="host-label" id="host-rows-label">The chain <span class="small">(only you can see the hidden rows)</span></p>
+                <ol id="host-rows" class="host-rows"></ol>
+                <p class="host-tv-state" id="host-tv-state" role="status" aria-live="polite"></p>
+                <div class="host-actions">
+                    <button type="button" id="host-next-btn" class="qn-go">Next chain</button>
+                </div>
+            </section>
+
+            <section class="host-card qn-panel host-admin" aria-label="Board settings">
+                <button type="button" id="host-reset-btn" class="qn-reset">Reset all chains</button>
+                <button type="button" id="host-end-btn" class="qn-reset">Stop using this phone</button>
+            </section>
+        </div>
+
+        <p id="host-message" class="host-message" role="alert"></p>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/remote-host.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/host-app.js') }}"></script>
+</body>
+</html>

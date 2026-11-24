@@ -60,4 +60,4 @@ Whichever way you choose, **don't mirror the quizmaster's phone to the TV**: the
 
 Older TV browsers can still behave in ways no checker catches (memory limits, unusual keyboards, screensavers), so try the board on the actual TV before the night. Where a TV supports it, the board asks the screen to stay on while following a remote; otherwise the TV's own power settings decide.
 
-To re-check the board after changing its scripts or styles: `cd tools/frontend && npm ci && npm run check:tv`. The **What The Spell TV compatibility** workflow runs the same check on pull requests.
+To re-check the board after changing its scripts or styles: `cd tools/frontend && npm ci && npm run check:tv`. The **TV compatibility** workflow runs the same check on pull requests.

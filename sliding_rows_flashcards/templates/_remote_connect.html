@@ -1,0 +1,25 @@
+{#- Phone remote, TV side: the "Use a phone as the remote" button, its form, and the
+    "Following phone remote ABCD" bar. Canonical copy: shared/remote/; synced into each app.
+    The page also needs css/remote.css, an element with id="remote-view" (hidden) for the
+    followed board, and js/remote-follow.js. -#}
+<div class="remote-connect">
+    <button type="button" id="remote-open-btn" class="qn-skip remote-open-btn" aria-expanded="false" aria-controls="remote-form">Use a phone as the remote</button>
+    <form id="remote-form" class="remote-form qn-panel" hidden>
+        <h2>Use a phone as the remote</h2>
+        <p>Answers stay hidden on this screen until you show them. On your phone, open
+            <strong class="remote-url"><span id="remote-host-url">this site's /host page</span></strong>
+            and tap <strong>Start a remote</strong>. Then type the code it shows here.</p>
+        <div class="remote-form-row">
+            <label for="remote-code">Code</label>
+            <input id="remote-code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                   maxlength="4" inputmode="text" pattern="[A-Za-z]{4}" required>
+            <button type="submit" class="qn-go">Connect</button>
+            <button type="button" id="remote-cancel-btn" class="qn-reset">Cancel</button>
+        </div>
+        <p id="remote-message" class="remote-message" role="status" aria-live="polite"></p>
+    </form>
+    <div id="remote-status" class="remote-status" hidden>
+        <span>Following phone remote <strong id="remote-status-code"></strong>. Answers appear when the quizmaster shows them.</span>
+        <button type="button" id="remote-disconnect-btn" class="qn-reset">Disconnect</button>
+    </div>
+</div>

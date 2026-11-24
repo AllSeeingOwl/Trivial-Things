@@ -1,0 +1,75 @@
+/* MCQ Flashcards: the board while it follows a phone remote, usually on a TV.
+   Loaded after style.css. Kept within the older-TV baseline (tools/frontend `npm run check:tv`):
+   flexbox with margins, no grid or flex gap, sizes from vh/vw. */
+/* ---- Following a phone remote (TV) ---- */
+.remote-on header .stats,
+.remote-on main > section,
+.remote-on main > div { display: none; }
+.remote-on main > #remote-view { display: flex; }
+.remote-on header h1 { font-size: 5vh; margin: 0 0 0.2em; }
+
+.remote-view {
+    width: 100%;
+    max-width: 76rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.remote-view .stats { font-size: 2.4vh; margin-bottom: 1vh; }
+.rv-card {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--qn-surface);
+    border: 2px solid var(--qn-line);
+    border-top: 8px solid var(--qn-accent);
+    border-radius: var(--qn-radius);
+    padding: 3vh 3vw;
+    margin: 1vh 0 2.5vh;
+}
+.rv-question { font-size: 5.2vh; font-weight: 700; line-height: 1.2; margin: 0 0 3vh; word-wrap: break-word; }
+/* Two columns of choices; flexbox (with margins) so older TV browsers lay it out the same. */
+.rv-choices {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.rv-choice {
+    width: 49%;
+    box-sizing: border-box;
+    margin: 0 0 1.4vh;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 1.6vh 1.4vw;
+    font-size: 3.6vh;
+    font-weight: 700;
+    background: var(--qn-surface-2);
+    border: 3px solid var(--qn-line);
+    border-radius: var(--qn-radius-sm);
+    color: var(--qn-text);
+    word-wrap: break-word;
+}
+.rv-letter {
+    flex: none;
+    display: inline-block;
+    width: 1.6em;
+    height: 1.6em;
+    line-height: 1.6em;
+    margin-right: 0.6em;
+    border-radius: 50%;
+    text-align: center;
+    background: var(--qn-bg);
+    color: var(--qn-accent);
+    font-size: 0.8em;
+}
+.rv-choice.is-picked { border-color: var(--qn-accent); box-shadow: 0 0 0 3px var(--qn-accent); }
+.rv-choice.is-correct { background: var(--qn-correct); border-color: var(--qn-correct); color: var(--qn-ink); }
+.rv-choice.is-wrong { background: var(--qn-wrong); border-color: var(--qn-wrong); color: var(--qn-ink); }
+.rv-choice.is-correct .rv-letter, .rv-choice.is-wrong .rv-letter { background: var(--qn-ink); color: var(--qn-text); }
+.rv-result { font-size: 4vh; font-weight: 700; color: var(--qn-muted); margin: 0; min-height: 1.3em; }
+.rv-result.is-right { color: var(--qn-correct); }
+.rv-result.is-wrong { color: var(--qn-wrong); }
+.rv-result.is-shown { color: var(--qn-accent); }
