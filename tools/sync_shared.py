@@ -5,7 +5,7 @@ Each app is built and deployed from its own directory, so each needs its own cop
 The canonical files live in shared/; run this after editing them.
 `--check` exits non-zero if any copy is out of date (used by the tests).
 
-- shared/portal_nav/: the "Back to Central Portal" bar, used by every Flask app.
+- shared/portal_nav/: the "Trivial Things · All apps" bar, used by every Flask app.
 - shared/quiz_night/: the Quiz Night look (stylesheet and font), used by the quiz apps;
   the portal uses the font too.
 """

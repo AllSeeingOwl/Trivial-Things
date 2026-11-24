@@ -38,5 +38,5 @@ def test_index_accessibility(client):
     response = client.get('/')
     assert response.status_code == 200
     html = response.get_data(as_text=True)
-    assert 'aria-label="Back to Central Portal"' in html
+    assert '</span>All apps</a>' in html
     assert '<span aria-hidden="true">← </span>' in html

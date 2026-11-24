@@ -78,7 +78,8 @@ class PeriodicNameTestCase(unittest.TestCase):
         self.assertIn(b'href="#main-content"', response.data)
         self.assertIn(b'Skip to main content', response.data)
         self.assertIn(b'<main id="main-content" tabindex="-1"', response.data)
-        self.assertIn(b'aria-label="Back to Central Portal"', response.data)
+        self.assertIn(b'<nav class="portal-nav" aria-label="Trivial Things">', response.data)
+        self.assertIn(b'</span>All apps</a>', response.data)
         self.assertIn(b'aria-hidden="true">\xe2\x86\x90 ', response.data)
 
     def test_accessibility_results_and_element_cards(self):
