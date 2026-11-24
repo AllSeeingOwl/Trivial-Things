@@ -82,20 +82,15 @@ const App = () => {
     className: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-md focus:font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white shadow-lg"
   }, "Skip to main content"), /*#__PURE__*/React.createElement("nav", {
     className: "bg-gray-900 text-white px-6 py-3 flex justify-between items-center text-sm border-b border-purple-800",
-    "aria-label": "Portal Navigation"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center gap-2"
+    "aria-label": "Trivial Things"
   }, /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-gray-100"
-  }, "Whovian Degrees Portal"), /*#__PURE__*/React.createElement("span", {
-    className: "bg-purple-950 text-purple-300 px-2 py-0.5 rounded-full text-xs border border-purple-700"
-  }, "Standalone Service")), /*#__PURE__*/React.createElement("a", {
+  }, "Trivial Things"), /*#__PURE__*/React.createElement("a", {
     href: portalUrl,
-    "aria-label": "Back to Central Portal",
     className: "bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-md font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
   }, /*#__PURE__*/React.createElement("span", {
     "aria-hidden": "true"
-  }, "\u2190 "), "Back to Central Portal")), /*#__PURE__*/React.createElement("main", {
+  }, "\u2190 "), "All apps")), /*#__PURE__*/React.createElement("main", {
     id: "main-content",
     tabIndex: -1,
     className: "flex-1 p-4 sm:p-8 flex items-center justify-center focus:outline-none"

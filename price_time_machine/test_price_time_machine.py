@@ -94,5 +94,5 @@ def test_portal_back_link_accessibility(client):
     response = client.get('/')
     assert response.status_code == 200
     html = response.data.decode('utf-8')
-    assert 'aria-label="Back to Central Portal"' in html
+    assert '</span>All apps</a>' in html
     assert '<span aria-hidden="true">← </span>' in html

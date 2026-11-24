@@ -12,11 +12,7 @@
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.4;
     text-align: left; border-bottom: 1px solid #374151;
 }
-.portal-nav-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.portal-name { font-weight: 700; color: #f3f4f6; }
-.portal-badge {
-    background: #374151; color: #d1d5db; padding: 2px 8px; border-radius: 9999px; font-size: 12px;
-}
+.portal-name { font-weight: 700; color: #f3f4f6; letter-spacing: 0.01em; }
 .portal-nav .portal-back {
     background: #2563eb; color: #fff; text-decoration: none; padding: 6px 14px;
     border-radius: 6px; font-weight: 600; transition: background-color 0.2s;

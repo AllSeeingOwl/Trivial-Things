@@ -88,17 +88,13 @@ const App = () => {
             >
                 Skip to main content
             </a>
-            <nav className="bg-gray-900 text-white px-6 py-3 flex justify-between items-center text-sm border-b border-purple-800" aria-label="Portal Navigation">
-                <div className="flex items-center gap-2">
-                    <span className="font-bold text-gray-100">Whovian Degrees Portal</span>
-                    <span className="bg-purple-950 text-purple-300 px-2 py-0.5 rounded-full text-xs border border-purple-700">Standalone Service</span>
-                </div>
+            <nav className="bg-gray-900 text-white px-6 py-3 flex justify-between items-center text-sm border-b border-purple-800" aria-label="Trivial Things">
+                <span className="font-bold text-gray-100">Trivial Things</span>
                 <a
                     href={portalUrl}
-                    aria-label="Back to Central Portal"
                     className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-md font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
                 >
-                    <span aria-hidden="true">← </span>Back to Central Portal
+                    <span aria-hidden="true">← </span>All apps
                 </a>
             </nav>
 

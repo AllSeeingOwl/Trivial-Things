@@ -283,7 +283,7 @@ def test_pages_have_back_link_and_security_headers(client, path):
     res = client.get(path)
     assert res.status_code == 200
     html = res.get_data(as_text=True)
-    assert 'aria-label="Back to Central Portal"' in html
+    assert '</span>All apps</a>' in html
     assert '<span aria-hidden="true">← </span>' in html
     assert res.headers['X-Content-Type-Options'] == 'nosniff'
     assert res.headers['X-Frame-Options'] == 'SAMEORIGIN'
