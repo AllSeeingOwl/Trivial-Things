@@ -1,0 +1,29 @@
+/* Shared portal bar. Canonical copy: shared/portal_nav/portal-nav.css.
+   Edit that file and run `python3 tools/sync_shared.py`; do not edit the copies in each app.
+   Kept in its own file (not inline styles) so it works under a `style-src 'self'` CSP.
+   If the app's <body> has padding, set `--portal-nav-inset` to that padding so the bar
+   still spans the full width of the page. */
+.portal-nav {
+    --inset: var(--portal-nav-inset, 0px);
+    box-sizing: border-box; width: calc(100% + 2 * var(--inset)); flex: 0 0 auto; align-self: stretch;
+    margin: calc(-1 * var(--inset)) calc(-1 * var(--inset)) var(--inset);
+    background: #1f2937; color: #fff; padding: 10px 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.4;
+    text-align: left; border-bottom: 1px solid #374151;
+}
+.portal-name { font-weight: 700; color: #f3f4f6; letter-spacing: 0.01em; }
+.portal-nav .portal-back {
+    background: #2563eb; color: #fff; text-decoration: none; padding: 6px 14px;
+    border-radius: 6px; font-weight: 600; transition: background-color 0.2s;
+}
+.portal-nav .portal-back:focus { background: #1d4ed8; color: #fff; outline: 2px solid #fff; outline-offset: 2px; }
+.portal-nav .portal-back:focus:not(:focus-visible) { background: #2563eb; outline: none; }
+.portal-nav .portal-back:hover { background: #1d4ed8; }
+/* Older browsers (some smart TVs) ignore gap in flex layouts. */
+@supports not (inset: 0) {
+    .portal-nav > * + * { margin-left: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .portal-nav .portal-back { transition: none; }
+}

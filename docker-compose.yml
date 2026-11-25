@@ -71,6 +71,11 @@ services:
     ports:
       - "8009:5000"
 
+  tv_link:
+    build: ./tv_link
+    ports:
+      - "8016:5000"
+
   what_the_spell:
     build: ./what_the_spell
     ports:

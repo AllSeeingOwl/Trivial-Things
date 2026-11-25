@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Link</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/phone.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
+</head>
+<body class="quiz-night phone" data-code-length="{{ code_length }}">
+    {% include '_portal_nav.html' %}
+
+    <main>
+        <h1>TV Link</h1>
+
+        <!-- Step 1: connect to a TV -->
+        <section id="join-view" class="qn-panel join" aria-labelledby="join-title">
+            <h2 id="join-title">Connect to a TV</h2>
+            <ol class="join-steps">
+                <li>On the TV, open its web browser and go to <strong class="tv-url" id="tv-url"></strong></li>
+                <li>Type the code the TV shows, or scan its QR code with your phone's camera.</li>
+            </ol>
+            <form id="join-form" class="join-form" autocomplete="off">
+                <label for="join-code">TV code</label>
+                <div class="join-row">
+                    <input id="join-code" name="code" inputmode="text" autocapitalize="characters"
+                           spellcheck="false" maxlength="{{ code_length + 2 }}" placeholder="ABCDE"
+                           aria-describedby="join-message" required>
+                    <button type="submit" class="qn-go">Connect</button>
+                </div>
+                <p id="join-message" class="message" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+
+        <!-- Step 2: control it -->
+        <section id="control-view" class="control" hidden aria-label="TV controls">
+            <div class="qn-panel now">
+                <div class="now-text">
+                    <p class="now-label">Connected to TV <strong id="now-code"></strong></p>
+                    <p id="now-showing" class="now-showing" aria-live="polite"></p>
+                </div>
+                <button type="button" id="disconnect-btn" class="qn-reset">Disconnect</button>
+            </div>
+            <p id="control-message" class="message" role="status" aria-live="polite"></p>
+
+            <div class="quick" role="group" aria-label="Quick screens">
+                <button type="button" data-action="home">Code screen</button>
+                <button type="button" data-action="clock">Clock</button>
+                <button type="button" data-action="blank">Blank</button>
+            </div>
+
+            <div class="tabs" role="tablist" aria-label="What to show">
+                <button type="button" role="tab" id="tab-photos" aria-controls="panel-photos" aria-selected="true">Photos</button>
+                <button type="button" role="tab" id="tab-message" aria-controls="panel-message" aria-selected="false" tabindex="-1">Message</button>
+                <button type="button" role="tab" id="tab-video" aria-controls="panel-video" aria-selected="false" tabindex="-1">Video</button>
+                <button type="button" role="tab" id="tab-timer" aria-controls="panel-timer" aria-selected="false" tabindex="-1">Timer</button>
+            </div>
+
+            <section id="panel-photos" class="qn-panel panel" role="tabpanel" aria-labelledby="tab-photos">
+                <label class="qn-btn qn-go add-photos" for="photo-input">Add photos</label>
+                <input id="photo-input" class="visually-hidden" type="file" accept="image/*" multiple>
+                <p id="photo-progress" class="hint" aria-live="polite">Photos are shrunk to fit the TV before they're sent.</p>
+                <div class="row">
+                    <button type="button" id="prev-btn" aria-label="Previous photo">‹ Previous</button>
+                    <button type="button" id="next-btn" aria-label="Next photo">Next ›</button>
+                </div>
+                <div class="row slideshow">
+                    <label for="slide-seconds">Slideshow</label>
+                    <select id="slide-seconds">
+                        {% for s in slideshow_seconds %}<option value="{{ s }}"{% if s == 5 %} selected{% endif %}>{{ s }} s each</option>{% endfor %}
+                    </select>
+                    <button type="button" id="slideshow-btn">Start</button>
+                </div>
+                <ul id="photo-grid" class="photo-grid" aria-label="Photos on this TV"></ul>
+                <p id="photo-empty" class="hint">No photos yet.</p>
+            </section>
+
+            <section id="panel-message" class="qn-panel panel" role="tabpanel" aria-labelledby="tab-message" hidden>
+                <form id="message-form">
+                    <label for="message-input">Message for the TV</label>
+                    <textarea id="message-input" rows="3" maxlength="{{ max_message }}"
+                              placeholder="Dinner's ready!" aria-describedby="message-count"></textarea>
+                    <p id="message-count" class="hint">0 / {{ max_message }}</p>
+                    <button type="submit" class="qn-go">Show on TV</button>
+                </form>
+                <h3 class="recent-title" id="recent-title" hidden>Recent</h3>
+                <ul id="recent-list" class="recent" aria-labelledby="recent-title"></ul>
+            </section>
+
+            <section id="panel-video" class="qn-panel panel" role="tabpanel" aria-labelledby="tab-video" hidden>
+                <form id="video-form">
+                    <label for="video-input">YouTube link</label>
+                    <input id="video-input" type="url" inputmode="url" placeholder="https://youtu.be/…" autocomplete="off">
+                    <p class="hint">Copy the link from YouTube's Share button and paste it here.</p>
+                    <button type="submit" class="qn-go">Play on TV</button>
+                </form>
+                <div class="row" id="video-controls" role="group" aria-label="Video controls">
+                    <button type="button" id="video-play-btn">Pause</button>
+                    <button type="button" id="video-mute-btn">Mute</button>
+                    <button type="button" data-action="video_restart">Restart</button>
+                    <button type="button" data-action="home" class="qn-reset">Stop</button>
+                </div>
+            </section>
+
+            <section id="panel-timer" class="qn-panel panel" role="tabpanel" aria-labelledby="tab-timer" hidden>
+                <p class="timer-now" id="timer-now" aria-live="off"></p>
+                <div class="row presets" role="group" aria-label="Start a timer">
+                    <button type="button" data-timer="30">30 s</button>
+                    <button type="button" data-timer="60">1 min</button>
+                    <button type="button" data-timer="120">2 min</button>
+                    <button type="button" data-timer="300">5 min</button>
+                    <button type="button" data-timer="600">10 min</button>
+                </div>
+                <form id="timer-form" class="row">
+                    <label for="timer-input">Other</label>
+                    <input id="timer-input" inputmode="numeric" placeholder="mm:ss" autocomplete="off" size="6">
+                    <button type="submit" class="qn-go">Start</button>
+                </form>
+                <div class="row" id="timer-controls" role="group" aria-label="Timer controls">
+                    <button type="button" id="timer-pause-btn">Pause</button>
+                    <button type="button" data-action="timer_add" data-seconds="30">+30 s</button>
+                    <button type="button" data-action="timer_add" data-seconds="60">+1 min</button>
+                    <button type="button" data-action="home" class="qn-reset">Cancel</button>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/phone.js') }}"></script>
+</body>
+</html>

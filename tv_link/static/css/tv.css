@@ -1,0 +1,202 @@
+/* TV Link, TV page. Written for older smart-TV browsers (checked by `npm run check:tv`):
+   flexbox with margins rather than grid or flex gap, and fixed sizes where viewport units
+   could be missing. */
+html, body { height: 100%; }
+
+body.tv {
+    margin: 0;
+    overflow: hidden;
+    --portal-nav-inset: 0px;
+}
+
+/* Only the layer for the current mode is shown. */
+.tv-layer {
+    display: none;
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+}
+.mode-home .tv-home,
+.mode-photo .tv-photo,
+.mode-message .tv-message,
+.mode-video .tv-video,
+.mode-timer .tv-timer,
+.mode-clock .tv-clock,
+.mode-blank .tv-blank {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+/* The portal bar only belongs on the connect screen. (body.tv outranks portal-nav.css,
+   which loads later.) */
+body.tv .portal-nav { display: none; }
+body.tv.mode-home .portal-nav {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+/* --- home: how to connect ------------------------------------------------------------- */
+.tv-home {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem 2rem;
+    box-sizing: border-box;
+}
+.tv-home h1 {
+    margin: 0 0 1.5rem;
+    font-size: 3rem;
+    color: var(--qn-accent);
+}
+.home-row {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+.home-steps { margin: 0 2.5rem; }
+.home-lead { margin: 0.3rem 0; font-size: 1.8rem; color: var(--qn-muted); }
+.home-url {
+    margin: 0.3rem 0 1.4rem;
+    font-size: 2.6rem;
+    font-weight: 700;
+    word-break: break-all;
+}
+.home-code {
+    margin: 0.5rem 0 1.2rem;
+    font-size: 7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    padding-left: 0.18em; /* balances the letter spacing after the last letter */
+    color: var(--qn-accent);
+    line-height: 1;
+}
+.home-status { margin: 0; font-size: 1.5rem; color: var(--qn-muted); min-height: 2rem; }
+.home-qr { margin: 1rem 2.5rem; }
+.home-qr img {
+    display: block;
+    width: 240px;
+    height: 240px;
+    border-radius: var(--qn-radius);
+    background: #fff;
+}
+.home-qr-note { margin: 0.6rem 0 0; color: var(--qn-muted); font-size: 1.3rem; }
+.home-actions { margin: 2.5rem 0 0; }
+
+/* --- photo ---------------------------------------------------------------------------- */
+.tv-photo { background: #000; }
+.photo-slide {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-color: #000;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0;
+    -webkit-transition: opacity 0.6s;
+    transition: opacity 0.6s;
+}
+.photo-slide.is-front { opacity: 1; }
+
+/* --- message -------------------------------------------------------------------------- */
+.tv-message {
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 4%;
+    box-sizing: border-box;
+}
+.message-text {
+    margin: 0;
+    max-width: 100%;
+    text-align: center;
+    font-weight: 700;
+    line-height: 1.15;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* --- video ---------------------------------------------------------------------------- */
+.tv-video { background: #000; }
+.video-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* --- timer and clock ------------------------------------------------------------------ */
+.tv-timer,
+.tv-clock {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    text-align: center;
+}
+.timer-text,
+.clock-time {
+    margin: 0;
+    font-size: 12rem;
+    font-weight: 700;
+    line-height: 1;
+}
+.timer-note,
+.clock-date {
+    margin: 1.5rem 0 0;
+    min-height: 3rem;
+    font-size: 2.6rem;
+    color: var(--qn-muted);
+}
+.timer-bar {
+    width: 70%;
+    height: 18px;
+    margin-top: 2.5rem;
+    border-radius: 9px;
+    background: var(--qn-surface-2);
+    overflow: hidden;
+}
+.timer-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--qn-accent);
+}
+.timer-done .timer-text { color: var(--qn-warn); }
+.timer-done .timer-fill { background: var(--qn-warn); }
+
+.tv-blank { background: #000; }
+
+/* Shown over everything when the connection drops. */
+.tv-corner {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1rem;
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--qn-muted);
+}
+
+/* Bigger screens: let the code and timer grow with the TV. */
+@media (min-width: 1600px) {
+    .home-code { font-size: 9rem; }
+    .timer-text, .clock-time { font-size: 16rem; }
+    .home-qr img { width: 320px; height: 320px; }
+}
+@media (max-width: 900px) {
+    .home-code { font-size: 4.5rem; }
+    .home-url { font-size: 1.8rem; }
+    .timer-text, .clock-time { font-size: 6rem; }
+}

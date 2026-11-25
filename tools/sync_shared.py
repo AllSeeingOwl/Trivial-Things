@@ -29,6 +29,7 @@ PORTAL_NAV_APPS = [
     "quarterly_calendar",
     "sliding_rows_flashcards",
     "trivia_flashcards",
+    "tv_link",
     "what_the_spell",
     "where_in_the_world",
 ]
@@ -40,6 +41,7 @@ QUIZ_NIGHT_APPS = [
     "point_it_out",
     "sliding_rows_flashcards",
     "trivia_flashcards",
+    "tv_link",
     "what_the_spell",
     "where_in_the_world",
 ]

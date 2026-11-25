@@ -16,6 +16,7 @@ APPS = {
     "quarterly_calendar": "quarterly_calendar_app.py",
     "sliding_rows_flashcards": "sliding_rows_flashcards_app.py",
     "trivia_flashcards": "trivia_flashcards_app.py",
+    "tv_link": "tv_link_app.py",
     "what_the_spell": "what_the_spell_app.py",
     "where_in_the_world": "where_in_the_world_app.py",
     "whovian_degrees": "whovian_degrees_app.py",

@@ -1,10 +1,10 @@
 # Trivia and Flashcards Apps
 
-Welcome to the Trivia and Flashcards repository! This collection features thirteen interactive, web-based applications designed to help you study, run trivia nights, or play educational games. Each application focuses on a unique style of learning and questioning.
+Welcome to the Trivia and Flashcards repository! This collection features fourteen interactive, web-based applications designed to help you study, run trivia nights, play educational games, or put things on a TV. Each application focuses on a unique style of learning and questioning.
 
 ## The Applications
 
-The repository is organized into thirteen distinct applications (ten Flask, one Next.js, two static HTML pages):
+The repository is organized into fourteen distinct applications (eleven Flask, one Next.js, two static HTML pages):
 
 ### 1. Trivia Flashcards (`trivia_flashcards/`)
 A flashcard web app perfect for classic trivia and quiz games.
@@ -74,6 +74,14 @@ Satirical bingo for things you can see coming a mile off. The name is short for 
 A picture quiz where you answer by pointing, a cousin of Where In The World.
 *   **Features**: Each question shows one or more pictures. Players click the right picture or the right part of it, can move their pin before locking it in, and score 10 points for a hit or 5 for a near miss. Questions can be grouped into sets that share pictures (four related pictures, or one busy picture) and are played back to back. Questions come from `Point It Out.csv` (category, question, pictures, correct picture, an optional answer area as left/top/width/height percentages, and an explanation); pictures live in `static/images`. A question maker at `/editor` lets you pick pictures, drag a box over the answer and copy the finished CSV line. Pins can be placed and moved from the keyboard. A quiz night mode has teams take turns, with a per-question timer and a scoreboard.
 *   **Running**: `cd point_it_out && python3 point_it_out_app.py` (Runs on port 5010 by default; port 8015 under `docker compose up`).
+
+### 14. TV Link (`tv_link/`)
+Put things on any TV that has a web browser, from your phone. No app to install on the TV or the phone, and no casting protocol to fight with: if the TV can open a web page, it works.
+*   **Connecting**: open `/tv` in the TV's browser. It shows a five-letter code and a QR code. On a phone, scan the QR code or open `/` and type the code. Any number of phones can connect to one TV. **New code** on the TV disconnects every phone. The TV keeps its code if it's reloaded, and a screen ends an hour after the TV stops checking in.
+*   **What you can show**: photos from the phone (shrunk to 1080p and sent as JPEG, then tapped to show, stepped through, or played as a slideshow that moves on by itself); a message in text as large as fits; a YouTube video from any watch, youtu.be, Shorts or live link (with play/pause, mute, restart and stop from the phone); a countdown timer (presets or any time, with pause, resume and +30 s); a clock; or a blank screen. The **Code screen** button puts the code back up so someone else can join.
+*   **Older TVs**: the TV page is ES5 with XMLHttpRequest polling and flexbox without gap, checked with `npm run check:tv` in `tools/frontend` like the quiz boards.
+*   **Limits**: everything is held in memory: up to 40 photos and 60 MB per TV, 400 MB across the server, and 300 TVs at once. Wrong codes from one address are limited to 20 every 10 minutes so codes can't be guessed. Video is YouTube only (embedded through youtube-nocookie.com); the TV's own browser decides whether a video can start with sound before someone presses OK on the TV remote.
+*   **Running**: `cd tv_link && pip install -r requirements.txt && python3 tv_link_app.py` (runs on port 5000 by default; port 8016 under `docker compose up`). The QR code needs `segno`; without it the TV still shows the code.
 
 ## Tech Stack
 

@@ -2,6 +2,7 @@
 # Checks the pages that run on TVs against the older smart-TV browsers in tv-browsers.txt:
 #   - What The Spell's board
 #   - the Trivia, MCQ and Sliding Rows boards while they follow a phone remote
+#   - TV Link's TV page
 # Scripts must be ES5 and use only APIs those browsers have; stylesheets may only use newer
 # features with a fallback (see ALLOWED in doiuse-check.mjs).
 set -euo pipefail
@@ -15,6 +16,7 @@ JS=(
   trivia_flashcards/static/js/remote-tv.js
   mcq_flashcards/static/js/remote-tv.js
   sliding_rows_flashcards/static/js/remote-tv.js
+  tv_link/static/js/tv.js
 )
 CSS=(
   shared/quiz_night/quiz-night.css
@@ -24,6 +26,8 @@ CSS=(
   trivia_flashcards/static/css/remote-view.css
   mcq_flashcards/static/css/remote-view.css
   sliding_rows_flashcards/static/css/remote-view.css
+  tv_link/static/css/style.css
+  tv_link/static/css/tv.css
 )
 
 npx es-check es5 "${JS[@]/#/$ROOT/}"
