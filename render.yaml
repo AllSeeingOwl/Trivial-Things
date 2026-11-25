@@ -98,6 +98,13 @@ services:
     plan: free
 
   - type: web
+    name: trivial-things-tv-link
+    env: docker
+    dockerContext: tv_link
+    dockerfilePath: tv_link/Dockerfile
+    plan: free
+
+  - type: web
     name: trivial-things-point-it-out
     env: docker
     dockerContext: point_it_out

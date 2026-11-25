@@ -17,7 +17,9 @@ PORTAL_NAV = css_without_comments(ROOT / "shared" / "portal_nav" / "portal-nav.c
 BOARD_CSS = css_without_comments(ROOT / "what_the_spell" / "static" / "css" / "style.css")
 BOARD_JS = [(ROOT / "what_the_spell" / "static" / "js" / name) for name in ("script.js", "spelling.js")] + [
     ROOT / "shared" / "remote" / "remote-follow.js",
-] + [ROOT / app / "static" / "js" / "remote-tv.js" for app in ("trivia_flashcards", "mcq_flashcards", "sliding_rows_flashcards")]
+] + [ROOT / app / "static" / "js" / "remote-tv.js" for app in ("trivia_flashcards", "mcq_flashcards", "sliding_rows_flashcards")] + [
+    ROOT / "tv_link" / "static" / "js" / "tv.js",
+]
 REMOTE_TV_CSS = {
     path.relative_to(ROOT).as_posix(): css_without_comments(path)
     for path in [ROOT / "shared" / "remote" / "remote.css"] + [

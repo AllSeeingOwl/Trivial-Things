@@ -1,0 +1,4 @@
+/* TV Link: its accent colour, shared by the TV and phone pages (see tv.css and phone.css). */
+body {
+    --qn-accent: #fb7185; /* coral */
+}

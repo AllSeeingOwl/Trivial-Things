@@ -1,0 +1,171 @@
+/* Quiz Night: the shared look of the quiz apps (Trivia, MCQ, Sliding Rows, What The Spell,
+   PDF Grid, Point It Out, Where In The World, Scoreboard).
+   Canonical copy: shared/quiz_night/quiz-night.css. Edit that file and run
+   `python3 tools/sync_shared.py`; do not edit the copies in each app.
+
+   Link it before the app's own style.css. Each app sets its accent on <body>:
+       body { --qn-accent: #2dd4bf; }
+   Action colours mean the same thing in every app:
+       .qn-go        the main forward action (start, next, submit, upload)   accent
+       .qn-skip      move on without changing anything (skip, keep)          neutral
+       .qn-eliminate remove or reject (eliminate, wrong, delete)             red
+       .qn-reset     admin and housekeeping (reset all, clear)               outlined, quiet
+   Green and red are kept for right and wrong. */
+
+@font-face{font-family:'Atkinson Hyperlegible';font-style:normal;font-weight:400;font-display:swap;src:url(../fonts/atkinson-400-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Atkinson Hyperlegible';font-style:normal;font-weight:400;font-display:swap;src:url(../fonts/atkinson-400-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Atkinson Hyperlegible';font-style:normal;font-weight:700;font-display:swap;src:url(../fonts/atkinson-700-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Atkinson Hyperlegible';font-style:normal;font-weight:700;font-display:swap;src:url(../fonts/atkinson-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+
+:root {
+    /* Stage: dark, so it reads well on a projector or TV and doesn't glare in a dim room. */
+    --qn-bg: #0e1320;
+    --qn-surface: #171e30;
+    --qn-surface-2: #222b42;
+    --qn-line: #34405c;
+    --qn-text: #f2f4f9;
+    --qn-muted: #aab3c7;
+    --qn-ink: #0b0f18;          /* text on any bright fill */
+
+    --qn-accent: #7dd3fc;       /* each app overrides this */
+    --qn-correct: #34d399;
+    --qn-wrong: #f87171;
+    --qn-warn: #fbbf24;
+
+    --qn-radius: 14px;
+    --qn-radius-sm: 9px;
+    --qn-font: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    /* Fixed sizes for older browsers (some smart TVs) without clamp(); see below. */
+    --qn-step-0: 1.125rem;
+    --qn-step-1: 1.4rem;
+    --qn-step-2: 1.9rem;
+    --qn-step-3: 2.6rem;
+
+    color-scheme: dark;
+}
+
+/* Type grows with the screen, so a laptop on a projector stays readable at the back. */
+@supports (width: clamp(1px, 1vw, 2px)) {
+    :root {
+        --qn-step-0: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+        --qn-step-1: clamp(1.2rem, 1rem + 0.8vw, 1.6rem);
+        --qn-step-2: clamp(1.5rem, 1.15rem + 1.4vw, 2.3rem);
+        --qn-step-3: clamp(1.9rem, 1.3rem + 2.4vw, 3.3rem);
+    }
+}
+
+body.quiz-night {
+    background: var(--qn-bg);
+    color: var(--qn-text);
+    font-family: var(--qn-font);
+    font-size: var(--qn-step-0);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+}
+
+.quiz-night h1 {
+    font-size: var(--qn-step-3);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--qn-text);
+    margin: 0.4em 0 0.3em;
+}
+.quiz-night h1::after {
+    content: "";
+    display: block;
+    width: 2.2em;
+    height: 0.14em;
+    margin: 0.22em auto 0;
+    border-radius: 999px;
+    background: var(--qn-accent);
+}
+.quiz-night h2 { font-size: var(--qn-step-2); line-height: 1.15; color: var(--qn-text); }
+.quiz-night h3 { font-size: var(--qn-step-1); color: var(--qn-text); }
+.quiz-night p { color: var(--qn-text); }
+.quiz-night a { color: var(--qn-accent); }
+
+/* Panels */
+.qn-panel {
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    border-radius: var(--qn-radius);
+}
+.qn-pill {
+    display: inline-block;
+    background: var(--qn-surface);
+    border: 1px solid var(--qn-line);
+    color: var(--qn-muted);
+    border-radius: 999px;
+    padding: 0.35em 1em;
+    font-weight: 700;
+}
+
+/* Buttons */
+.quiz-night button,
+.quiz-night .qn-btn {
+    font: inherit;
+    font-weight: 700;
+    font-size: var(--qn-step-0);
+    line-height: 1.2;
+    padding: 0.7em 1.35em;
+    min-height: 2.75rem;
+    border-radius: var(--qn-radius-sm);
+    border: 2px solid transparent;
+    cursor: pointer;
+    background: var(--qn-surface-2);
+    color: var(--qn-text);
+    box-shadow: none;
+    transition: background-color 0.15s, border-color 0.15s, filter 0.15s, transform 0.1s;
+}
+.quiz-night button:hover:not(:disabled) { filter: brightness(1.12); }
+.quiz-night button:active:not(:disabled) { transform: translateY(1px); }
+.quiz-night button:disabled { opacity: 0.55; cursor: not-allowed; }
+/* Focus ring. :focus first so browsers without :focus-visible (older smart TVs, where
+   people move around with the remote's arrow keys) still show it; the second rule hides
+   it after a mouse click where :focus-visible is understood. */
+.quiz-night :focus {
+    outline: 3px solid var(--qn-text);
+    outline-offset: 3px;
+}
+.quiz-night :focus:not(:focus-visible) { outline: none; }
+
+.quiz-night .qn-go        { background: var(--qn-accent); color: var(--qn-ink); }
+.quiz-night .qn-skip      { background: var(--qn-surface-2); color: var(--qn-text); border-color: var(--qn-line); }
+.quiz-night .qn-eliminate { background: var(--qn-wrong); color: var(--qn-ink); }
+.quiz-night .qn-reset {
+    background: transparent; color: var(--qn-muted); border-color: var(--qn-line);
+    font-size: 0.9em; padding: 0.5em 1.1em; min-height: 2.5rem;
+}
+.quiz-night .qn-reset:hover:not(:disabled) { color: var(--qn-text); border-color: var(--qn-muted); filter: none; }
+
+/* Form controls */
+.quiz-night select,
+.quiz-night input:not([type=checkbox]):not([type=radio]),
+.quiz-night textarea {
+    font: inherit;
+    font-size: var(--qn-step-0);
+    background: var(--qn-surface);
+    color: var(--qn-text);
+    border: 2px solid var(--qn-line);
+    border-radius: var(--qn-radius-sm);
+    padding: 0.45em 0.7em;
+}
+.quiz-night input[type=file]::file-selector-button {
+    font: inherit; font-weight: 700; margin-right: 0.8em; cursor: pointer;
+    background: var(--qn-surface-2); color: var(--qn-text);
+    border: 2px solid var(--qn-line); border-radius: var(--qn-radius-sm); padding: 0.4em 0.9em;
+}
+.quiz-night input[type=checkbox],
+.quiz-night input[type=radio] { accent-color: var(--qn-accent); width: 1.15em; height: 1.15em; }
+
+/* Right and wrong */
+.qn-correct { color: var(--qn-correct); }
+.qn-wrong { color: var(--qn-wrong); }
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-night *, .quiz-night *::before, .quiz-night *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

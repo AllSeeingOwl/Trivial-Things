@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Link · TV</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-night.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tv.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-nav.css') }}">
+</head>
+<body class="quiz-night tv mode-home" data-code-length="{{ code_length }}">
+    {% include '_portal_nav.html' %}
+
+    <!-- Home: how to connect. Shown until a phone picks something else, and whenever it taps Home. -->
+    <section id="home" class="tv-layer tv-home" aria-labelledby="home-title">
+        <h1 id="home-title">TV Link</h1>
+        <div class="home-row">
+            <div class="home-steps">
+                <p class="home-lead">On your phone, go to</p>
+                <p class="home-url" id="home-url"></p>
+                <p class="home-lead">and enter this code</p>
+                <p class="home-code" id="home-code" aria-live="polite">·····</p>
+                <p class="home-status" id="home-status" aria-live="polite">Getting a code…</p>
+            </div>
+            <div class="home-qr" id="home-qr-box" hidden>
+                <img id="home-qr" alt="QR code that opens TV Link on a phone with this code filled in" width="240" height="240">
+                <p class="home-qr-note">or scan this</p>
+            </div>
+        </div>
+        <p class="home-actions"><button type="button" id="new-code-btn" class="qn-reset">New code (disconnects phones)</button></p>
+    </section>
+
+    <section id="photo" class="tv-layer tv-photo" aria-label="Photo">
+        <div id="photo-a" class="photo-slide"></div>
+        <div id="photo-b" class="photo-slide"></div>
+    </section>
+
+    <section id="message" class="tv-layer tv-message" aria-label="Message">
+        <p id="message-text" class="message-text" aria-live="polite"></p>
+    </section>
+
+    <section id="video" class="tv-layer tv-video" aria-label="Video"></section>
+
+    <section id="timer" class="tv-layer tv-timer" aria-label="Timer">
+        <p id="timer-text" class="timer-text" role="timer">0:00</p>
+        <p id="timer-note" class="timer-note"></p>
+        <div class="timer-bar"><div id="timer-fill" class="timer-fill"></div></div>
+    </section>
+
+    <section id="clock" class="tv-layer tv-clock" aria-label="Clock">
+        <p id="clock-time" class="clock-time">--:--</p>
+        <p id="clock-date" class="clock-date"></p>
+    </section>
+
+    <section id="blank" class="tv-layer tv-blank" aria-label="Blank screen"></section>
+
+    <p id="corner" class="tv-corner" aria-live="polite"></p>
+
+    <script src="{{ url_for('static', filename='js/tv.js') }}"></script>
+</body>
+</html>
