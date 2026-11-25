@@ -200,3 +200,31 @@ body.tv.mode-home .portal-nav {
     .home-url { font-size: 1.8rem; }
     .timer-text, .clock-time { font-size: 6rem; }
 }
+
+/* Short screens: mini projectors are often 854x480 or 1024x600, and some TV browsers report
+   a small viewport. Tighten everything so the code, QR code and button all fit. */
+@media (max-height: 640px) {
+    .tv-home { padding: 3.2rem 1rem 0.5rem; }
+    .tv-home h1 { font-size: 2rem; margin: 0 0 0.6rem; }
+    .home-lead { font-size: 1.2rem; margin: 0.15rem 0; }
+    .home-url { font-size: 1.6rem; margin: 0.15rem 0 0.6rem; }
+    .home-code { font-size: 4.2rem; margin: 0.2rem 0 0.6rem; }
+    .home-status { font-size: 1.1rem; min-height: 1.4rem; }
+    .home-steps { margin: 0 1.5rem; }
+    .home-qr { margin: 0.4rem 1.5rem; }
+    .home-qr img { width: 170px; height: 170px; }
+    .home-qr-note { font-size: 1rem; margin-top: 0.3rem; }
+    .home-actions { margin: 0.8rem 0 0; }
+    .home-actions button { min-height: 0; padding: 0.4em 1em; font-size: 1rem; }
+    .timer-text, .clock-time { font-size: 7rem; }
+    .timer-note, .clock-date { font-size: 1.6rem; margin-top: 0.8rem; min-height: 2rem; }
+    .timer-bar { margin-top: 1.2rem; }
+}
+/* Very short: drop the portal bar so the code has the room. */
+@media (max-height: 420px) {
+    body.tv.mode-home .portal-nav { display: none; }
+    .tv-home { padding-top: 0.6rem; }
+    .tv-home h1 { display: none; }
+    .home-code { font-size: 3.4rem; }
+    .home-qr img { width: 130px; height: 130px; }
+}
