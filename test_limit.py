@@ -2,15 +2,8 @@ from mcq_flashcards.mcq_flashcards_app import app as mcq_app
 from trivia_flashcards.trivia_flashcards_app import app as trivia_app
 from sliding_rows_flashcards.sliding_rows_flashcards_app import app as sliding_app
 from where_in_the_world.where_in_the_world_app import app as world_app
-import json
 import unittest
-import sys
 
-
-from mcq_flashcards.mcq_flashcards_app import mark_used as mark_used_mcq
-from trivia_flashcards.trivia_flashcards_app import mark_used as mark_used_trivia
-from sliding_rows_flashcards.sliding_rows_flashcards_app import mark_used as mark_used_sliding
-from where_in_the_world.where_in_the_world_app import calculate_score
 
 class TestLimits(unittest.TestCase):
     def test_mcq_limit(self):
