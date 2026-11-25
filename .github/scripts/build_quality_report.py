@@ -261,8 +261,9 @@ def lighthouse_section(audit, url):
     if "trivial-things.onrender.com" in url:
         out.append(
             "- **Coverage limitation:** this URL is the `trivial-things` Render *static site* that publishes `portal/`. "
-            "It is a landing page whose app links point to `localhost` ports, so these scores describe only the portal "
-            "page. The Flask apps and the Next.js app (`right-here-right-now`) are separate Render services and are "
+            "It is a landing page that links to each app's own Render service and pings each one on load to show "
+            "whether it is awake, so these scores describe only the portal page. The Flask apps and the Next.js app "
+            "(`right-here-right-now`) are separate Render services and are "
             "**not** covered by this Lighthouse run."
         )
     else:

@@ -275,6 +275,29 @@
                 });
             }
 
+            var pings = [];
+
+            function ping(targetUrl, badgeEl) {
+                fetch(targetUrl, { mode: 'no-cors' }).then(function() {
+                    badgeEl.textContent = 'Ready';
+                    badgeEl.setAttribute('data-state', 'ready');
+                }).catch(function() {
+                    badgeEl.textContent = 'Waking up';
+                    badgeEl.setAttribute('data-state', 'waking');
+                });
+            }
+
+            // Start the pings once the page has loaded and the browser is idle, so 16 cross-origin
+            // requests don't compete with the portal's own CSS, font and script.
+            function startPings() {
+                var run = function() { pings.forEach(function(fn) { fn(); }); };
+                if ('requestIdleCallback' in window) {
+                    window.requestIdleCallback(run, { timeout: 2000 });
+                } else {
+                    setTimeout(run, 200);
+                }
+            }
+
             cards.forEach(function(card) {
                 var localPort = card.getAttribute('data-local-port');
                 var renderSlug = card.getAttribute('data-render-slug');
@@ -297,13 +320,7 @@
                     badgeEl.textContent = 'Checking';
                     badgeEl.setAttribute('data-state', 'checking');
                     badgeEl.hidden = false;
-                    fetch(targetUrl, { mode: 'no-cors' }).then(function() {
-                        badgeEl.textContent = 'Ready';
-                        badgeEl.setAttribute('data-state', 'ready');
-                    }).catch(function() {
-                        badgeEl.textContent = 'Waking up';
-                        badgeEl.setAttribute('data-state', 'waking');
-                    });
+                    pings.push(function() { ping(targetUrl, badgeEl); });
                 }
 
                 card.addEventListener('click', function(e) {
@@ -319,6 +336,14 @@
                     }
                 });
             });
+
+            if (pings.length) {
+                if (document.readyState === 'complete') {
+                    startPings();
+                } else {
+                    window.addEventListener('load', startPings);
+                }
+            }
 
             var desc = document.getElementById('portal-description');
             if (desc && isLocal) {
